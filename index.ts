@@ -1,5 +1,7 @@
 import { sys } from "typescript";
 
+let minutes: number = new Date().getMinutes();
+
 function eloZelo(numofrec:number): void {
     let text: string = "";
     if (numofrec < 0) {
@@ -14,3 +16,5 @@ function eloZelo(numofrec:number): void {
     }
     sys.writeFile("elo-żelo.txt", text);
 }
+eloZelo(minutes);
+
