@@ -8,10 +8,12 @@ export class AppController {
 
   @Get("backend")
   @HttpCode(418)
-  getHello(): { title: string; quote: string } {
+  getHello(): { title: string; quote: string; author: string } {
     return {
       title: "Wakacyjne Wyzwanie Solvro!!!",
-      quote: "Jakaś twoja złota myśl - liczę na kreatywność",
+      quote:
+        "Moja złota myśl to robic pierwsze co ci przyjdzie na myśl, a nie myśleć o złotej myśli przez parę godzin. Płatki z mlekiem to też zupa hotdog to kanapka. Thank you for listening to my Ted Talk.",
+      author: "Marcin Lutnia",
     };
   }
 }
