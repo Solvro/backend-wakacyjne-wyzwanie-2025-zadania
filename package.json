@@ -1,0 +1,28 @@
+{
+  "name": "backend-wakacyjne-wyzwanie-2025-zadania",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <img src=\"https://github.com/user-attachments/assets/7c32ec09-c2ac-4961-82e6-a98f04220510\"/>\r </p>",
+  "homepage": "https://github.com/Solvro/backend-wakacyjne-wyzwanie-2025-zadania#readme",
+  "bugs": {
+    "url": "https://github.com/Solvro/backend-wakacyjne-wyzwanie-2025-zadania/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Solvro/backend-wakacyjne-wyzwanie-2025-zadania.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "npx tsc src/index.ts | node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.0"
+  }
+}
