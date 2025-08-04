@@ -1,4 +1,4 @@
-import { sys } from "typescript";
+import * as fs from 'fs';
 
 let minutes: number = new Date().getMinutes();
 
@@ -14,7 +14,6 @@ function eloZelo(numofrec:number): void {
     if (text.length > 0) {
         text.endsWith("\n") ? text = text.slice(0, -1) : null;
     }
-    sys.writeFile("elo-żelo.txt", text);
+    fs.writeFileSync("elo-żelo.txt", text,'utf-8');
 }
 eloZelo(minutes);
-
