@@ -7,7 +7,7 @@ function eloZelo(n: number): void {
         content.push("Elo żelo") 
     }
 
-    writeFileSync("eloZelo.txt", content.join("\n"), "utf8")
+    writeFileSync("elo-żelo.txt", content.join("\n"), "utf8")
 }
 
 eloZelo(new Date().getMinutes())    
