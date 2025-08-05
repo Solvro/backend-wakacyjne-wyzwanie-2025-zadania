@@ -1,8 +1,9 @@
-import * as request from "supertest";
-import { App } from "supertest/types";
+import request from "supertest";
+import type { App } from "supertest/types";
 
-import { INestApplication } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { AppModule } from "./../src/app.module";
 
@@ -18,10 +19,13 @@ describe("AppController (e2e)", () => {
     await app.init();
   });
 
-  it("/ (GET)", () => {
+  it("/wakacyjne/backend/ (GET)", () => {
     return request(app.getHttpServer())
-      .get("/")
-      .expect(200)
-      .expect("Hello World!");
+      .get("/wakacyjne/backend")
+      .expect(418)
+      .expect({
+        title: "Wakacyjne Wyzwanie Solvro!!!",
+        quote: "Ten co ZSE skończył w cyrku się nie śmieje...",
+      });
   });
 });
