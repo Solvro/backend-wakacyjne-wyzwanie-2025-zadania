@@ -1,10 +1,12 @@
 import * as fs from "fs";
 
 function eloZelo(numberOfLines: number): void {
-  const text = "Elo żelo\n";
+  const textPart = "Elo żelo";
+  let text: string = "";
   for (let index = 0; index < numberOfLines; index++) {
-    fs.appendFileSync("elo-żelo.txt", text);
+    text = text + textPart + "\n";
   }
+  fs.appendFileSync("elo-żelo.txt", text);
 }
 
 const now = new Date();
