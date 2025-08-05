@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import { writeFileSync } from "fs"
 
 function eloZelo(x: number): void {
   const content = Array(x).fill("Elo żelo").join("\n");
