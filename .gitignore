@@ -1,0 +1,6 @@
+node_modules/
+dist/
+build/
+*.log
+.vscode/
+elo-żelo.txt
