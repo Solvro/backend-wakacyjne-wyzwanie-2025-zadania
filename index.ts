@@ -6,11 +6,10 @@ function eloZelo(repeats: number): void {
   writeFileSync(file, '')
   for (let i: number = 0; i < repeats; i++) {
     writeFileSync(file, text + '\n', { flag: 'a' })
-    console.log(text)
+    console.log(`${i + 1}: ${text}`)
   }
 }
 
 let minutes: number = new Date().getMinutes()
-let message: string = `minutes: ${minutes}`
-console.log(message)
+console.log(`minutes: ${minutes}`)
 eloZelo(minutes)
