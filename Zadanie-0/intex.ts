@@ -1,13 +1,9 @@
-import { writeFileSync } from "fs";
+var fs_1 = require("fs");
 
 function eloZelo(repeats: number)
 {
     const content = "Elo żelo\n".repeat(repeats);
-
-    writeFileSync("elo-żelo.txt", content, {
-        flag: "w"
-    })
-
+    fs_1.writeFileSync("elo-żelo.txt", content)
 }
 
 let minutesNow = new Date().getMinutes();
