@@ -8,7 +8,12 @@ export class AppController {
 
   @Get("backend")
   @HttpCode(418)
-  getHello(): { title: string; quote: string } {
+  getHello(): {
+    title: string;
+    quote: string;
+    author: string;
+    randomanimalfact: string;
+  } {
     return this.appService.getHello();
   }
 }
