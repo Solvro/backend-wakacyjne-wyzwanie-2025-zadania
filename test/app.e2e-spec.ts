@@ -1,7 +1,8 @@
 import request from "supertest";
 
-import { INestApplication } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { AppModule } from "../src/app.module";
 
@@ -18,12 +19,15 @@ describe("AppController (e2e)", () => {
   });
 
   it("wakacyjne/backend (GET)", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return request(app.getHttpServer())
       .get("/wakacyjne/backend")
       .expect(418)
-      .expect({
-        title: "Wakacyjne Wyzwanie Solvro!!!",
-        quote: "Kokodżambo i do przodu!",
+      .expect((response) => {
+        expect(response.body).toEqual({
+          title: "Wakacyjne Wyzwanie Solvro!!!",
+          quote: "Kokodżambo i do przodu!",
+        });
       });
   });
 });
