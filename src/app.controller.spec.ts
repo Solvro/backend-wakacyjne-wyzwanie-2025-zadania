@@ -1,8 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
-describe('AppController', () => {
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+
+describe("AppController", () => {
   let appController: AppController;
 
   beforeEach(async () => {
@@ -14,9 +16,12 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe("root", () => {
+    it("should return object with quote", () => {
+      expect(appController.getHello()).toStrictEqual({
+        title: "Wakacyjne Wyzwanie Solvro!!!",
+        quote: "Dziwne, u mnie działa ;)",
+      });
     });
   });
 });

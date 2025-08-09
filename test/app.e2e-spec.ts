@@ -1,10 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import request from "supertest";
+import type { App } from "supertest/types";
 
-describe('AppController (e2e)', () => {
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
+
+import { AppModule } from "./../src/app.module";
+
+describe("AppController (e2e)", () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -16,10 +19,13 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it("/wakacyjne/backend/ (GET)", () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .get("/wakacyjne/backend")
+      .expect(418)
+      .expect({
+        title: "Wakacyjne Wyzwanie Solvro!!!",
+        quote: "Dziwne, u mnie działa ;)",
+      });
   });
 });
