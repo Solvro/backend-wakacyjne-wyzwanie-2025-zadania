@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AppService {
   getHello() {
     return {
-      title: 'Wakacyjne Wyzwanie Solvro!!!',
-      quote: 'Kokodżambo i do przodu!',
+      title: "Wakacyjne Wyzwanie Solvro!!!",
+      quote: "Kokodżambo i do przodu!",
     };
   }
 }

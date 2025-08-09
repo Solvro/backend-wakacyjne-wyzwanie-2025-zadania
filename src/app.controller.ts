@@ -1,11 +1,12 @@
-import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
-import { AppService } from './app.service';
-import express from 'express';
+import express from "express";
 
-@Controller('wakacyjne/backend')
+import { Controller, Get, HttpStatus, Res } from "@nestjs/common";
+
+import { AppService } from "./app.service";
+
+@Controller("wakacyjne/backend")
 export class AppController {
-  constructor(private readonly appService: AppService) {
-  }
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getHello(@Res() res: express.Response) {
