@@ -1,13 +1,11 @@
-import * as request from "supertest";
-import { App } from "supertest/types";
+import request from 'supertest';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 
-import { INestApplication } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import { AppModule } from "../src/app.module";
 
-import { AppModule } from "./../src/app.module";
-
-describe("AppController (e2e)", () => {
-  let app: INestApplication<App>;
+describe('AppController (e2e)', () => {
+  let app: INestApplication;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,10 +16,10 @@ describe("AppController (e2e)", () => {
     await app.init();
   });
 
-  it("wakacyjne/backend (GET)", () => {
+  it('wakacyjne/backend (GET)', () => {
     return request(app.getHttpServer())
-      .get("wakacyjne/backend")
+      .get('/wakacyjne/backend')
       .expect(418)
-      .expect("Wakacyjne Wyzwanie Solvro!!!");
+      .expect({ title: 'Wakacyjne Wyzwanie Solvro!!!', quote: 'Twoja złota myśl' });
   });
 });

@@ -1,7 +1,4 @@
-import express from "express";
-
-import { Controller, Get, HttpStatus, Res } from "@nestjs/common";
-
+import { Controller, Get, HttpStatus } from "@nestjs/common";
 import { AppService } from "./app.service";
 
 @Controller("wakacyjne/backend")
@@ -9,8 +6,10 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(@Res() res: express.Response) {
-    const data = this.appService.getHello();
-    return res.status(418).json(data);
+  getHello() {
+    return {
+      statusCode: HttpStatus.I_AM_A_TEAPOT, // 418
+      message: this.appService.getHello(),
+    };
   }
 }
