@@ -16,8 +16,11 @@ describe("AppController", () => {
   });
 
   describe("root", () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe("Hello World!");
+    it("should return expected object", () => {
+      expect(appController.getHello()).toEqual({
+        title: "Wakacyjne Wyzwanie Solvro!!!",
+        quote: "Kokodżambo i do przodu!",
+      });
     });
   });
 });
