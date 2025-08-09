@@ -1,14 +1,17 @@
-import { Controller, Get, HttpCode } from "@nestjs/common";
+import type { Response } from "express";
+
+import { Controller, Get, HttpStatus, Res } from "@nestjs/common";
 
 import { AppService } from "./app.service";
 
-@Controller("wakacyjne")
+@Controller("wakacyjne/backend")
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get("backend")
-  @HttpCode(418)
-  getHello() {
-    return this.appService.getHello();
+  @Get()
+  getHello(@Res() response: Response) {
+    return response
+      .status(HttpStatus.I_AM_A_TEAPOT)
+      .json(this.appService.getHello());
   }
 }
