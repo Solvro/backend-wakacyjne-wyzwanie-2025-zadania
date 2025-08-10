@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "removeComments": true,
+    "noEmitOnError": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "types": ["node"],
+    "noUnusedParameters": true, //a function cant have a parameter which is unused in the function block, we get a warning
+    "noUnusedLocals": true, //enable warnings when a local variable declared inside a block and its never used
+    "noImplicitReturns": true
+  }
+}
