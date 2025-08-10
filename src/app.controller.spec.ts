@@ -17,8 +17,11 @@ describe("AppController", () => {
   });
 
   describe("root", () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe(appController.getHello());
+    it("should return expected message object", () => {
+      expect(appController.getHello()).toEqual({
+        title: "Wakacyjne Wyzwanie Solvro!!!",
+        quote: "It's not a bug, it's a feature",
+      });
     });
   });
 });
