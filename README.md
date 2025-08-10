@@ -1,3 +1,6 @@
+Plik zadania 0 index.ts jest w katalogu src.
+
+
 # Zadania z kursu "Od zera do backend developera"
 
 <p align="center">
