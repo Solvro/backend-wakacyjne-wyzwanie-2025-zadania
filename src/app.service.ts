@@ -2,7 +2,10 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return "Hello World!";
+  getHello() {
+    return {
+      title: "Wakacyjne Wyzwanie Solvro!!!",
+      quote: "https://tinyurl.com/2c6dyhmr",
+    };
   }
 }
