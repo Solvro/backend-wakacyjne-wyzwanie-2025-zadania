@@ -16,9 +16,12 @@ describe("AppController", () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe("root", () => {
-    it('should return {"quote": "Jestem czajnikiem", "title": "Wakacyjne Wyzwanie Solvro!!!"}', () => {
-      expect(appController.getHello()).toStrictEqual(appController.getHello());
+  describe("AppController root endpoint", () => {
+    it("appController.getHello()", () => {
+      expect(appController.getHello()).toStrictEqual({
+        title: "Wakacyjne Wyzwanie Solvro!!!",
+        quote: "Jestem czajnikiem",
+      });
     });
   });
 });
