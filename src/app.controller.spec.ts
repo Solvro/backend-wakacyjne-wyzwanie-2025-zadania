@@ -17,8 +17,8 @@ describe("AppController", () => {
   });
 
   describe("root", () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe(appController.getHello());
+    it('should return {"quote": "Jestem czajnikiem", "title": "Wakacyjne Wyzwanie Solvro!!!"}', () => {
+      expect(appController.getHello()).toStrictEqual(appController.getHello());
     });
   });
 });
