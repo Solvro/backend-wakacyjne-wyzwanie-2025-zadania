@@ -1,16 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { Module } from '@nestjs/common';
-import { AppModule } from './app/module';
+import { NestFactory } from "@nestjs/core";
 
-@Module({
-  imports: [AppModule],
-})
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-class MainModule {}
+import { AppModule } from "./app.module";
 
 async function main() {
-  const app = await NestFactory.create(MainModule);
-  await app.listen(process.env.PORT ?? 80);
+  const app = await NestFactory.create(AppModule);
+  await app.listen(process.env.PORT ?? 3000);
 }
 
 main();

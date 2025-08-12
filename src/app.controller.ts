@@ -1,5 +1,6 @@
-import { Controller, Get, HttpCode } from '@nestjs/common';
-import { AppService } from './service';
+import { Controller, Get, HttpCode } from "@nestjs/common";
+
+import { AppService } from "./app.service";
 
 @Controller("wakacyjne")
 export class AppController {
@@ -7,7 +8,7 @@ export class AppController {
 
   @Get("backend")
   @HttpCode(418)
-  getBackend(): { title: string; quote: string; } {
+  getBackend(): { title: string; quote: string } {
     return this.appService.getBackend();
   }
 }
