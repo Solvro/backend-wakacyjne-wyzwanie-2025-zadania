@@ -26,6 +26,7 @@ model Trip {
 
 model Participant {
   id          Int       @id @default(autoincrement())
+  email       String?
   name        String
   role        String
   trip_id     Int

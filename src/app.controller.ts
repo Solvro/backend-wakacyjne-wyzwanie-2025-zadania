@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode } from "@nestjs/common";
+import { Controller, Get, HttpCode, Put, Delete } from "@nestjs/common";
 import { DbService } from "./db.service";
 import { AppService } from "./app.service";
 
@@ -17,12 +17,12 @@ export class AppController {
     return await this.dbService.getTest();
   }
 
-  @Get("db/test/create")
+  @Put("db/test/create")
   async getDbTestCreate(): Promise<void> {
     return await this.dbService.getTestCreate();
   }
 
-  @Get("db/test/clear")
+  @Delete("db/test/clear")
   async getDbTestClear(): Promise<void> {
     return await this.dbService.getTestClear();
   }
