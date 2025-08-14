@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class DbService extends PrismaClient implements OnModuleInit {
+export class DatabaseService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     await this.$connect();
@@ -25,7 +25,7 @@ export class DbService extends PrismaClient implements OnModuleInit {
   async getTestCreate(): Promise<void> {
     await this.trip.create({
         data: {
-            id: Math.random() * 1000000,
+            id: Math.random() * 1_000_000,
             name: "Are Ya trippin???",
             destination: "Brazil",
             start_date: new Date(),
@@ -44,7 +44,7 @@ export class DbService extends PrismaClient implements OnModuleInit {
 
     const trip_ids = trips.map(t => t.id);
 
-    if (trip_ids.length === 0) return;
+    if (trip_ids.length === 0) {return;}
 
     await this.expense.deleteMany({
       where: { trip_id: { in: trip_ids } },

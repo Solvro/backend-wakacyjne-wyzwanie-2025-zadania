@@ -1,10 +1,10 @@
 import { Controller, Get, HttpCode, Put, Delete } from "@nestjs/common";
-import { DbService } from "./db.service";
+import { DatabaseService } from "./database.service";
 import { AppService } from "./app.service";
 
 @Controller("api/v1/")
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly dbService: DbService) {}
+  constructor(private readonly appService: AppService, private readonly databaseService: DatabaseService) {}
 
   @Get("wakacyjne/backend")
   @HttpCode(418)
@@ -14,16 +14,16 @@ export class AppController {
 
   @Get("db/test/show")
   async getDbTest(): Promise<unknown> {
-    return await this.dbService.getTest();
+    return await this.databaseService.getTest();
   }
 
   @Put("db/test/create")
   async getDbTestCreate(): Promise<void> {
-    return await this.dbService.getTestCreate();
+    await this.databaseService.getTestCreate();
   }
 
   @Delete("db/test/clear")
   async getDbTestClear(): Promise<void> {
-    return await this.dbService.getTestClear();
+    await this.databaseService.getTestClear();
   }
 }
