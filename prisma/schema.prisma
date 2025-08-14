@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  id           Int       @id @default(autoincrement())
+  name         String
+  destination  String
+  start_date   DateTime
+  end_date     DateTime
+  participants Participant[]  // relacja 1:N z Participant
+  expenses     Expense[]      // relacja 1:N z Expense
+}
+
+model Participant {
+  id          Int       @id @default(autoincrement())
+  name        String
+  role        String
+  trip_id     Int
+  trip        Trip      @relation(fields: [trip_id], references: [id])
+  expenses    Expense[] // relacja 1:N z Expense
+}
+
+model Expense {
+  id             Int       @id @default(autoincrement())
+  description    String
+  amount         Float
+  currency       String
+  date           DateTime
+  participant_id Int
+  trip_id        Int 
+  participant    Participant @relation(fields: [participant_id], references: [id])
+  trip           Trip        @relation(fields: [trip_id], references: [id])
+}
