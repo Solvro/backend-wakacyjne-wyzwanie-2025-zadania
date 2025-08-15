@@ -1,10 +1,14 @@
-import { Controller, Get, HttpCode, Put, Delete } from "@nestjs/common";
-import { DatabaseService } from "./database.service";
+import { Controller, Delete, Get, HttpCode, Put } from "@nestjs/common";
+
 import { AppService } from "./app.service";
+import { DatabaseService } from "./database.service";
 
 @Controller("api/v1/")
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @Get("wakacyjne/backend")
   @HttpCode(418)

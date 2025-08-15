@@ -1,9 +1,9 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+
+import { Injectable, OnModuleInit } from "@nestjs/common";
 
 @Injectable()
 export class DatabaseService extends PrismaClient implements OnModuleInit {
-
   async onModuleInit() {
     await this.$connect();
   }
@@ -24,27 +24,29 @@ export class DatabaseService extends PrismaClient implements OnModuleInit {
 
   async getTestCreate(): Promise<void> {
     await this.trip.create({
-        data: {
-            id: Math.random() * 1_000_000,
-            name: "Are Ya trippin???",
-            destination: "Brazil",
-            start_date: new Date(),
-            end_date:   new Date(67),
-            participants: { create: [] },
-            expenses:     { create: [] },
-        },
+      data: {
+        id: Math.random() * 1_000_000,
+        name: "Are Ya trippin???",
+        destination: "Brazil",
+        start_date: new Date(),
+        end_date: new Date(67),
+        participants: { create: [] },
+        expenses: { create: [] },
+      },
     });
   }
 
   async getTestClear(): Promise<void> {
     const trips = await this.trip.findMany({
-      where: { destination: 'Brazil' },
+      where: { destination: "Brazil" },
       select: { id: true },
     });
 
-    const trip_ids = trips.map(t => t.id);
+    const trip_ids = trips.map((t) => t.id);
 
-    if (trip_ids.length === 0) {return;}
+    if (trip_ids.length === 0) {
+      return;
+    }
 
     await this.expense.deleteMany({
       where: { trip_id: { in: trip_ids } },

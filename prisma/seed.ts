@@ -1,11 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 async function main() {
   const trip = await prisma.trip.create({
     data: {
-      name: 'Test Trip',
-      destination: 'Brazil',
+      name: "Test Trip",
+      destination: "Brazil",
       start_date: new Date(),
       end_date: new Date(),
     },
@@ -13,17 +14,17 @@ async function main() {
 
   const participant = await prisma.participant.create({
     data: {
-      name: 'Alice',
-      role: 'GUIDE',
+      name: "Alice",
+      role: "GUIDE",
       trip_id: trip.id,
     },
   });
 
   await prisma.expense.create({
     data: {
-      description: 'Hotel',
+      description: "Hotel",
       amount: 2500,
-      currency: 'PLN',
+      currency: "PLN",
       date: new Date(),
       trip_id: trip.id,
       participant_id: participant.id,
