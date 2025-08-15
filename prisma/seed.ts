@@ -14,7 +14,7 @@ async function main() {
   const participant = await prisma.participant.create({
     data: {
       name: 'Alice',
-      role: "Organizer",
+      role: 'GUIDE',
       trip_id: trip.id,
     },
   });

@@ -28,7 +28,7 @@ model Participant {
   id          Int       @id @default(autoincrement())
   email       String?
   name        String
-  role        String
+  role        Role
   trip_id     Int
   trip        Trip      @relation(fields: [trip_id], references: [id])
   expenses    Expense[] // relacja 1:N z Expense
@@ -44,4 +44,9 @@ model Expense {
   trip_id        Int 
   participant    Participant @relation(fields: [participant_id], references: [id])
   trip           Trip        @relation(fields: [trip_id], references: [id])
+}
+
+enum Role {
+  GUIDE
+  PARTICIPANT
 }
