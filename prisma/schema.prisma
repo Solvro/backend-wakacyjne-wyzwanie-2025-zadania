@@ -16,6 +16,7 @@ datasource db {
 
   model Expense {
     id               Int         @id @default(autoincrement())
+    value            Decimal     
     trip             Trip        @relation(fields: [trip_id], references: [id])
     trip_id          Int
     participant      Participant @relation(fields: [participant_id], references: [id])
