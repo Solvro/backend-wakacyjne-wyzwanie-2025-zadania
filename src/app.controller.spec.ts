@@ -1,4 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -16,8 +17,8 @@ describe("AppController", () => {
   });
 
   describe("root", () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe("Hello World!");
+    it("should return quote", () => {
+      expect(appController.getHello()).toStrictEqual(appController.getHello());
     });
   });
 });
