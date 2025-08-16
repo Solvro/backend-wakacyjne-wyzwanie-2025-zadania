@@ -13,3 +13,35 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Trip {
+  id  Int @id @default(autoincrement())
+  name  String
+  start_date  DateTime
+  end_date  DateTime
+  participants  Participant[]
+}
+
+model Participant {
+  id  Int @id @default(autoincrement())
+  name  String
+  surname String
+  email String? @unique
+  phone String? @unique
+  trip  Trip @relation(fields: [trip_id], references: [id])
+  trip_id Int
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+  name String
+  amount Decimal
+  type Expense_Type
+}
+
+enum Expense_Type {
+  food
+  accomodation
+  entrance_fee
+  rental_fee
+}
