@@ -1,19 +1,25 @@
-import { Controller, Body, Post, Get } from '@nestjs/common';
-import { TripService } from '../trip/trip.service';
-import { Prisma, Trip} from '@prisma/client';
+import { Prisma, Trip } from "@prisma/client";
 
-@Controller('wycieczki')
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+
+import { TripService } from "../trip/trip.service";
+
+@Controller("trips")
 export class TripController {
-    constructor(private tripService: TripService) {}
+  constructor(private tripService: TripService) {}
 
-    @Post('create') 
-    async addTrip(
-        @Body() data: Prisma.TripCreateInput): Promise<Trip> {
-        return this.tripService.createTrip(data);
-    }
+  @Post("/")
+  async addTrip(@Body() data: Prisma.TripCreateInput): Promise<Trip> {
+    return this.tripService.createTrip(data);
+  }
 
-    @Get('all')
-    async findAll(): Promise<Trip[]> {
-        return this.tripService.all();
-    }
+  @Get("/")
+  async findAll(): Promise<Trip[]> {
+    return this.tripService.all();
+  }
+
+  @Get("/:id")
+  async findOne(@Param("id") id: string): Promise<Trip | null> {
+    return this.tripService.trip({ trip_id: Number(id) });
+  }
 }

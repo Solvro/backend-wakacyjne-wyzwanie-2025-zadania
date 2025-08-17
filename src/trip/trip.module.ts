@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
-import { TripService } from './trip.service';
-import { TripController } from './trip.controller';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from "src/database/database.module";
+
+import { Module } from "@nestjs/common";
+
+import { TripController } from "./trip.controller";
+import { TripService } from "./trip.service";
 
 @Module({
   imports: [DatabaseModule],
   providers: [TripService],
   controllers: [TripController],
-  exports: [TripService]
+  exports: [TripService],
 })
 export class TripModule {}
