@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TripStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum ExpenseCategory {
+  ACCOMMODATION
+  TRANSPORT
+  FOOD
+  ENTERTAINMENT
+  OTHER
+}
+
+model Trip {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  status      TripStatus @default(PLANNED)
+  startDate   DateTime
+  endDate     DateTime
+  budget      Float?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  participants Participant[]
+  expenses     Expense[]
+
+  @@map("trips")
+}
+
+model Participant {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  isOrganizer Boolean  @default(false)
+  joinedAt    DateTime @default(now())
+
+  tripId Int
+  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  expenses Expense[]
+
+  @@map("participants")
+}
+
+model Expense {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String?
+  amount      Float
+  category    ExpenseCategory
+  date        DateTime
+  createdAt   DateTime        @default(now())
+
+  tripId Int
+  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  participantId Int
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@map("expenses")
+}
