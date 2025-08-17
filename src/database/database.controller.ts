@@ -1,4 +1,4 @@
-import { Participant, Trip } from "@prisma/client";
+import { Participant, Trip, sex } from "@prisma/client";
 
 import { Body, Controller, Get, Post } from "@nestjs/common";
 
@@ -21,7 +21,7 @@ export class DatabaseController {
       last_name: string;
       address: string;
       phone_number: string;
-      sex: string;
+      sex: sex;
     },
   ): Promise<Participant> {
     return await this.prisma.participant.create({ data });
