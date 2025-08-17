@@ -1,0 +1,57 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.participant.createMany({
+    data: [
+      { name: "Jan", surname: "Nowak", account_type: "basic" },
+      { name: "Katarzyna", surname: "Kowalska", account_type: "premium" },
+    ],
+  });
+
+  await prisma.trip.createMany({
+    data: [
+      {
+        name: "Góry",
+        begin_date: new Date("2025-08-15"),
+        end_date: new Date("2025-08-18"),
+      },
+      {
+        name: "Jezioro",
+        begin_date: new Date("2025-08-22"),
+        end_date: new Date("2025-08-24"),
+      },
+    ],
+  });
+
+  const [jan, katarzyna] = await prisma.participant.findMany();
+  const [mountains, lake] = await prisma.trip.findMany();
+
+  await prisma.trip_participant.createMany({
+    data: [
+      { trip_id: mountains.id, participant_id: jan.id },
+      { trip_id: lake.id, participant_id: katarzyna.id },
+    ],
+  });
+
+  const [tparticipant1, tparticipant2] =
+    await prisma.trip_participant.findMany();
+
+  await prisma.expense.createMany({
+    data: [
+      { value: 18.99, trip_participant_id: tparticipant1.id },
+      { value: 99.99, trip_participant_id: tparticipant2.id },
+    ],
+  });
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (error: unknown) => {
+    console.error(error);
+    await prisma.$disconnect();
+    throw new Error("query failed");
+  });
