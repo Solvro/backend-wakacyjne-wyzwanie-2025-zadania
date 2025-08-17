@@ -15,12 +15,10 @@ datasource db {
 }
 
   model Expense {
-    id               Int         @id @default(autoincrement())
-    value            Decimal     
-    trip             Trip        @relation(fields: [trip_id], references: [id])
-    trip_id          Int
-    participant      Participant @relation(fields: [participant_id], references: [id])
-    participant_id   Int
+    id                    Int         @id @default(autoincrement())
+    value                 Decimal
+    Trip_participant      Trip_participant     @relation(fields: [trip_participant_id], references: [id])     
+    trip_participant_id   Int
   }
 
   model Trip {
@@ -29,7 +27,6 @@ datasource db {
     description      String?   @db.Text
     begin_date       DateTime  @db.Date
     end_date         DateTime  @db.Date
-    expenses         Expense[]
     trip_participant Trip_participant[]
   }
 
@@ -38,7 +35,6 @@ datasource db {
     name             String  @db.VarChar(255)
     surname          String  @db.VarChar(255)
     account_type     account_type 
-    expenses         Expense[]
     trip_participant Trip_participant[]
   }
 
@@ -48,6 +44,7 @@ datasource db {
     trip_id         Int
     participant     Participant @relation(fields: [participant_id], references: [id])
     participant_id  Int
+    expense         Expense[]
   }
 
   enum account_type {
