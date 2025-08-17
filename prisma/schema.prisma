@@ -20,6 +20,7 @@ model Trip {
   start_date  DateTime
   end_date  DateTime
   participants  Participant[]
+  expenses  Expense[]
 }
 
 model Participant {
@@ -37,6 +38,8 @@ model Expense {
   name String
   amount Decimal
   type Expense_Type
+  trip  Trip @relation(fields: [trip_id], references: [id])
+  trip_id Int
 }
 
 enum Expense_Type {
