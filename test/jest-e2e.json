@@ -6,8 +6,5 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "setupFiles": ["<rootDir>/../../.env"],
-  "modulePaths": ["<rootDir>/src"],
-  "collectCoverageFrom": ["src/**/*.(t|j)s"],
-  "coverageDirectory": "coverage-e2e"
+  "setupFiles": ["<rootDir>/setup-env.ts"]
 }
