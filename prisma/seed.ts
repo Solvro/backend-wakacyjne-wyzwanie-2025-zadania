@@ -20,21 +20,8 @@ const initialParticipants = [
     first_name: "Jaś",
     last_name: "Melon",
     address: "Zielona 3",
-    phone_number: 3123211,
+    phone_number: 3123,
   },
-];
-
-const initialTrips = [
-  {
-    participant_id: 1,
-    destination: "Japan",
-    start_date: new Date("2025-08-10"),
-    end_date: new Date("2025-08-20"),
-  },
-];
-
-const initialExpenses = [
-  { trip_id: 2, expense_amount: 1978, expense_description: "Hotel" },
 ];
 
 async function main() {
@@ -42,8 +29,10 @@ async function main() {
   await prisma.trip.deleteMany();
   await prisma.participant.deleteMany();
 
-  const [ala, jan, jas] = await Promise.all(
-    initialParticipants.map((p) => prisma.participant.create({ data: p })),
+  const [ala, jan] = await Promise.all(
+    initialParticipants.map(async (p) =>
+      prisma.participant.create({ data: p }),
+    ),
   );
 
   const trips = await Promise.all([
@@ -84,9 +73,9 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
+  .catch((error: unknown) => {
+    console.error(error);
+    throw new Error("Błąd w głównej funkcji");
   })
   .finally(async () => {
     await prisma.$disconnect();
