@@ -29,8 +29,8 @@ model Participant {
   surname String
   email String? @unique
   phone String? @unique
-  trip  Trip @relation(fields: [trip_id], references: [id])
   trip_id Int
+  trip  Trip @relation(fields: [trip_id], references: [id])
 }
 
 model Expense {
@@ -38,8 +38,8 @@ model Expense {
   name String
   amount Decimal
   type Expense_Type
-  trip  Trip @relation(fields: [trip_id], references: [id])
   trip_id Int
+  trip  Trip @relation(fields: [trip_id], references: [id])
 }
 
 enum Expense_Type {
