@@ -1,4 +1,4 @@
-import { PrismaClient, sex } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,13 +8,13 @@ const initialParticipants = [
     last_name: "Makota",
     address: "Zielona 3",
     phone_number: "2137",
-    sex: sex.FEMALE,
+    sex: "FEMALE",
   },
   {
     first_name: "Jan",
     last_name: "Paweł",
     address: "Kremówkowa 2",
-    sex: sex.MALE,
+    sex: "MALE",
   },
   {
     first_name: "Jaś",
