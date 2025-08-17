@@ -7,7 +7,7 @@ const initialParticipants = [
     first_name: "Ala",
     last_name: "Makota",
     address: "Zielona 3",
-    phone_number: 2137,
+    phone_number: "2137",
     sex: sex.FEMALE,
   },
   {
@@ -20,7 +20,7 @@ const initialParticipants = [
     first_name: "Jaś",
     last_name: "Melon",
     address: "Zielona 3",
-    phone_number: 3123,
+    phone_number: "3123",
   },
 ];
 
@@ -29,11 +29,13 @@ async function main() {
   await prisma.trip.deleteMany();
   await prisma.participant.deleteMany();
 
-  const [ala, jan] = await Promise.all(
-    initialParticipants.map(async (p) =>
-      prisma.participant.create({ data: p }),
-    ),
+  const participants = await Promise.all(
+    initialParticipants.map(async (p) => {
+      return prisma.participant.create({ data: p });
+    }),
   );
+
+  const [ala, jan] = participants;
 
   const trips = await Promise.all([
     prisma.trip.create({
