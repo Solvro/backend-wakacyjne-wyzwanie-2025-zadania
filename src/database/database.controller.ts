@@ -1,4 +1,4 @@
-import { sex } from "generated/prisma";
+import { participant, sex, trip } from "@prisma/client";
 
 import { Body, Controller, Get, Post } from "@nestjs/common";
 
@@ -9,7 +9,7 @@ export class DatabaseController {
   constructor(private readonly prisma: DatabaseService) {}
 
   @Get("trips")
-  async getAllTrips() {
+  async getAllTrips(): Promise<trip[]> {
     const response = await this.prisma.trip.findMany();
     return response;
   }
@@ -24,7 +24,7 @@ export class DatabaseController {
       phone_number: string;
       sex: sex;
     },
-  ) {
+  ): Promise<participant> {
     const response = await this.prisma.participant.create({ data });
     return response;
   }
