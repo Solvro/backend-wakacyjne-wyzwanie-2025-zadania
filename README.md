@@ -1,7 +1,12 @@
-# Zadania z kursu "Od zera do backend developera"
-
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7c32ec09-c2ac-4961-82e6-a98f04220510"/>
+  Relacje między tabelami to: relacje jeden do wielu między kluczem głównym tabeli Trip - kluczem obcym tabeli Expense Trip_id, kluczem głównym tabeli Trip - kluczem obcym tabeli Participant Trip_id oraz kluczem głównym tabeli Participant - kluczem obcym tabeli Expense Participant_id.
 </p>
-
-To repozytorium jest miejscem, w którym wykonujemy zadania z kursu, który znajduje się w repozytorium [backend-wakacyjne-wyzwanie-2025](https://github.com/Solvro/backend-wakacyjne-wyzwanie-2025)
+<p align="center">
+  <img src="src\prisma\ERD.png"/>
+</p>
+<p align="center">
+  <img src="src\prisma\Endpoint_put.png"/>
+</p>
+<p align="center">
+  <img src="src\prisma\Endpoint_get.png"/>
+</p>
