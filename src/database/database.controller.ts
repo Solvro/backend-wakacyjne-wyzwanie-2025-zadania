@@ -1,4 +1,4 @@
-import { account_type } from "generated/prisma";
+import { account_type } from "@prisma/client";
 
 import { Body, Controller, Get, Post } from "@nestjs/common";
 
