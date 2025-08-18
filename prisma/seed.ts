@@ -1,4 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { ExpenseCategory, PrismaClient, TripStatus } from "@prisma/client";
+
+// Set the DATABASE_URL if not already set
+process.env.DATABASE_URL ??=
+  "postgresql://user:password@localhost:5432/budzetownik?schema=public";
 
 const prisma = new PrismaClient();
 
