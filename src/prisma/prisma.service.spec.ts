@@ -1,4 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { PrismaService } from "./prisma.service";
 
@@ -11,6 +12,7 @@ describe("PrismaService", () => {
     }).compile();
 
     service = module.get<PrismaService>(PrismaService);
+    console.warn(service);
   });
 
   it("should be defined", () => {
