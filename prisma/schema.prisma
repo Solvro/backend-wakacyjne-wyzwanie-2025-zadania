@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,73 +7,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ExpenseCategory {
-  TRANSPORT
-  FOOD
-  ACCOMMODATION
-  OTHER
+enum expense_category {
+  transport
+  food
+  accommodation
+  other
 }
 
-enum TripStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
+enum trip_status {
+  pending
+  confirmed
+  cancelled
 }
 
-enum TripType {
-  CITY_BREAK
-  ADVENTURE
-  BUSINESS
-  SIGHTSEEING
-  LEISURE
+enum trip_type {
+  city_break
+  adventure
+  business
+  sightseeing
+  leisure
 }
 
-model Trip {
-  idT           Int              @id @default(autoincrement())
-  destination   String
-  type          TripType          
-  start_date    DateTime
-  end_date      DateTime?
-  expenses      Expense[]
-  participants  TripParticipant[]
+model trip {
+  id_t           Int                @id @default(autoincrement())
+  destination    String
+  type           trip_type
+  start_date     DateTime
+  end_date       DateTime?
+  expenses       expense[]
+  participants   trip_participant[]
 }
 
-model Participant {
-  idP           Int                   @id @default(autoincrement())
-  name          String
-  surname       String
-  age           Int
-  phone_num     String?
-  email         String?
-  trips         TripParticipant[]
-  expenses      ExpenseParticipant[]
+model participant {
+  id_p           Int                     @id @default(autoincrement())
+  name           String
+  surname        String
+  age            Int
+  phone_num      String?
+  email          String?
+  trips          trip_participant[]
+  expenses       expense_participant[]
 }
 
-model Expense {
-  idE           Int                   @id @default(autoincrement())
-  tripID        Int
-  amount        Float
-  category      ExpenseCategory
-  trip          Trip                  @relation(fields: [tripID], references: [idT])
-  participants  ExpenseParticipant[]
+model expense {
+  id_e           Int                     @id @default(autoincrement())
+  trip_id        Int
+  amount         Float
+  category       expense_category
+  trip           trip                    @relation(fields: [trip_id], references: [id_t])
+  participants   expense_participant[]
 }
 
-model TripParticipant {
-  tripID  Int
-  parID   Int
-  status  TripStatus
-  trip    Trip        @relation(fields: [tripID], references: [idT])
-  participant Participant @relation(fields: [parID], references: [idP])
+model trip_participant {
+  trip_id      Int
+  par_id       Int
+  status       trip_status
+  trip         trip          @relation(fields: [trip_id], references: [id_t])
+  participant  participant   @relation(fields: [par_id], references: [id_p])
 
-  @@id([tripID, parID]) 
+  @@id([trip_id, par_id]) 
 }
 
-model ExpenseParticipant {
-  expenseID Int
-  parID     Int
-  paid      Float
-  expense   Expense     @relation(fields: [expenseID], references: [idE])
-  participant Participant @relation(fields: [parID], references: [idP])
+model expense_participant {
+  expense_id   Int
+  par_id       Int
+  paid         Float
+  expense      expense       @relation(fields: [expense_id], references: [id_e])
+  participant  participant   @relation(fields: [par_id], references: [id_p])
 
-  @@id([expenseID, parID]) 
+  @@id([expense_id, par_id]) 
 }

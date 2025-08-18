@@ -1,8 +1,8 @@
 import {
-  ExpenseCategory,
   PrismaClient,
-  TripStatus,
-  TripType,
+  expense_category,
+  trip_status,
+  trip_type,
 } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -24,7 +24,7 @@ async function main(): Promise<void> {
     const trip1 = await prisma.trip.create({
       data: {
         destination: "Kraków",
-        type: TripType.CITY_BREAK,
+        type: trip_type.city_break,
         start_date: new Date("2024-09-15"),
         end_date: new Date("2024-09-18"),
       },
@@ -33,26 +33,26 @@ async function main(): Promise<void> {
     // Tworzenie wydatku
     const expense1 = await prisma.expense.create({
       data: {
-        tripID: trip1.idT,
+        trip_id: trip1.id_t,
         amount: 300,
-        category: ExpenseCategory.ACCOMMODATION,
+        category: expense_category.accommodation,
       },
     });
 
     // Tworzenie relacji uczestnik-wycieczka
-    await prisma.tripParticipant.create({
+    await prisma.trip_participant.create({
       data: {
-        tripID: trip1.idT,
-        parID: participant1.idP,
-        status: TripStatus.CONFIRMED,
+        trip_id: trip1.id_t,
+        par_id: participant1.id_p,
+        status: trip_status.confirmed,
       },
     });
 
     // Tworzenie relacji uczestnik-wydatek
-    await prisma.expenseParticipant.create({
+    await prisma.expense_participant.create({
       data: {
-        expenseID: expense1.idE,
-        parID: participant1.idP,
+        expense_id: expense1.id_e,
+        par_id: participant1.id_p,
         paid: 300,
       },
     });

@@ -1,4 +1,4 @@
-import { TripType } from "@prisma/client";
+import { trip_type } from "@prisma/client";
 
 import { Controller, Get, Put } from "@nestjs/common";
 
@@ -15,7 +15,7 @@ export class DatabaseController {
   async add_trip() {
     return this.prisma.trip.create({
       data: {
-        type: TripType.LEISURE,
+        type: trip_type.leisure,
         destination: "Rzym",
         start_date: new Date("2025-08-01"),
         end_date: new Date("2025-08-10"),
