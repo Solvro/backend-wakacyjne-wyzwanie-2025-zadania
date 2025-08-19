@@ -1,5 +1,5 @@
 {
-  "name": "budzetownik",
+  "name": "y",
   "version": "0.0.1",
   "private": true,
   "description": "<p align=\"center\">   <img src=\"https://github.com/user-attachments/assets/7c32ec09-c2ac-4961-82e6-a98f04220510\"/> </p>",
@@ -68,7 +68,7 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
-    "@solvro/config": "^2.0.2",
+    "@solvro/config": "^1.13.6",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
