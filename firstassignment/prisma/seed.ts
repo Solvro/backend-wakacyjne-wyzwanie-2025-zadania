@@ -1,4 +1,4 @@
-import { PrismaClient, Gender  } from "@prisma/client";
+import { PrismaClient, Gender  } from "../src/generated/client";
 const prisma = new PrismaClient();
 async function main(){
     const date = new Date()
