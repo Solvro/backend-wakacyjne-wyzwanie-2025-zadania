@@ -1,9 +1,9 @@
-import { PrismaClient, TripStatus } from "@prisma/client";
+import { PrismaClient, TripStatus } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const trip1 = await prisma.trip.upsert({
+  await prisma.trip.upsert({
     where: { trip_id: 1 },
     update: {},
     create: {
@@ -15,15 +15,43 @@ async function main() {
     },
   });
 
-  console.log(trip1);
-
-  const user1 = await prisma.participant.upsert({
+  await prisma.participant.upsert({
     where: { participant_id: 1 },
     update: {},
     create: {
       participant_id: 1,
       name: "User 1",
       email: "user1@example.com",
+    },
+  });
+
+  await prisma.trip_participant.upsert({
+    where: { trip_id_participant_id: { trip_id: 1, participant_id: 1 } },
+    update: {},
+    create: {
+      trip_id: 1,
+      participant_id: 1,
+    },
+  });
+
+  await prisma.expense.upsert({
+    where: { expense_id: 1 },
+    update: {},
+    create: {
+      expense_id: 1,
+      trip_id: 1,
+      name: "seed",
+      sum: 100,
+    },
+  });
+
+  await prisma.participant_expense.upsert({
+    where: { expense_id_participant_id: { participant_id: 1, expense_id: 1 } },
+    update: {},
+    create: {
+      participant_id: 1,
+      expense_id: 1,
+      part: 100,
     },
   });
 }
