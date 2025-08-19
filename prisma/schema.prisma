@@ -37,13 +37,17 @@ enum ParticipantRole {
   OTHER
 }
 
+enum ParticipantSex {
+  FEMALE
+  MALE
+}
 
 model Expense {
   id Int @id @default(autoincrement())
   title String @db.VarChar(255)
   recipient String? @db.VarChar(100)
   amount Int? @db.Integer
-  currency String? @db.VarChar(3)
+  currency String @db.VarChar(3)
   value Decimal? @db.Decimal(10, 2)
   left Decimal? @db.Decimal(10, 2)
   category ExpenseCategory?
@@ -91,9 +95,10 @@ model Participant {
   phone String? @db.VarChar(20)
   address String? @db.Text
   bankAccount String? @db.VarChar(50)
-  isAdult Boolean? @default(true)
-  birthDate DateTime? @db.Date
+  isAdult Boolean @default(true)
+  birthday DateTime? @db.Date
   birthplace String? @db.Text
+  sex ParticipantSex?
   role ParticipantRole?
   note String? @db.Text
   createdAt DateTime @default(now()) @db.Timestamptz
