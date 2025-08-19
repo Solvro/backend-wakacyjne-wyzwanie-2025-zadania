@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TripStatus{
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model trip{
+  trip_id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  start DateTime 
+  end DateTime
+  status TripStatus @default(PLANNED)
+  participants trip_participant[]
+  expenses expense[]
+}
+
+model participant{
+  participant_id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  email String @db.VarChar(255) @unique
+  trips trip_participant[]
+  participant_expences participant_expense[]
+}
+
+model trip_participant{
+  trip trip @relation(fields: [trip_id], references: [trip_id])
+  trip_id Int
+  participant participant @relation(fields: [participant_id], references: [participant_id])
+  participant_id Int
+
+  @@id([trip_id, participant_id])
+}
+
+model expense{
+  expense_id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  trip trip @relation(fields: [trip_id], references: [trip_id])
+  trip_id Int
+  sum Float
+  is_settled Boolean @default(false)
+  participant_expences participant_expense[]
+}
+
+model participant_expense{
+  expense expense @relation(fields: [expense_id], references: [expense_id])
+  expense_id Int
+  participant participant @relation(fields: [participant_id], references: [participant_id])
+  participant_id Int
+  part Float
+
+  @@id([expense_id, participant_id])
+}
+
