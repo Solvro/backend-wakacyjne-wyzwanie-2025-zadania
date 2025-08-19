@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { PrismaClient, TripStatus } from "../generated/prisma";
+import { PrismaClient, TripStatus } from ".prisma/client";
 
 const prisma = new PrismaClient();
 
