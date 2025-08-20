@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  trip_id      Int                @id @default(autoincrement())
+  destination  String
+  description  String?
+  start_date   DateTime
+  end_date     DateTime?
+  expenses     Expense[]
+  participants TripParticipants[]
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @updatedAt
+}
+
+model Participant {
+  participant_id Int                @id @default(autoincrement())
+  first_name     String
+  last_name      String
+  email          String             @unique
+  phone          String?
+  participants   TripParticipants[]
+  created_at     DateTime           @default(now())
+  updated_at     DateTime           @updatedAt
+}
+
+enum Category {
+  FOOD
+  TRANSPORT
+  ACCOMMODATION
+  OTHER
+}
+
+model Expense {
+  expense_id  Int      @id @default(autoincrement())
+  amount      Float
+  category    Category
+  description String?
+  trip_id     Int
+  trip        Trip     @relation(fields: [trip_id], references: [trip_id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model TripParticipants {
+  trip_id        Int
+  participant_id Int
+  trip           Trip        @relation(fields: [trip_id], references: [trip_id])
+  participant    Participant @relation(fields: [participant_id], references: [participant_id])
+
+  @@id([trip_id, participant_id])
+}
