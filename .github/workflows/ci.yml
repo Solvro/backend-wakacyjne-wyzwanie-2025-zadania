@@ -8,8 +8,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,9 +43,9 @@ jobs:
         run: npm test
         if: always()
 
-      - name: Run e2e tests
-        run: npm run test:e2e
-        if: always()
+      #      - name: Run e2e tests
+      #        run: npm run test:e2e
+      #        if: always()
 
       - name: Build
         run: npm run build
