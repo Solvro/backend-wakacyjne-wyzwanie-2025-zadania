@@ -13,7 +13,6 @@ export class ParticipantService {
     return this.database.participant.create({
       data: {
         name: createParticipantDto.name,
-        birthday: createParticipantDto.birthday,
         email: createParticipantDto.email,
       },
     });
@@ -35,7 +34,6 @@ export class ParticipantService {
       where: { participant_id },
       data: {
         name: updateParticipantDto.name,
-        birthday: updateParticipantDto.birthday,
         email: updateParticipantDto.email,
       },
     });

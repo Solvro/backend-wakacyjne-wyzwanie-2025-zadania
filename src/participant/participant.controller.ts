@@ -11,12 +11,13 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
-@ApiTags("participant")
-@Controller("participant")
+@ApiTags("participants")
+@Controller("participants")
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
@@ -29,7 +30,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 201,
     description: "Participant created",
-    type: CreateParticipantDto,
+    type: CreateParticipantResponseDto,
   })
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
@@ -43,7 +44,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "List of participants returned successfully",
-    type: [CreateParticipantDto],
+    type: [CreateParticipantResponseDto],
   })
   async findAll() {
     return this.participantService.findAll();
@@ -57,7 +58,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "Participant found",
-    type: CreateParticipantDto,
+    type: CreateParticipantResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -75,7 +76,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "Participant updated successfully",
-    type: CreateParticipantDto,
+    type: CreateParticipantResponseDto,
   })
   @ApiResponse({
     status: 404,

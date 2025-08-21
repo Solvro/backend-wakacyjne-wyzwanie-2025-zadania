@@ -12,7 +12,7 @@ model Trip {
   name        String
   date_start  DateTime
   date_end    DateTime
-  description String
+  description String?
   expenses    Expense[]
   participants    TripParticipant[] 
 }
@@ -20,7 +20,7 @@ model Trip {
 model Expense {
   expense_id     Int         @id @default(autoincrement())
   title          String
-  category       Category[]
+  category       Category
   amount         Decimal
   date           DateTime
   trip_id        Int
@@ -32,7 +32,6 @@ model Expense {
 model Participant {
   participant_id Int       @id @default(autoincrement())
   name           String
-  birthday       DateTime?
   email          String    @unique
   expenses       Expense[]
   trips          TripParticipant[]

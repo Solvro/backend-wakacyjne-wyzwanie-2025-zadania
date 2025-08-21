@@ -8,7 +8,6 @@ async function main() {
     update: {},
     create: {
       name: "Janusz",
-      birthday: new Date("1999-01-01"),
       email: "janusz@example.com",
     },
   });
@@ -25,7 +24,7 @@ async function main() {
   await prisma.expense.create({
     data: {
       title: "Bilet PKP",
-      category: ["Transport"],
+      category: "Transport",
       amount: 21.37,
       date: new Date("2025-08-13"),
       trip_id: trip.trip_id,
