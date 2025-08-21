@@ -23,9 +23,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      #- name: Check commit name
-      #  if: github.event_name == 'pull_request'
-      #  run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: Check commit name
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
       - name: Run prettier
         run: npm run format:check
@@ -39,13 +39,13 @@ jobs:
         run: npm run typecheck
         if: always()
 
-      #- name: Run tests
-      #  run: npm test
-      #  if: always()
+      - name: Run tests
+        run: npm test
+        if: always()
 
-      #- name: Run e2e tests
-      #  run: npm run test:e2e
-      #  if: always()
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
 
       - name: Build
         run: npm run build
