@@ -6,10 +6,11 @@ import { DatabaseService } from "./database/database.service";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
 import { TripController } from "./trip/trip.controller";
+import { TripModule } from "./trip/trip.module";
 import { TripService } from "./trip/trip.service";
 
 @Module({
-  imports: [ParticipantModule, ExpenseModule],
+  imports: [ParticipantModule, ExpenseModule, TripModule],
   controllers: [AppController, TripController],
   providers: [AppService, DatabaseService, TripService],
 })

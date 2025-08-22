@@ -7,9 +7,6 @@ export class CreateParticipantResponseDto {
   @ApiProperty()
   name: string;
 
-  @ApiPropertyOptional()
-  birthday?: Date;
-
   @ApiProperty()
   email: string;
 

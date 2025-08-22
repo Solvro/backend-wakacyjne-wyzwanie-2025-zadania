@@ -1,30 +1,105 @@
-import { Prisma, Trip } from "@prisma/client";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
-
-import { TripService } from "../trip/trip.service";
+import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
+import { CreateTripDto } from "./dto/create-trip.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
+import { TripService } from "./trip.service";
 
 @ApiTags("trips")
 @Controller("trips")
 export class TripController {
-  constructor(private tripService: TripService) {}
+  constructor(private readonly tripService: TripService) {}
 
-  @Post("/")
-  @ApiOperation({ description: "Create a new trip" })
-  async addTrip(@Body() data: Prisma.TripCreateInput): Promise<Trip> {
-    return this.tripService.createTrip(data);
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: "Create a new trip",
+    description: "Add a new trip to the system",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Trip created successfully",
+    type: CreateTripResponseDto,
+  })
+  async create(@Body() createTripDto: CreateTripDto) {
+    return this.tripService.create(createTripDto);
   }
 
-  @Get("/")
-  @ApiOperation({ description: "Get all trips" })
-  async findAll(): Promise<Trip[]> {
-    return this.tripService.all();
+  @Get()
+  @ApiOperation({
+    summary: "Get all trips",
+    description: "Retrieve a list of all trips",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "List of trips returned successfully",
+    type: [CreateTripResponseDto],
+  })
+  async findAll() {
+    return this.tripService.findAll();
   }
 
-  @Get("/:id")
-  @ApiOperation({ description: "Get trip with id" })
-  async findOne(@Param("id") id: string): Promise<Trip | null> {
-    return this.tripService.trip({ trip_id: Number(id) });
+  @Get(":id")
+  @ApiOperation({
+    summary: "Get trip by ID",
+    description: "Retrieve a single trip using its ID",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip found",
+    type: CreateTripResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async findOne(@Param("id") id: string) {
+    return this.tripService.findOne(+id);
+  }
+
+  @Patch(":id")
+  @ApiOperation({
+    summary: "Update trip",
+    description: "Update an existing trip by ID",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip updated successfully",
+    type: CreateTripResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
+    return this.tripService.update(+id, updateTripDto);
+  }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete trip",
+    description: "Remove an existing trip by ID",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip deleted successfully",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async remove(@Param("id") id: string) {
+    return this.tripService.remove(+id);
   }
 }
