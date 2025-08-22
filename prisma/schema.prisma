@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  //output   = "../generated/prisma"
 }
 
 datasource db {
@@ -20,6 +20,8 @@ model Participant {
   surname  String
   age Int
   trip_id Int
+  gender  Gender
+  trip  Trip  @relation(fields: [trip_id], references: [id])
 }
 
 model Trip {
@@ -27,6 +29,8 @@ model Trip {
   date   DateTime
   location  String
   duration Int
+  participant Participant[]  
+  expense     Expense[] 
 }
 
 model Expense {
@@ -34,5 +38,10 @@ model Expense {
   daily_price   Float
   trip_id  Int
   discount Boolean?
+  trip  Trip  @relation(fields: [trip_id], references: [id])
 }
 
+enum Gender {
+  M
+  F
+}

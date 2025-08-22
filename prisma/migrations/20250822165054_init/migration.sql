@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "public"."Gender" AS ENUM ('M', 'F');
+
 -- CreateTable
 CREATE TABLE "public"."Participant" (
     "id" SERIAL NOT NULL,
@@ -5,6 +8,7 @@ CREATE TABLE "public"."Participant" (
     "surname" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
     "trip_id" INTEGER NOT NULL,
+    "gender" "public"."Gender" NOT NULL,
 
     CONSTRAINT "Participant_pkey" PRIMARY KEY ("id")
 );
@@ -28,3 +32,9 @@ CREATE TABLE "public"."Expense" (
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
 );
+
+-- AddForeignKey
+ALTER TABLE "public"."Participant" ADD CONSTRAINT "Participant_trip_id_fkey" FOREIGN KEY ("trip_id") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_trip_id_fkey" FOREIGN KEY ("trip_id") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

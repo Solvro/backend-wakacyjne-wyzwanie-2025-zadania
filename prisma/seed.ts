@@ -5,14 +5,6 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("Rozpoczynam seeding...");
-  const part = await prisma.participant.create({
-    data: {
-      name: "Jan",
-      surname: "Kowalski",
-      age: 25,
-      trip_id: 1,
-    },
-  });
 
   const trp = await prisma.trip.create({
     data: {
@@ -22,10 +14,20 @@ async function main() {
     },
   });
 
+  const part = await prisma.participant.create({
+    data: {
+      name: "Jan",
+      surname: "Kowalski",
+      age: 25,
+      gender: "M",
+      trip_id: trp.id,
+    },
+  });
+
   const exp = await prisma.expense.create({
     data: {
       daily_price: 150.3,
-      trip_id: 1,
+      trip_id: trp.id,
       discount: true,
     },
   });
