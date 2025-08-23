@@ -1,5 +1,3 @@
-import { UpdateParticipantDto } from "src/participant/dto/update-participant.dto";
-
 import {
   Body,
   Controller,
@@ -78,7 +76,7 @@ export class TripController {
   @ApiResponse({
     status: 200,
     description: "Trip updated successfully",
-    type: UpdateParticipantDto,
+    type: UpdateTripDto,
   })
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
