@@ -1,4 +1,4 @@
-import { ExpenseCategory, PrismaClient } from "../generated/prisma";
+import { ExpenseCategory, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
