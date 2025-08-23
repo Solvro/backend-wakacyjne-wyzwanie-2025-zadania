@@ -13,12 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum ROLE {
   member
   organizer
 }
 
-enum ExpenseType {
+enum EXPENSETYPE {
   food
   activity
   accommodation
@@ -44,7 +44,7 @@ model Participant {
   trip           Trip   @relation(fields: [trip_id], references: [trip_id])
   first_name     String @db.VarChar(32)
   last_name      String @db.VarChar(32)
-  role           Role
+  role           ROLE
   email          String @db.VarChar(64)
 
 
@@ -54,8 +54,8 @@ model Expense {
   expense_id   Int         @id @default(autoincrement())
   trip_id      Int
   trip         Trip        @relation(fields: [trip_id], references: [trip_id])
-  expense_type ExpenseType
-  expense_date DateTime    @db.Date
+  expense_type EXPENSETYPE
+  expense_date DateTime    @default(now())
   cost         Decimal     @db.Decimal(10, 2)
   description  String?     @db.VarChar(255)
 

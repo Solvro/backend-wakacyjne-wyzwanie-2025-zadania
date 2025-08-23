@@ -1,8 +1,8 @@
 -- CreateEnum
-CREATE TYPE "public"."Role" AS ENUM ('member', 'organizer');
+CREATE TYPE "public"."ROLE" AS ENUM ('member', 'organizer');
 
 -- CreateEnum
-CREATE TYPE "public"."ExpenseType" AS ENUM ('food', 'activity', 'accommodation', 'transport', 'other');
+CREATE TYPE "public"."EXPENSETYPE" AS ENUM ('food', 'activity', 'accommodation', 'transport', 'other');
 
 -- CreateTable
 CREATE TABLE "public"."Trip" (
@@ -22,7 +22,7 @@ CREATE TABLE "public"."Participant" (
     "trip_id" INTEGER NOT NULL,
     "first_name" VARCHAR(32) NOT NULL,
     "last_name" VARCHAR(32) NOT NULL,
-    "role" "public"."Role" NOT NULL,
+    "role" "public"."ROLE" NOT NULL,
     "email" VARCHAR(64) NOT NULL,
 
     CONSTRAINT "Participant_pkey" PRIMARY KEY ("participant_id")
@@ -32,8 +32,8 @@ CREATE TABLE "public"."Participant" (
 CREATE TABLE "public"."Expense" (
     "expense_id" SERIAL NOT NULL,
     "trip_id" INTEGER NOT NULL,
-    "expense_type" "public"."ExpenseType" NOT NULL,
-    "expense_date" DATE NOT NULL,
+    "expense_type" "public"."EXPENSETYPE" NOT NULL,
+    "expense_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cost" DECIMAL(10,2) NOT NULL,
     "description" VARCHAR(255),
 

@@ -1,4 +1,4 @@
-import { PrismaClient, Role, ExpenseType } from '@prisma/client';
+import { PrismaClient, ROLE, EXPENSETYPE } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,7 @@ async function main() {
       first_name: 'Jan',
       last_name: 'Kowalski',
       email: 'jan.kowalski@example.com',
-      role: Role.organizer,
+      role: ROLE.organizer,
       trip: {
         connect: { trip_id: trip.trip_id }, 
       },
@@ -27,7 +27,7 @@ async function main() {
 
   const expense = await prisma.expense.create({
     data: {
-      expense_type: ExpenseType.food,
+      expense_type: EXPENSETYPE.food,
       expense_date: new Date('2025-09-01'),
       cost: 85.5,
       description: 'Obiad w restauracji',
