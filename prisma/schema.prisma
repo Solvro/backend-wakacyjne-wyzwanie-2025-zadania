@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
@@ -8,35 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Trip {
-  trip_id        Int      @id @default(autoincrement())
-  participant_id Int
-  destination    String      @db.VarChar(255)
-  start_date     DateTime    @db.Timestamp(6)
-  end_date       DateTime    @db.Timestamp(6)
-  Expense        Expense[]
-  Participant    Participant @relation(fields: [participant_id], references: [participant_id], onDelete: NoAction, onUpdate: NoAction, map: "participant_constraint")
-}
-
 model Expense {
-  expense_id          Int  @id @default(autoincrement())
-  trip_id             Int
-  expense_amount      Float
-  expense_description String?
-  Trip                Trip    @relation(fields: [trip_id], references: [trip_id], onDelete: NoAction, onUpdate: NoAction, map: "trip_constraint")
+  expenseId          Int     @id @default(autoincrement())
+  tripId             Int
+  expenseAmount      Float
+  expenseDescription String?
+  Trip               Trip    @relation(fields: [tripId], references: [tripId], onDelete: NoAction, onUpdate: NoAction, map: "trip_constraint")
 }
 
 model Participant {
-  participant_id Int @id @default(autoincrement())
-  first_name     String @db.VarChar(255)
-  last_name      String @db.VarChar(255)
-  address        String @db.VarChar(255)
-  phone_number   String?
-  sex            sex?
-  Trip           Trip[]
+  participantId Int     @id @default(autoincrement())
+  firstName     String  @db.VarChar(255)
+  lastName      String  @db.VarChar(255)
+  address       String  @db.VarChar(255)
+  phoneNumber   String? @db.VarChar(20)
+  sex           Sex?
+  Trip          Trip[]
 }
 
-enum sex {
+model Trip {
+  tripId        Int         @id @default(autoincrement())
+  participantId Int
+  destination   String      @db.VarChar(255)
+  startDate     DateTime    @db.Timestamp(6)
+  endDate       DateTime    @db.Timestamp(6)
+  Expense       Expense[]
+  Participant   Participant @relation(fields: [participantId], references: [participantId], onDelete: NoAction, onUpdate: NoAction, map: "participant_constraint")
+}
+
+enum Sex {
   MALE
   FEMALE
   OTHER
