@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { CreateParticipantResponseDto } from "./dto/create-participant-response-dto";
+import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
@@ -33,7 +33,7 @@ export class ParticipantController {
     description: "Participant created",
     type: CreateParticipantResponseDto,
   })
-  create(@Body() createParticipantDto: CreateParticipantDto) {
+  async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
 
@@ -47,7 +47,7 @@ export class ParticipantController {
     description: "List of participants retrieved successfully",
     type: [CreateParticipantResponseDto],
   })
-  findAll() {
+  async findAll() {
     return this.participantService.findAll();
   }
 
@@ -65,14 +65,14 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.participantService.findOne(+id);
   }
 
   @Patch(":id")
   @ApiOperation({
     summary: "Update participant details",
-    description: "Modify information for an existing trip",
+    description: "Modify information for an existing participant",
   })
   @ApiResponse({
     status: 200,
@@ -83,7 +83,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
@@ -104,7 +104,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);
   }
 }

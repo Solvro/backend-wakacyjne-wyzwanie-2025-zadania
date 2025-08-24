@@ -8,23 +8,41 @@ import { UpdateTripDto } from "./dto/update-trip.dto";
 @Injectable()
 export class TripService {
   constructor(private database: DatabaseService) {}
-  create(createTripDto: CreateTripDto) {
-    return "This action adds a new trip";
+
+  async create(createTripDto: CreateTripDto) {
+    return this.database.trip.create({
+      data: {
+        participantId: createTripDto.participantId,
+        destination: createTripDto.destination,
+        startDate: createTripDto.startDate,
+        endDate: createTripDto.endDate,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all trip`;
+  async findAll() {
+    return this.database.trip.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} trip`;
+  async findOne(id: number) {
+    return this.database.trip.findUnique({
+      where: { tripId: id },
+    });
   }
 
-  update(id: number, updateTripDto: UpdateTripDto) {
-    return `This action updates a #${id} trip`;
+  async update(id: number, updateTripDto: UpdateTripDto) {
+    return this.database.trip.update({
+      where: { tripId: id },
+      data: {
+        participantId: updateTripDto.participantId,
+        destination: updateTripDto.destination,
+        startDate: updateTripDto.startDate,
+        endDate: updateTripDto.endDate,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} trip`;
+  async remove(id: number) {
+    return this.database.trip.delete({ where: { tripId: id } });
   }
 }

@@ -8,23 +8,39 @@ import { UpdateExpenseDto } from "./dto/update-expense.dto";
 @Injectable()
 export class ExpenseService {
   constructor(private database: DatabaseService) {}
-  create(createExpenseDto: CreateExpenseDto) {
-    return "This action adds a new expense";
+
+  async create(createExpenseDto: CreateExpenseDto) {
+    return this.database.expense.create({
+      data: {
+        tripId: createExpenseDto.tripId,
+        expenseAmount: createExpenseDto.expenseAmount,
+        expenseDescription: createExpenseDto.expenseDescription,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all expense`;
+  async findAll() {
+    return this.database.expense.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} expense`;
+  async findOne(id: number) {
+    return this.database.expense.findUnique({
+      where: { expenseId: id },
+    });
   }
 
-  update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return `This action updates a #${id} expense`;
+  async update(id: number, updateExpenseDto: UpdateExpenseDto) {
+    return this.database.expense.update({
+      where: { expenseId: id },
+      data: {
+        tripId: updateExpenseDto.tripId,
+        expenseAmount: updateExpenseDto.expenseAmount,
+        expenseDescription: updateExpenseDto.expenseDescription,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} expense`;
+  async remove(id: number) {
+    return this.database.expense.delete({ where: { expenseId: id } });
   }
 }
