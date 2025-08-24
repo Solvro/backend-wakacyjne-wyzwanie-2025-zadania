@@ -1,7 +1,6 @@
-import { DatabaseService } from "src/database/database.service";
-
 import { Injectable } from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 

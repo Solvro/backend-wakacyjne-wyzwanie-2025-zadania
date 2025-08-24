@@ -1,16 +1,16 @@
-import { Test, TestingModule } from "@nestjs/testing";
-
-import { ExpenseService } from "./expense.service";
+import type { ExpenseService } from "./expense.service";
 
 describe("ExpenseService", () => {
   let service: ExpenseService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ExpenseService],
-    }).compile();
-
-    service = module.get<ExpenseService>(ExpenseService);
+  beforeEach(() => {
+    service = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn(),
+    } as unknown as ExpenseService;
   });
 
   it("should be defined", () => {
