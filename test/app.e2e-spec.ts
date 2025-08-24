@@ -18,7 +18,7 @@ describe("AppController (e2e)", () => {
     await app.init();
   });
 
-  it.skip("/ (GET)", () => {
+  it("/ (GET)", () => {
     expect(app.getHttpServer()).toBeDefined();
   });
 });
