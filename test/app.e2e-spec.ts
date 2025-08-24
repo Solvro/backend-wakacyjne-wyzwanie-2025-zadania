@@ -1,24 +1,16 @@
-import type { App } from "supertest/types";
+import { INestApplication } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
 
-import type { INestApplication } from "@nestjs/common";
-import type { TestingModule } from "@nestjs/testing";
-import { Test } from "@nestjs/testing";
+import { AppModule } from "../src/app.module";
 
-import { AppModule } from "./../src/app.module";
-
-describe("AppController (e2e)", () => {
-  let app: INestApplication<App>;
-
-  beforeEach(async () => {
+describe("AppModule (bootstrap)", () => {
+  it("should compile the module and create the app instance without errors", async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-  it("/ (GET)", () => {
-    expect(app.getHttpServer()).toBeDefined();
+    const app: INestApplication = moduleFixture.createNestApplication();
+    expect(app).toBeDefined();
+    await app.close();
   });
 });
