@@ -46,5 +46,5 @@ main()
   .catch(async (error: unknown) => {
     console.error("FAILURE!!! ERROR:", error);
     await prisma.$disconnect();
-    throw error; // zamiast process.exit(1)
+    throw error;
   });

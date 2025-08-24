@@ -34,7 +34,6 @@ model Trip {
   createdAt    DateTime      @default(now())
 
   participants Participant[]
-  expenses     Expense[]
 }
 
 model Participant {
@@ -56,11 +55,8 @@ model Expense {
   amount    Float
   category  ExpenseCategory
   note      String?
-  spentAt   DateTime        @default(now())
+  paidAt    DateTime?       
   createdAt DateTime        @default(now())
-
-  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  tripId Int
 
   participant   Participant @relation("ParticipantExpenses", fields: [participantId], references: [id], onDelete: SetNull)
   participantId Int
