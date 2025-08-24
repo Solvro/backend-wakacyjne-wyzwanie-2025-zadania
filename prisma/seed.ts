@@ -1,6 +1,11 @@
 import "dotenv/config";
 
-import { PrismaClient } from "../generated/prisma";
+import {
+  ExpenseCategory,
+  ParticipantRole,
+  PrismaClient,
+  TripStatus,
+} from "../generated/prisma";
 
 const prisma = new PrismaClient();
 
@@ -9,18 +14,18 @@ async function main() {
     data: {
       name: "Kajaki i namioty",
       description: "Wyjazd na spływ kajakowy z noclegami w namiotach.",
-      status: "planned",
+      status: TripStatus.planned,
       startDate: new Date("2025-08-25T10:00:00Z"),
       endDate: new Date("2025-08-30T18:00:00Z"),
       budget: 2500.0,
     },
   });
 
-  const participant = await prisma.participant.create({
+  const janusz = await prisma.participant.create({
     data: {
       tripId: trip.id,
       name: "Janusz Pawlacz",
-      role: "organizer",
+      role: ParticipantRole.organizer,
       share: 500.0,
     },
   });
@@ -29,7 +34,7 @@ async function main() {
     data: {
       tripId: trip.id,
       name: "Grażyna Pawlacz",
-      role: "member",
+      role: ParticipantRole.member,
       share: 500.0,
     },
   });
@@ -37,19 +42,20 @@ async function main() {
   await prisma.expense.create({
     data: {
       tripId: trip.id,
-      payerId: participant.id,
+      payerId: janusz.id,
       amount: 120.0,
-      category: "food",
+      category: ExpenseCategory.food,
       currency: "PLN",
       paid_at: new Date(),
     },
   });
+
   await prisma.expense.create({
     data: {
       tripId: trip.id,
-      payerId: participant.id,
+      payerId: janusz.id,
       amount: 80.0,
-      category: "transport",
+      category: ExpenseCategory.transport,
       currency: "PLN",
       paid_at: new Date(),
     },
