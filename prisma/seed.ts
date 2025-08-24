@@ -3,6 +3,7 @@ import "dotenv/config";
 import {
   ExpenseCategory,
   ParticipantRole,
+  Prisma,
   PrismaClient,
   TripStatus,
 } from "../generated/prisma";
@@ -14,10 +15,10 @@ async function main() {
     data: {
       name: "Kajaki i namioty",
       description: "Wyjazd na spływ kajakowy z noclegami w namiotach.",
-      status: TripStatus.planned,
+      status: TripStatus.PLANNED,
       startDate: new Date("2025-08-25T10:00:00Z"),
       endDate: new Date("2025-08-30T18:00:00Z"),
-      budget: 2500.0,
+      budget: new Prisma.Decimal("2500.00"),
     },
   });
 
@@ -25,8 +26,8 @@ async function main() {
     data: {
       tripId: trip.id,
       name: "Janusz Pawlacz",
-      role: ParticipantRole.organizer,
-      share: 500.0,
+      role: ParticipantRole.ORGANIZER,
+      share: new Prisma.Decimal("500.00"),
     },
   });
 
@@ -34,27 +35,26 @@ async function main() {
     data: {
       tripId: trip.id,
       name: "Grażyna Pawlacz",
-      role: ParticipantRole.member,
-      share: 500.0,
+      role: ParticipantRole.MEMBER,
+      share: new Prisma.Decimal("500.00"),
     },
   });
 
   await prisma.expense.create({
     data: {
-      tripId: trip.id,
       payerId: janusz.id,
-      amount: 120.0,
-      category: ExpenseCategory.food,
+      amount: new Prisma.Decimal("120.00"),
+      category: ExpenseCategory.FOOD,
       currency: "PLN",
       paid_at: new Date(),
     },
   });
+
   await prisma.expense.create({
     data: {
-      tripId: trip.id,
       payerId: janusz.id,
-      amount: 80.0,
-      category: ExpenseCategory.transport,
+      amount: new Prisma.Decimal("80.00"),
+      category: ExpenseCategory.TRANSPORT,
       currency: "PLN",
       paid_at: new Date(),
     },
