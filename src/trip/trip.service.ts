@@ -1,14 +1,18 @@
-import { PrismaClient } from "@prisma/client";
-
 import { Injectable } from "@nestjs/common";
+
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class TripService {
-  private prisma = new PrismaClient();
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAllTrips() {
     return this.prisma.trip.findMany({
-      include: { participants: true, expenses: true },
+      include: {
+        participants: {
+          include: { expenses: true },
+        },
+      },
     });
   }
 

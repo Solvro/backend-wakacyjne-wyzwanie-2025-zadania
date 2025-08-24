@@ -30,7 +30,6 @@ async function main(): Promise<void> {
 
   await prisma.expense.create({
     data: {
-      tripId: trip.id,
       participantId: trip.participants[0].id,
       amount: 350.75,
       category: ExpenseCategory.TRAVEL,
