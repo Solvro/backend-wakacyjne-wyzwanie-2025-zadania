@@ -1,7 +1,7 @@
 import { ParticipantRole } from "@prisma/client";
 import { IsEmail, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateParticipantDto {
   @ApiProperty({ example: "Marek" })
@@ -14,6 +14,7 @@ export class CreateParticipantDto {
 
   @ApiProperty({ required: false, example: "mark@example.com" })
   @IsOptional()
+  @ApiPropertyOptional()
   @IsEmail()
   email?: string;
 
@@ -23,6 +24,7 @@ export class CreateParticipantDto {
     required: false,
   })
   @IsOptional()
+  @ApiPropertyOptional()
   @IsEnum(ParticipantRole)
   role?: ParticipantRole;
 

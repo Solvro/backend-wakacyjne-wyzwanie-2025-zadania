@@ -8,7 +8,12 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -20,18 +25,21 @@ export class ExpenseController {
   constructor(private readonly service: ExpenseService) {}
 
   @Get()
+  @ApiOperation({ summary: "Get all expenses" })
   @ApiOkResponse({ description: "List all expenses" })
   async findAll() {
     return this.service.findAll();
   }
 
   @Get(":id")
+  @ApiOperation({ summary: "Get specific expense" })
   @ApiOkResponse({ description: "Get one expense" })
   async findOne(@Param("id", ParseIntPipe) id: number) {
     return this.service.findOne(id);
   }
 
   @Post()
+  @ApiOperation({ summary: "Create a new expense" })
   @ApiCreatedResponse({ description: "Created expense" })
   async create(@Body() dto: CreateExpenseDto) {
     return this.service.create(dto);

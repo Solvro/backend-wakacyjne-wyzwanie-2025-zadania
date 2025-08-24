@@ -8,7 +8,12 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -20,18 +25,21 @@ export class ParticipantController {
   constructor(private readonly service: ParticipantService) {}
 
   @Get()
+  @ApiOperation({ summary: "Get all participants" })
   @ApiOkResponse({ description: "List all participants" })
   async findAll() {
     return this.service.findAll();
   }
 
   @Get(":id")
+  @ApiOperation({ summary: "Get specific participant" })
   @ApiOkResponse({ description: "Get one participant" })
   async findOne(@Param("id", ParseIntPipe) id: number) {
     return this.service.findOne(id);
   }
 
   @Post()
+  @ApiOperation({ summary: "Create a participant" })
   @ApiCreatedResponse({ description: "Created participant" })
   async create(@Body() dto: CreateParticipantDto) {
     return this.service.create(dto);

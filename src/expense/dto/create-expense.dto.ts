@@ -9,7 +9,7 @@ import {
   IsString,
 } from "class-validator";
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateExpenseDto {
   @ApiProperty({ example: 1, description: "Participant who paid the expense" })
@@ -27,11 +27,13 @@ export class CreateExpenseDto {
 
   @ApiProperty({ required: false, example: "Train tickets" })
   @IsOptional()
+  @ApiPropertyOptional()
   @IsString()
   note?: string;
 
   @ApiProperty({ required: false, example: "2025-08-24T09:00:00.000Z" })
   @IsOptional()
+  @ApiPropertyOptional()
   @IsDateString()
   paidAt?: string | null;
 }
