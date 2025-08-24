@@ -49,7 +49,6 @@ async function main() {
       paid_at: new Date(),
     },
   });
-
   await prisma.expense.create({
     data: {
       tripId: trip.id,
