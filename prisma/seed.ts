@@ -1,5 +1,5 @@
 //import { PrismaClient } from '../generated/prisma';
-import { PrismaClient } from "@prisma/client";
+import { Gender, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,9 +8,9 @@ async function main() {
 
   const trp = await prisma.trip.create({
     data: {
-      date: new Date("2025-08-01T12:00:00Z"),
+      startDate: new Date("2025-08-01T12:00:00Z"),
+      endDate: new Date("2025-08-10T12:00:00Z"),
       location: "Mazury",
-      duration: 10,
     },
   });
 
@@ -19,7 +19,7 @@ async function main() {
       name: "Jan",
       surname: "Kowalski",
       age: 25,
-      gender: "M",
+      gender: Gender.M,
       trip_id: trp.id,
     },
   });
@@ -39,6 +39,9 @@ main()
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
+    try {
+      await prisma.$disconnect();
+    } finally {
+      process.exit(1);
+    }
   });

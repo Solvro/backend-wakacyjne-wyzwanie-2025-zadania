@@ -26,9 +26,9 @@ model Participant {
 
 model Trip {
   id    Int     @default(autoincrement()) @id
-  date   DateTime
+  startDate   DateTime
+  endDate DateTime
   location  String
-  duration Int
   participant Participant[]  
   expense     Expense[] 
 }

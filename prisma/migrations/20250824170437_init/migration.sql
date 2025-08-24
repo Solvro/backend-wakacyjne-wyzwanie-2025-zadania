@@ -16,9 +16,9 @@ CREATE TABLE "public"."Participant" (
 -- CreateTable
 CREATE TABLE "public"."Trip" (
     "id" SERIAL NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "location" TEXT NOT NULL,
-    "duration" INTEGER NOT NULL,
 
     CONSTRAINT "Trip_pkey" PRIMARY KEY ("id")
 );
