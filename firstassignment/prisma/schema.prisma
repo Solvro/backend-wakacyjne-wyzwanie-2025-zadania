@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -25,23 +25,29 @@ model Trip {
   end_date     DateTime
   location     String
   participants Participant[]
+  created_at   DateTime
+  updated_at   DateTime
 }
 
 model Participant {
-  id       Int       @id @default(autoincrement())
-  imie     String
-  nazwisko String
-  gender   Gender?
-  isVegan  Boolean   @default(false)
-  expenses Expense[]
-  trip     Trip?     @relation(fields: [tripId], references: [id])
-  tripId   Int?
+  id         Int       @id @default(autoincrement())
+  imie       String
+  nazwisko   String
+  gender     Gender?
+  isVegan    Boolean   @default(false)
+  expenses   Expense[]
+  trip       Trip?     @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tripId     Int?
+  created_at DateTime
+  updated_at DateTime
 }
 
 model Expense {
   id            Int          @id @default(autoincrement())
   amount        Float
   location      String
-  Participant   Participant? @relation(fields: [participantId], references: [id])
+  Participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   participantId Int?
+  created_at    DateTime
+  updated_at    DateTime
 }
