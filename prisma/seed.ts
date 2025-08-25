@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Sex } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
