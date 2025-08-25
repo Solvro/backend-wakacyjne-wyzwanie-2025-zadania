@@ -1,6 +1,7 @@
 import { Controller, Get } from "@nestjs/common";
+import { Trip } from "@prisma/client";
 
-import { DatabaseService, Trip } from "./database.service";
+import { DatabaseService } from "./database.service";
 
 @Controller("database")
 export class DatabaseController {
