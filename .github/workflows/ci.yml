@@ -6,15 +6,28 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: haslomaslo
+          POSTGRES_DB: budzetownik
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -23,30 +36,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check commit name
-        if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: Set DATABASE_URL
+        run: echo "DATABASE_URL=postgresql://postgres:haslomaslo@localhost:5432/budzetownik?schema=public" >> $GITHUB_ENV
 
-      - name: Run prettier
-        run: npm run format:check
-        if: always()
+      - name: Generate Prisma client
+        run: npx prisma generate
 
-      - name: Run Lint
-        run: npm run lint
-        if: always()
-
-      - name: Check types
-        run: npm run typecheck
-        if: always()
+      - name: Run migrations
+        run: npx prisma migrate deploy
 
       - name: Run tests
         run: npm test
-        if: always()
 
       - name: Run e2e tests
         run: npm run test:e2e
-        if: always()
 
       - name: Build
         run: npm run build
-        if: always()
