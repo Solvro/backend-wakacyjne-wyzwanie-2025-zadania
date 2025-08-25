@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TripCategory {
+  BUSINESS
+  VACATION
+  PERSONAL
+  CONFERENCE
+  OTHER
+}
+
+enum ExpenseCategory {
+  ACCOMMODATION
+  TRANSPORT
+  FOOD
+  ENTERTAINMENT
+  SHOPPING
+  OTHER
+}
+
+enum ParticipantRole {
+  ORGANIZER
+  PARTICIPANT
+  GUEST
+  OTHER
+}
+
+enum ParticipantSex {
+  FEMALE
+  MALE
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(255)
+  recipient String? @db.VarChar(100)
+  amount Int? @db.Integer
+  currency String @db.VarChar(3)
+  value Decimal? @db.Decimal(10, 2)
+  left Decimal? @db.Decimal(10, 2)
+  category ExpenseCategory?
+  note String? @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+
+  participantId Int @map("participant_id")
+  tripId Int @map("trip_id")
+
+
+  participant Participant @relation(fields: [participantId], references: [id])
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  @@map("expenses")
+}
+
+model Trip {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(255)
+  destination String? @db.Text
+  fromDate DateTime? @db.Timestamptz
+  toDate DateTime? @db.Timestamptz
+  departure String? @db.Text
+  accommodation String? @db.Text
+  travelTime Decimal? @db.Decimal(10, 2)
+  travelDistance Decimal? @db.Decimal(10, 2)
+  category TripCategory?
+  note String? @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+
+  expenses Expense[]
+  participants Participant[]
+
+  @@map("trips")
+}
+
+model Participant {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  surname String @db.VarChar(100)
+  nick String? @db.VarChar(50)
+  email String? @db.VarChar(255)
+  phone String? @db.VarChar(20)
+  address String? @db.Text
+  bankAccount String? @db.VarChar(50)
+  isAdult Boolean @default(true)
+  birthday DateTime? @db.Date
+  birthplace String? @db.Text
+  sex ParticipantSex?
+  role ParticipantRole?
+  note String? @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+
+  expenses Expense[]
+  trips Trip[]
+
+  @@map("participants")
+}
