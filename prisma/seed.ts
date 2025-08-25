@@ -7,7 +7,7 @@ async function main() {
     data: {
       name: 'Jan',
       surname: 'Kowalski',
-      role: 1, // to będzie organizator
+      role: "ORGANIZER", // to będzie organizator
     },
   });
 
@@ -15,7 +15,7 @@ async function main() {
     data: {
       name: 'Anna',
       surname: 'Nowak',
-      role: 2, // uczestnik
+      role: "PARTICIPANT", // uczestnik
     },
   });
 
@@ -28,26 +28,26 @@ async function main() {
     },
   });
 
-  await prisma.expanse.createMany({
+  await prisma.expense.createMany({
     data: [
       {
         tripId: trip.id,
         amount: 1200,
-        category: 'Transport',
+        category: 'TRANSPORT',
         description: 'Bilety lotnicze',
         date: new Date('2025-09-01'),
       },
       {
         tripId: trip.id,
         amount: 1000,
-        category: 'Hotel',
+        category: 'OTHER',
         description: 'Noclegi w centrum',
         date: new Date('2025-09-02'),
       },
       {
         tripId: trip.id,
         amount: 800,
-        category: 'Jedzenie',
+        category: 'FOOD',
         description: 'Restauracje i kawiarnie',
         date: new Date('2025-09-03'),
       },
@@ -71,10 +71,11 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
   });

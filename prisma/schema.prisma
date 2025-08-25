@@ -10,16 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  PARTICIPANT
+  ORGANIZER
+}
+
+enum CATEGORY {
+  FOOD
+  TRANSPORT
+  ENTERTAINMENT
+  OTHER
+}
 
 model Trip {
   id           Int               @id @default(autoincrement())
-  name         String?
-  startDate    DateTime?
-  endDate      DateTime?
-  totalCost    Int?
+  name         String
+  startDate    DateTime
+  endDate      DateTime
+  totalCost    Int
 
   // relacje
-  expanses     Expanse[]         // 1 Trip -> wiele Expanses
+  expenses     Expense[]         // 1 Trip -> wiele Expenses
   participants TripParticipant[] // M:N z Participant
 
   @@map("Trip")
@@ -27,26 +38,26 @@ model Trip {
 
 model Participant {
   id        Int              @id @default(autoincrement())
-  name      String?
-  surname   String?
-  role      Int?
+  name      String
+  surname   String
+  role      Role
 
   trips     TripParticipant[] // M:N z Trip
 
   @@map("Participant")
 }
 
-model Expanse {
+model Expense {
   id          Int      @id @default(autoincrement())
   tripId      Int
-  amount      Int?
-  category    String?
-  description String?
-  date        DateTime?
+  amount      Int
+  category    CATEGORY
+  description String
+  date        DateTime
 
   trip        Trip     @relation(fields: [tripId], references: [id])
 
-  @@map("Expanse")
+  @@map("Expense")
 }
 
 model TripParticipant {
