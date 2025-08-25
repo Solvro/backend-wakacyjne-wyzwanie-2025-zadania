@@ -17,8 +17,10 @@ export class DatabaseController {
     await this.prisma.trip.create({
       data: {
         id: 9999,
-        name: "Test Trip",
-        createdAt: new Date(),
+        title: "Test Trip",
+        description: "This is a test trip",
+        startDate: new Date(),
+        endDate: new Date(),
       },
     });
   }
