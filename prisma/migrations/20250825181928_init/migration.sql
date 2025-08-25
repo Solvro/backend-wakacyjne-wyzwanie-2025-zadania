@@ -7,8 +7,8 @@ CREATE TABLE "public"."Participant" (
     "name" TEXT NOT NULL,
     "surname" TEXT NOT NULL,
     "age" INTEGER NOT NULL,
-    "trip_id" INTEGER NOT NULL,
-    "gender" "public"."Gender" NOT NULL,
+    "tripId" INTEGER NOT NULL,
+    "gender" "public"."Gender",
 
     CONSTRAINT "Participant_pkey" PRIMARY KEY ("id")
 );
@@ -26,15 +26,15 @@ CREATE TABLE "public"."Trip" (
 -- CreateTable
 CREATE TABLE "public"."Expense" (
     "id" SERIAL NOT NULL,
-    "daily_price" DOUBLE PRECISION NOT NULL,
-    "trip_id" INTEGER NOT NULL,
-    "discount" BOOLEAN,
+    "dailyPrice" DOUBLE PRECISION NOT NULL,
+    "tripId" INTEGER NOT NULL,
+    "discount" BOOLEAN NOT NULL,
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
 );
 
 -- AddForeignKey
-ALTER TABLE "public"."Participant" ADD CONSTRAINT "Participant_trip_id_fkey" FOREIGN KEY ("trip_id") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Participant" ADD CONSTRAINT "Participant_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_trip_id_fkey" FOREIGN KEY ("trip_id") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -20,28 +20,24 @@ async function main() {
       surname: "Kowalski",
       age: 25,
       gender: Gender.M,
-      trip_id: trp.id,
+      tripId: trp.id,
     },
   });
 
   const exp = await prisma.expense.create({
     data: {
-      daily_price: 150.3,
-      trip_id: trp.id,
+      dailyPrice: 150.3,
+      tripId: trp.id,
       discount: true,
     },
   });
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
   .catch(async (e) => {
     console.error(e);
-    try {
-      await prisma.$disconnect();
-    } finally {
-      process.exit(1);
-    }
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

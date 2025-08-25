@@ -1,12 +1,17 @@
 import { Controller, Get } from "@nestjs/common";
-import { Expense, Participant, Trip } from "@prisma/client";
 
-import { DatabaseService } from "./database.service";
+import { DatabaseService, Trip } from "./database.service";
 
 @Controller("database")
 export class DatabaseController {
   constructor(private prisma: DatabaseService) {}
+  @Get("/")
+  async testTrip(): Promise<Trip[]> {
+    return await this.prisma.trip.findMany();
+  }
+}
 
+/*
   @Get("/Trip")
   async testTrip(): Promise<Trip[]> {
     return await this.prisma.trip.findMany();
@@ -21,4 +26,4 @@ export class DatabaseController {
   async testExpense(): Promise<Expense[]> {
     return await this.prisma.expense.findMany();
   }
-}
+    */

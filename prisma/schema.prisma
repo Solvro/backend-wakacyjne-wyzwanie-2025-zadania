@@ -19,9 +19,9 @@ model Participant {
   name String  
   surname  String
   age Int
-  trip_id Int
-  gender  Gender
-  trip  Trip  @relation(fields: [trip_id], references: [id])
+  tripId Int
+  gender  Gender?
+  trip  Trip  @relation(fields: [tripId], references: [id])
 }
 
 model Trip {
@@ -35,10 +35,10 @@ model Trip {
 
 model Expense {
   id    Int     @default(autoincrement()) @id
-  daily_price   Float
-  trip_id  Int
-  discount Boolean?
-  trip  Trip  @relation(fields: [trip_id], references: [id])
+  dailyPrice   Float
+  tripId  Int
+  discount Boolean
+  trip  Trip  @relation(fields: [tripId], references: [id])
 }
 
 enum Gender {
