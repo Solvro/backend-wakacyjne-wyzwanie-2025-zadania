@@ -1,17 +1,32 @@
 import { trip_type } from "@prisma/client";
 
 import { Controller, Get, Put } from "@nestjs/common";
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { DatabaseService } from "./database.service";
 
+@ApiTags("tests")
 @Controller("database_test")
 export class DatabaseController {
   constructor(private prisma: DatabaseService) {}
   @Get()
+  @ApiOperation({ summary: "testowe do zwrócenie wszystkich wycieczek" })
+  @ApiOkResponse({
+    description: "zwraca wszystkie wycieczki",
+  })
   async get_trips() {
     return this.prisma.trip.findMany();
   }
   @Put()
+  @ApiOperation({ summary: "testowe stworzenie wycieczki" })
+  @ApiCreatedResponse({
+    description: "Wycieczka została stworzona",
+  })
   async add_trip() {
     return this.prisma.trip.create({
       data: {

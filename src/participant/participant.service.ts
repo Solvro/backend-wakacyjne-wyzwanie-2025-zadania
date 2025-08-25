@@ -1,7 +1,6 @@
-import { DatabaseService } from "src/database/database.service";
-
 import { Injectable } from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 
