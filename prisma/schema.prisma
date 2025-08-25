@@ -13,3 +13,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Trip {
+  id            Int           @id @default(autoincrement())
+  name          String
+  expenses      Expense[]
+  participants  Participant[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  tripId    Int
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Participant {
+  id          Int      @id @default(autoincrement())
+  name        String
+  amountToPay Float
+  tripId      Int
+  trip        Trip     @relation(fields: [tripId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
