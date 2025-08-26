@@ -4,7 +4,7 @@ import { Controller, Get, Post } from "@nestjs/common";
 
 import { DatabaseService } from "./database.service";
 
-@Controller("database")
+@Controller("trips")
 export class DatabaseController {
   constructor(private prisma: DatabaseService) {}
 
