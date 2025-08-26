@@ -6,7 +6,7 @@ import {
   Prisma,
   PrismaClient,
   TripStatus,
-} from "../../generated/prisma";
+} from "../generated/prisma";
 
 const prisma = new PrismaClient();
 

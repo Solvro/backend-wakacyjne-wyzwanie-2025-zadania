@@ -14,6 +14,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TripStatus {
+  PLANNED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum ParticipantRole {
+  ORGANIZER
+  MEMBER
+}
+
+enum ExpenseCategory {
+  FOOD
+  ACCOMMODATION
+  TRANSPORT
+  ACTIVITIES
+  OTHER
+}
+
 model Trip {
   id          Int        @id @default(autoincrement())
   name        String     @db.VarChar(255)
@@ -50,24 +70,4 @@ model Expense {
   paid_at   DateTime?
 
   payer     Participant @relation("ParticipantPaysExpense", fields: [payerId], references: [id], onDelete: Cascade)
-}
-
-enum TripStatus {
-  PLANNED
-  ONGOING
-  COMPLETED
-  CANCELLED
-}
-
-enum ParticipantRole {
-  ORGANIZER
-  MEMBER
-}
-
-enum ExpenseCategory {
-  FOOD
-  ACCOMMODATION
-  TRANSPORT
-  ACTIVITIES
-  OTHER
 }
