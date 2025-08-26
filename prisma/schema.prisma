@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  description String?    @db.VarChar(255)
+  status      TripStatus @default(PLANNED)
+  startDate   DateTime
+  endDate     DateTime?
+  createdAt   DateTime   @default(now())
+  budget      Decimal?   @db.Decimal(12, 2)
+
+  participants Participant[]
+}
+
+model Participant {
+  id        Int             @id @default(autoincrement())
+  tripId    Int
+  name      String          @db.VarChar(255)
+  role      ParticipantRole @default(MEMBER)
+  joined_at DateTime        @default(now())
+  share     Decimal         @db.Decimal(12, 2)
+
+  trip     Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  payments Expense[]  @relation("ParticipantPaysExpense")
+
+  @@index([tripId])
+}
+
+model Expense {
+  id        Int              @id @default(autoincrement())
+  payerId   Int
+  amount    Decimal          @db.Decimal(12, 2)
+  category  ExpenseCategory
+  currency  String           @db.VarChar(3)
+  paid_at   DateTime?
+
+  payer     Participant @relation("ParticipantPaysExpense", fields: [payerId], references: [id], onDelete: Cascade)
+}
+
+enum TripStatus {
+  PLANNED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum ParticipantRole {
+  ORGANIZER
+  MEMBER
+}
+
+enum ExpenseCategory {
+  FOOD
+  ACCOMMODATION
+  TRANSPORT
+  ACTIVITIES
+  OTHER
+}
