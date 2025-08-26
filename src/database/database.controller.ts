@@ -1,7 +1,6 @@
-import { Trip as TripModel } from "@prisma/client";
-
 import { Controller, Get, Post } from "@nestjs/common";
 
+import { Trip as TripModel } from "../../generated/prisma";
 import { DatabaseService } from "./database.service";
 
 @Controller("database")
@@ -18,7 +17,7 @@ export class DatabaseController {
     await this.prisma.trip.create({
       data: {
         id: 9999,
-        name: "Test Trip",
+        location: "Test Trip",
         createdAt: new Date(),
       },
     });

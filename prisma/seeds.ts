@@ -3,6 +3,7 @@ import { Category, PrismaClient, Role } from "../generated/prisma";
 const prisma = new PrismaClient();
 
 async function main() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const trip = await prisma.trip.create({
     data: {
       location: "Testowa lokacja",
