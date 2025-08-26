@@ -1,21 +1,24 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 export class CreateTripDto{
     
-    @IsDate()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Początek wycieczki',
+        type: Date
+    })
     start_date: string;
 
-    @IsDate()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Koniec wycieczki',
+        type: Date
+    })
     end_date: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({description: 'Lokalizacja',})
     location: string;
-
 
 }

@@ -4,6 +4,7 @@ const prisma = new PrismaClient();
 async function main(){
 
     const date = new Date()
+
     const trip = await prisma.trip.create({
         data:{
             start_date: date,

@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
-import { Trip, Prisma } from "../../generated/prisma";
+import { Trip } from "../../generated/prisma";
 import { CreateTripDto } from "src/Dto/create-trip-dto";
 
 @Injectable()
 export class TripsService{
     constructor(private prisma: PrismaService){}
+
+    async trip(id: number): Promise<Trip>{
+        return this.prisma.trip.findFirstOrThrow({where: {id}, include: {participants: {include: {expenses: true}}}});
+    }
 
     async trips(): Promise<Trip[]>{
         return this.prisma.trip.findMany({include: {participants: {include: {expenses: true}}}});
@@ -24,13 +28,18 @@ export class TripsService{
     }
     
     async updateTrip(parameters:{
-        where: Prisma.TripWhereUniqueInput;
-        data: Prisma.TripUpdateInput;
+        id: number;
+        newData: CreateTripDto;
     }): Promise<Trip>{
-        const { where, data } = parameters;
+        const { id, newData } = parameters;
         return this.prisma.trip.update({
-            data,
-            where,
+            data: {
+                start_date: newData.start_date,
+                end_date: newData.end_date,
+                location: newData.location,
+                updated_at: new Date(),
+            },
+            where: {id},
         })
     }
 
