@@ -74,3 +74,5 @@ public
 
 tmp/
 temp/
+
+/generated/prisma
