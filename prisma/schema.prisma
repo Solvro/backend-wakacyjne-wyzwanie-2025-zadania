@@ -20,7 +20,6 @@ model Trip {
   end           DateTime
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  expenses      Expense[]
   participants  TripParticipant[]
 }
 
@@ -33,7 +32,6 @@ model Participant {
   email     String?        @unique
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
-  expenses  Expense[]
   trips     TripParticipant[]
 }
 
@@ -47,17 +45,16 @@ model Expense {
   id            Int         @default(autoincrement()) @id
   amount        Float
   createdAt     DateTime    @default(now())
-  tripId        Int
-  participantId Int
-  trip          Trip        @relation(fields: [tripId], references: [id])
-  participant   Participant @relation(fields: [participantId], references: [id])
+  expences      TripParticipant[]
 }
 
 model TripParticipant {
   id            Int         @default(autoincrement()) @id
   tripId        Int
   participantId Int
+  expenseId     Int
   joinedAt      DateTime    @default(now())
   trip          Trip        @relation(fields: [tripId], references: [id])
   participant   Participant @relation(fields: [participantId], references: [id])
+  expense       Expense     @relation(fields: [expenseId], references: [id])
 }
