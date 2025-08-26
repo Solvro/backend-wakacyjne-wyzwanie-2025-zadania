@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TripStatus {
+  planned
+  active
+  finished
+  cancelled
+
+  @@map("trip_status")
+}
+
+model Trip {
+  id         Int        @id @default(autoincrement())
+  name       String
+  start_date DateTime?  @db.Timestamp(6)
+  end_date   DateTime?  @db.Timestamp(6)
+  location   String?
+  status     TripStatus
+
+  participants Participant[]
+  expenses     Expense[]
+
+  @@map("trip")
+}
+
+model Expense {
+  id          Int       @id @default(autoincrement())
+  trip_id     Int
+  amount      Decimal   @db.Decimal()
+  description String?
+  date        DateTime? @db.Timestamp(6)
+
+  trip                 Trip                 @relation(fields: [trip_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  expense_participants ExpenseParticipant[]
+
+  @@index([trip_id, id], map: "expense_index_0")
+  @@map("expense")
+}
+
+model Participant {
+  id      Int     @id @default(autoincrement())
+  trip_id Int?
+  name    String
+  surname String?
+  email   String  @unique
+
+  trip                 Trip?                @relation(fields: [trip_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  expense_participants ExpenseParticipant[]
+
+  @@index([trip_id, name, surname], map: "participant_index_0")
+  @@index([trip_id, email], map: "participant_index_1")
+  @@index([id, trip_id], map: "participant_index_2")
+  @@map("participant")
+}
+
+model ExpenseParticipant {
+  trip_id        Int
+  participant_id Int
+  expense_id     Int
+  amount         Decimal @db.Decimal()
+
+  // FK wg DBML:
+  expense     Expense     @relation(fields: [expense_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  participant Participant @relation(fields: [participant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([trip_id, participant_id, expense_id])
+  @@index([trip_id, expense_id], map: "expense_participant_index_0")
+  @@index([trip_id, participant_id], map: "expense_participant_index_1")
+  @@map("expense_participant")
+}
