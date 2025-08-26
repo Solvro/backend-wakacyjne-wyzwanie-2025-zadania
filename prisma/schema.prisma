@@ -45,7 +45,7 @@ model Expense {
   id            Int         @default(autoincrement()) @id
   amount        Float
   createdAt     DateTime    @default(now())
-  expences      TripParticipant[]
+  expenses      TripParticipant[]
 }
 
 model TripParticipant {
