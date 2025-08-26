@@ -5,13 +5,13 @@ export class CreateParticipantResponseDto {
   id: number;
 
   @ApiPropertyOptional()
-  trip_id: number;
+  trip_id?: number;
 
   @ApiProperty()
   name: string;
 
   @ApiPropertyOptional()
-  surname: string;
+  surname?: string;
 
   @ApiProperty()
   email: string;
