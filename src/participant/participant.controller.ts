@@ -1,27 +1,89 @@
-import { AccountType } from "@prisma/client";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { Body, Controller, Get, Post } from "@nestjs/common";
-
+import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
-@Controller("participants")
+@Controller("participant")
+@ApiTags("participants")
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
-  @Get()
-  async getAllParticipants() {
-    return this.participantService.getAllParticipants();
+  @Post()
+  @ApiOperation({
+    summary: "Creates a new participant",
+    description:
+      "Adds a new participant, you need to supply a name, surname and an account type (enum)",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "participant created",
+  })
+  async create(@Body() createParticipantDto: CreateParticipantDto) {
+    return this.participantService.create(createParticipantDto);
   }
 
-  @Post()
-  async createNewParticipant(
-    @Body()
-    participantData: {
-      name: string;
-      surname: string;
-      account_type: AccountType;
-    },
+  @Get()
+  @ApiOperation({
+    summary: "Returns all participants",
+    description: "Returns all participants",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Request successful",
+  })
+  async findAll() {
+    return this.participantService.findAll();
+  }
+
+  @Get(":id")
+  @ApiOperation({
+    summary: "Returns a participant with given id",
+    description: "Given an id, returns a participant record with that id",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Request successful",
+  })
+  async findOne(@Param("id") id: string) {
+    return this.participantService.findOne(+id);
+  }
+
+  @Patch(":id")
+  @ApiOperation({
+    summary: "Updates a particpant",
+    description: "Given an id, updates that record with the given data",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Patch successful",
+  })
+  async update(
+    @Param("id") id: string,
+    @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
-    return this.participantService.createNewParticipant(participantData);
+    return this.participantService.update(+id, updateParticipantDto);
+  }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Deletes a participant with given id",
+    description: "Given an id, deletes a participant record with that id",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Resource deleted",
+  })
+  async remove(@Param("id") id: string) {
+    return this.participantService.remove(+id);
   }
 }
