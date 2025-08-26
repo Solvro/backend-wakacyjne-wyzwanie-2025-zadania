@@ -13,3 +13,50 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model Trip {
+  id          Int      @id @default(autoincrement())
+  destination String
+  description String?
+  start       DateTime
+  end         DateTime
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  expenses     Expense[]
+  participants Participant[]
+
+  @@map("Trip")
+}
+
+model Expense {
+  id             Int      @id @default(autoincrement())
+  what           String
+  description    String?
+  amount         Decimal  @db.Decimal(10, 2)
+  trip_id        Int
+  participant_id Int
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  trip        Trip        @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participant_id], references: [id], onDelete: Cascade)
+
+  @@map("Expense")
+}
+
+model Participant {
+  id         Int      @id @default(autoincrement())
+  name       String?
+  email      String?
+  birthday   DateTime?
+  trip_id    Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  trip     Trip      @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+  expenses Expense[]
+
+  @@map("Participant")
+}
