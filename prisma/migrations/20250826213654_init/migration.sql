@@ -32,6 +32,7 @@ CREATE TABLE "public"."Expense" (
     "id" SERIAL NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "tripParticipantId" INTEGER NOT NULL,
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
 );
@@ -41,7 +42,6 @@ CREATE TABLE "public"."TripParticipant" (
     "id" SERIAL NOT NULL,
     "tripId" INTEGER NOT NULL,
     "participantId" INTEGER NOT NULL,
-    "expenseId" INTEGER NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TripParticipant_pkey" PRIMARY KEY ("id")
@@ -51,10 +51,10 @@ CREATE TABLE "public"."TripParticipant" (
 CREATE UNIQUE INDEX "Participant_email_key" ON "public"."Participant"("email");
 
 -- AddForeignKey
+ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_tripParticipantId_fkey" FOREIGN KEY ("tripParticipantId") REFERENCES "public"."TripParticipant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "public"."TripParticipant" ADD CONSTRAINT "TripParticipant_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."TripParticipant" ADD CONSTRAINT "TripParticipant_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."TripParticipant" ADD CONSTRAINT "TripParticipant_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "public"."Expense"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -21,18 +21,18 @@ async function main() {
     },
   });
 
-  const expense = await prisma.expense.create({
+  const tripParticipant = await prisma.tripParticipant.create({
     data: {
-      amount: 1111.11,
+      tripId: trip.id,
+      participantId: participant.id,
+      joinedAt: new Date("2025-03-26"),
     },
   });
 
-  await prisma.tripParticipant.create({
+  await prisma.expense.create({
     data: {
-      joinedAt: new Date("2025-03-26"),
-      tripId: trip.id,
-      participantId: participant.id,
-      expenseId: expense.id,
+      amount: 1111.11,
+      tripParticipantId: tripParticipant.id,
     },
   });
 

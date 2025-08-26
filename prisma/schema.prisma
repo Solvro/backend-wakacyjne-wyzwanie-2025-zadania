@@ -42,19 +42,19 @@ enum Sex {
 }
 
 model Expense {
-  id            Int         @default(autoincrement()) @id
-  amount        Float
-  createdAt     DateTime    @default(now())
-  expenses      TripParticipant[]
+  id                Int         @default(autoincrement()) @id
+  amount            Float
+  createdAt         DateTime    @default(now())
+  tripParticipantId Int
+  tripParticipant   TripParticipant @relation(fields: [tripParticipantId], references: [id])
 }
 
 model TripParticipant {
   id            Int         @default(autoincrement()) @id
   tripId        Int
   participantId Int
-  expenseId     Int
   joinedAt      DateTime    @default(now())
   trip          Trip        @relation(fields: [tripId], references: [id])
   participant   Participant @relation(fields: [participantId], references: [id])
-  expense       Expense     @relation(fields: [expenseId], references: [id])
+  expenses      Expense[]
 }
