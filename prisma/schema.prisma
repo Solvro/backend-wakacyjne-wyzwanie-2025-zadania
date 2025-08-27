@@ -50,8 +50,16 @@ model Participant {
   userId      Int
   trip        Trip @relation(fields: [tripId], references: [id])
   tripId      Int
+  role         Role
 
 }
+
+enum Role {
+  GUIDE
+  MEMBER
+
+}
+
 
 enum Sex {
   MALE

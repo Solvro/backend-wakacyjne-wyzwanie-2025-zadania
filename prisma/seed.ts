@@ -1,4 +1,4 @@
-import { PrismaClient, Sex } from "@prisma/client";
+import { PrismaClient, Role, Sex } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -46,6 +46,7 @@ async function main() {
     data: {
       userId: user.id,
       tripId: trip.id,
+      role: Role.GUIDE,
     },
   });
 }
