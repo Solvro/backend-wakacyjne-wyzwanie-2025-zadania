@@ -17,22 +17,22 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
-  create(@Body() createParticipantDto: CreateParticipantDto) {
+  async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.participantService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.participantService.findOne(+id);
   }
 
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
@@ -40,7 +40,7 @@ export class ParticipantController {
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);
   }
 }

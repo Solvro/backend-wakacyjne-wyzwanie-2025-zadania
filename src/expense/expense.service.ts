@@ -1,27 +1,43 @@
 import { Injectable } from "@nestjs/common";
+import { DatabaseService } from "src/database/database.service";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
 export class ExpenseService {
-  create(createExpenseDto: CreateExpenseDto) {
-    return "This action adds a new expense";
+  constructor(private database: DatabaseService) {}
+
+  async create(createExpenseDto: CreateExpenseDto) {
+    return this.database.expense.create({
+      data: {
+        dailyPrice: createExpenseDto.dailyPrice,
+        tripId: createExpenseDto.tripId,
+        discount: createExpenseDto.discount,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all expense`;
+  async findAll() {
+    return this.database.expense.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} expense`;
+  async findOne(id: number) {
+    return this.database.expense.findUnique({ where: { id } });
   }
 
-  update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return `This action updates a #${id} expense`;
+  async update(id: number, updateExpenseDto: UpdateExpenseDto) {
+    return this.database.expense.update({
+      where: { id },
+      data: {
+        dailyPrice: updateExpenseDto.dailyPrice,
+        tripId: updateExpenseDto.tripId,
+        discount: updateExpenseDto.discount,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} expense`;
+  async remove(id: number) {
+    return this.database.expense.delete({ where: { id } });
   }
 }

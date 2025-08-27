@@ -17,27 +17,27 @@ export class TripController {
   constructor(private readonly tripService: TripService) {}
 
   @Post()
-  create(@Body() createTripDto: CreateTripDto) {
+  async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.tripService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.tripService.findOne(+id);
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
+  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);
   }
 }

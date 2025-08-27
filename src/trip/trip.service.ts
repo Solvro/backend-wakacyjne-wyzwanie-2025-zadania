@@ -1,27 +1,43 @@
 import { Injectable } from "@nestjs/common";
+import { DatabaseService } from "src/database/database.service";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 
 @Injectable()
 export class TripService {
-  create(createTripDto: CreateTripDto) {
-    return "This action adds a new trip";
+  constructor(private database: DatabaseService) {}
+
+  async create(createTripDto: CreateTripDto) {
+    return this.database.trip.create({
+      data: {
+        startDate: createTripDto.startDate,
+        endDate: createTripDto.endDate,
+        location: createTripDto.location,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all trip`;
+  async findAll() {
+    return this.database.trip.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} trip`;
+  async findOne(id: number) {
+    return this.database.trip.findUnique({ where: { id } });
   }
 
-  update(id: number, updateTripDto: UpdateTripDto) {
-    return `This action updates a #${id} trip`;
+  async update(id: number, updateTripDto: UpdateTripDto) {
+    return this.database.trip.update({
+      where: { id },
+      data: {
+        startDate: updateTripDto.startDate,
+        endDate: updateTripDto.endDate,
+        location: updateTripDto.location,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} trip`;
+  async remove(id: number) {
+    return this.database.trip.delete({ where: { id } });
   }
 }
