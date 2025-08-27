@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -18,7 +20,7 @@ import {
 } from "@nestjs/swagger";
 
 import { TripsService } from "../trips/trips.service";
-import { CreateParticipantDto } from "./dto/participant.dto";
+import { ParticipantDto } from "./dto/participant.dto";
 import { ParticipantsService } from "./participants.service";
 
 @ApiTags("participants")
@@ -64,7 +66,7 @@ export class ParticipantsController {
   })
   @ApiParam({ name: "tripId", description: "Trip ID", type: "number" })
   @ApiBody({
-    type: CreateParticipantDto,
+    type: ParticipantDto,
     description: "Participant creation data",
     examples: {
       example1: {
@@ -101,11 +103,48 @@ export class ParticipantsController {
   })
   async addParticipant(
     @Param("tripId", ParseIntPipe) tripId: number,
-    @Body() createParticipantDto: CreateParticipantDto,
+    @Body() createParticipantDto: ParticipantDto,
   ) {
     return this.participantsService.addParticipantToTrip(
       tripId,
       createParticipantDto,
     );
+  }
+
+  @Put(":id")
+  @ApiOperation({
+    summary: "Update participant",
+    description: "Update an existing participant",
+  })
+  @ApiParam({ name: "id", description: "Participant ID", type: "number" })
+  @ApiBody({
+    type: ParticipantDto,
+    description: "Participant update data",
+  })
+  @ApiOkResponse({
+    description: "Participant updated successfully",
+    type: ParticipantDto,
+  })
+  async updateParticipant(
+    @Param("id", ParseIntPipe) participantId: number,
+    @Body() updateParticipantDto: ParticipantDto,
+  ) {
+    return this.participantsService.updateParticipant(
+      participantId,
+      updateParticipantDto,
+    );
+  }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete participant",
+    description: "Delete an existing participant",
+  })
+  @ApiParam({ name: "id", description: "Participant ID", type: "number" })
+  @ApiOkResponse({
+    description: "Participant deleted successfully",
+  })
+  async deleteParticipant(@Param("id", ParseIntPipe) participantId: number) {
+    return this.participantsService.deleteParticipant(participantId);
   }
 }

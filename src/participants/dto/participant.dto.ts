@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class CreateParticipantDto {
+export class ParticipantDto {
   @ApiProperty({
     description: "Name of the participant",
     example: "John Doe",

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
-import type { CreateParticipantDto } from "./dto/participant.dto";
+import type { ParticipantDto } from "./dto/participant.dto";
 
 @Injectable()
 export class ParticipantsService {
@@ -9,7 +9,7 @@ export class ParticipantsService {
 
   async addParticipantToTrip(
     tripId: number,
-    createParticipantDto: CreateParticipantDto,
+    createParticipantDto: ParticipantDto,
   ) {
     // Validate that trip exists
     const existingTrip = await this.prisma.trip.findUnique({
@@ -28,6 +28,47 @@ export class ParticipantsService {
         isOrganizer: createParticipantDto.isOrganizer ?? false,
         tripId,
       },
+    });
+  }
+
+  async updateParticipant(
+    participantId: number,
+    updateParticipantDto: ParticipantDto,
+  ) {
+    const existingParticipant = await this.prisma.participant.findUnique({
+      where: { id: participantId },
+    });
+
+    if (existingParticipant === null) {
+      throw new NotFoundException(
+        `Participant with ID ${String(participantId)} not found`,
+      );
+    }
+
+    return this.prisma.participant.update({
+      where: { id: participantId },
+      data: {
+        name: updateParticipantDto.name,
+        email: updateParticipantDto.email,
+        phone: updateParticipantDto.phone,
+        isOrganizer: updateParticipantDto.isOrganizer,
+      },
+    });
+  }
+
+  async deleteParticipant(participantId: number) {
+    const existingParticipant = await this.prisma.participant.findUnique({
+      where: { id: participantId },
+    });
+
+    if (existingParticipant === null) {
+      throw new NotFoundException(
+        `Participant with ID ${String(participantId)} not found`,
+      );
+    }
+
+    return this.prisma.participant.delete({
+      where: { id: participantId },
     });
   }
 }

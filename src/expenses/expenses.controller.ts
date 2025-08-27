@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -18,7 +20,7 @@ import {
 } from "@nestjs/swagger";
 
 import { TripsService } from "../trips/trips.service";
-import { CreateExpenseDto } from "./dto/expense.dto";
+import { ExpenseDto } from "./dto/expense.dto";
 import { ExpensesService } from "./expenses.service";
 
 @ApiTags("expenses")
@@ -66,7 +68,7 @@ export class ExpensesController {
   })
   @ApiParam({ name: "tripId", description: "Trip ID", type: "number" })
   @ApiBody({
-    type: CreateExpenseDto,
+    type: ExpenseDto,
     description: "Expense creation data",
     examples: {
       example1: {
@@ -110,8 +112,42 @@ export class ExpensesController {
   })
   async addExpense(
     @Param("tripId", ParseIntPipe) tripId: number,
-    @Body() createExpenseDto: CreateExpenseDto,
+    @Body() createExpenseDto: ExpenseDto,
   ) {
     return this.expensesService.addExpenseToTrip(tripId, createExpenseDto);
+  }
+
+  @Put(":id")
+  @ApiOperation({
+    summary: "Update expense",
+    description: "Update an existing expense",
+  })
+  @ApiParam({ name: "id", description: "Expense ID", type: "number" })
+  @ApiBody({
+    type: ExpenseDto,
+    description: "Expense update data",
+  })
+  @ApiOkResponse({
+    description: "Expense updated successfully",
+    type: ExpenseDto,
+  })
+  async updateExpense(
+    @Param("id", ParseIntPipe) expenseId: number,
+    @Body() updateExpenseDto: ExpenseDto,
+  ) {
+    return this.expensesService.updateExpense(expenseId, updateExpenseDto);
+  }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete expense",
+    description: "Delete an existing expense",
+  })
+  @ApiParam({ name: "id", description: "Expense ID", type: "number" })
+  @ApiOkResponse({
+    description: "Expense deleted successfully",
+  })
+  async deleteExpense(@Param("id", ParseIntPipe) expenseId: number) {
+    return this.expensesService.deleteExpense(expenseId);
   }
 }

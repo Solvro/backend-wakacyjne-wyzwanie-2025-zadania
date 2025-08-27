@@ -2,7 +2,7 @@ import type { ExpenseCategory } from "@prisma/client";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class CreateExpenseDto {
+export class ExpenseDto {
   @ApiProperty({
     description: "Title of the expense",
     example: "Hotel accommodation",
