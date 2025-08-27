@@ -20,7 +20,7 @@ model Trip {
   destination  String
   start_date   DateTime
   end_date     DateTime
-  participants Participant[]  // relacja 1:N z Participant
+  participants Participant[]  @relation("TripParticipants")
   expenses     Expense[]      // relacja 1:N z Expense
 }
 
@@ -29,8 +29,7 @@ model Participant {
   email       String?
   name        String
   role        Role
-  trip_id     Int
-  trip        Trip      @relation(fields: [trip_id], references: [id])
+  trips       Trip[] @relation("TripParticipants")
   expenses    Expense[] // relacja 1:N z Expense
 }
 
@@ -40,10 +39,10 @@ model Expense {
   amount         Float
   currency       String
   date           DateTime
-  participant_id Int
-  trip_id        Int 
-  participant    Participant @relation(fields: [participant_id], references: [id])
-  trip           Trip        @relation(fields: [trip_id], references: [id])
+  participant_id Int?
+  trip_id        Int? 
+  participant    Participant? @relation(fields: [participant_id], references: [id])
+  trip           Trip?        @relation(fields: [trip_id], references: [id])
 }
 
 enum Role {

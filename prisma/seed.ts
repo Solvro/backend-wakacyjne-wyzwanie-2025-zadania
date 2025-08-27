@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -15,8 +15,10 @@ async function main() {
   const participant = await prisma.participant.create({
     data: {
       name: "Alice",
-      role: "GUIDE",
-      trip_id: trip.id,
+      role: Role.GUIDE,
+      trips: {
+        connect: { id: trip.id },
+      },
     },
   });
 

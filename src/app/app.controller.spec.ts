@@ -1,9 +1,9 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { DatabaseService } from "../database/database.service";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { DatabaseService } from "./database.service";
 
 describe("AppController", () => {
   let appController: AppController;
