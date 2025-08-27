@@ -1,24 +1,24 @@
-import { EXPENSETYPE, PrismaClient, ROLE } from "@prisma/client";
+import { PrismaClient, Role, ExpenseType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
   const trip = await prisma.trip.create({
     data: {
-      name: "Weekend w Krakowie",
-      destination: "Kraków",
-      start_date: new Date("2025-09-01"),
-      end_date: new Date("2025-09-03"),
+      name: 'Weekend w Krakowie',
+      destination: 'Kraków',
+      start_date: new Date('2025-09-01'),
+      end_date: new Date('2025-09-03'),
       budget: 1200.0,
     },
   });
 
   const participant = await prisma.participant.create({
     data: {
-      first_name: "Jan",
-      last_name: "Kowalski",
-      email: "jan.kowalski@example.com",
-      role: ROLE.organizer,
+      first_name: 'Jan',
+      last_name: 'Kowalski',
+      email: 'jan.kowalski@example.com',
+      role: Role.ORGANIZER,
       trip: {
         connect: { trip_id: trip.trip_id },
       },
@@ -27,17 +27,17 @@ async function main() {
 
   const expense = await prisma.expense.create({
     data: {
-      expense_type: EXPENSETYPE.food,
-      expense_date: new Date("2025-09-01"),
+      expense_type: ExpenseType.FOOD,
+      expense_date: new Date('2025-09-01'),
       cost: 85.5,
-      description: "Obiad w restauracji",
+      description: 'Obiad w restauracji',
       trip: {
         connect: { trip_id: trip.trip_id },
       },
     },
   });
 
-  console.log("Działa");
+  console.log('Działa');
 }
 
 main()
