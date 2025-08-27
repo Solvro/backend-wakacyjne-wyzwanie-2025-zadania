@@ -18,39 +18,35 @@ model Trip {
   name        String
   destination String?
   budget      Decimal?  @db.Decimal(12, 2)
-  startDate   DateTime  @db.Date      @map("start_date")
-  endDate     DateTime? @db.Date      @map("end_date")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  startDate   DateTime  @db.Date
+  endDate     DateTime? @db.Date
+  createdAt   DateTime  @default(now())
 
-  members     TripParticipant[]
-  expenses    Expense[]
-
-  @@map("Trip")
+  members  TripParticipant[]
+  expenses Expense[]
 }
 
 model Participant {
-  id          Int    @id @default(autoincrement())
-  firstName   String @map("first_name")
-  lastName    String @map("last_name")
-  email       String
+  id        Int    @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
 
-  memberships TripParticipant[]
-
-  @@map("Participant")
+  memberships  TripParticipant[]
+  paidExpenses Expense[]
 }
 
 model TripParticipant {
-  id            Int         @id @default(autoincrement())
-  participantId Int         @map("participant_id")
-  tripId        Int         @map("trip_id")
+  id            Int @id @default(autoincrement())
+  participantId Int
+  tripId        Int
 
-  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
-  trip          Trip        @relation(fields: [tripId],        references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  trip        Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
 
   @@unique([tripId, participantId])
   @@index([participantId])
   @@index([tripId])
-  @@map("TripParticipant")
 }
 
 enum Type {
@@ -62,14 +58,16 @@ enum Type {
 }
 
 model Expense {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   description String
-  cost        Decimal  @db.Decimal(12, 2)
+  cost        Decimal @db.Decimal(12, 2)
   type        Type
-  tripId      Int      @map("trip_id")
+  tripId      Int
+  payerId     Int
 
-  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  trip  Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  payer Participant @relation(fields: [payerId], references: [id], onDelete: Cascade)
 
   @@index([tripId])
-  @@map("Expense")
+  @@index([payerId])
 }

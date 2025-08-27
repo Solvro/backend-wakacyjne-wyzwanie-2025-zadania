@@ -30,12 +30,6 @@ async function main() {
   });
 
   await prisma.tripParticipant.upsert({
-    where: { tripId_participantId: { tripId: trip.id, participantId: jan.id } },
-    update: {},
-    create: { tripId: trip.id, participantId: jan.id },
-  });
-
-  await prisma.tripParticipant.upsert({
     where: {
       tripId_participantId: { tripId: trip.id, participantId: anna.id },
     },
@@ -50,6 +44,7 @@ async function main() {
       cost: new Prisma.Decimal("35.50"),
       type: Type.FOOD, // inne: TRANSPORT, ACCOMODATION, PARKING, OTHER
       tripId: trip.id,
+      payerId: jan.id,
     },
   });
 
@@ -60,6 +55,7 @@ async function main() {
       cost: new Prisma.Decimal("7.00"),
       type: Type.TRANSPORT,
       tripId: trip.id,
+      payerId: anna.id,
     },
   });
 }
