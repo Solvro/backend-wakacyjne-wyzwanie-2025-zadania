@@ -25,14 +25,14 @@ export class ParticipantsController {
     description: "The participant has been successfully created.",
   })
   @ApiResponse({ status: 400, description: "Bad Request." })
-  create(@Body() createParticipantDto: CreateParticipantDto) {
+  async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantsService.create(createParticipantDto);
   }
 
   @Get()
   @ApiOperation({ summary: "Get all participants" })
   @ApiResponse({ status: 200, description: "Return all participants." })
-  findAll() {
+  async findAll() {
     return this.participantsService.findAll();
   }
 
@@ -40,7 +40,7 @@ export class ParticipantsController {
   @ApiOperation({ summary: "Get a participant by id" })
   @ApiResponse({ status: 200, description: "Return the participant." })
   @ApiResponse({ status: 404, description: "Participant not found." })
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.participantsService.findOne(+id);
   }
 
@@ -51,7 +51,7 @@ export class ParticipantsController {
     description: "The participant has been successfully updated.",
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
@@ -65,7 +65,7 @@ export class ParticipantsController {
     description: "The participant has been successfully deleted.",
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.participantsService.remove(+id);
   }
 }

@@ -8,26 +8,26 @@ import { UpdateParticipantDto } from "./dto/update-participant.dto";
 export class ParticipantsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createParticipantDto: CreateParticipantDto) {
+  async create(createParticipantDto: CreateParticipantDto) {
     return this.prisma.participant.create({ data: createParticipantDto });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.participant.findMany();
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.prisma.participant.findUnique({ where: { id } });
   }
 
-  update(id: number, updateParticipantDto: UpdateParticipantDto) {
+  async update(id: number, updateParticipantDto: UpdateParticipantDto) {
     return this.prisma.participant.update({
       where: { id },
       data: updateParticipantDto,
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.prisma.participant.delete({ where: { id } });
   }
 }

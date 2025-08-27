@@ -7,7 +7,7 @@ import {
   IsString,
 } from "class-validator";
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateTripDto {
   @ApiProperty({ example: "Summer Vacation", description: "Name of the trip" })
@@ -15,10 +15,9 @@ export class CreateTripDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: "A relaxing week at the beach",
     description: "Optional description of the trip",
-    required: false,
   })
   @IsString()
   @IsOptional()

@@ -25,14 +25,14 @@ export class ExpensesController {
     description: "The expense has been successfully created.",
   })
   @ApiResponse({ status: 400, description: "Bad Request." })
-  create(@Body() createExpenseDto: CreateExpenseDto) {
+  async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expensesService.create(createExpenseDto);
   }
 
   @Get()
   @ApiOperation({ summary: "Get all expenses" })
   @ApiResponse({ status: 200, description: "Return all expenses." })
-  findAll() {
+  async findAll() {
     return this.expensesService.findAll();
   }
 
@@ -40,7 +40,7 @@ export class ExpensesController {
   @ApiOperation({ summary: "Get an expense by id" })
   @ApiResponse({ status: 200, description: "Return the expense." })
   @ApiResponse({ status: 404, description: "Expense not found." })
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.expensesService.findOne(+id);
   }
 
@@ -51,7 +51,7 @@ export class ExpensesController {
     description: "The expense has been successfully updated.",
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
-  update(@Param("id") id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
+  async update(@Param("id") id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
     return this.expensesService.update(+id, updateExpenseDto);
   }
 
@@ -62,7 +62,7 @@ export class ExpensesController {
     description: "The expense has been successfully deleted.",
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.expensesService.remove(+id);
   }
 }
