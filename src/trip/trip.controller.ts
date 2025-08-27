@@ -1,6 +1,3 @@
-import { ExpenseResponseDto } from "src/expense/dto/expense-response.dto";
-import { PersonResponseDto } from "src/person/dto/person-response.dto";
-
 import {
   Body,
   Controller,
@@ -13,6 +10,8 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { ExpenseResponseDto } from "../expense/dto/expense-response.dto";
+import { PersonResponseDto } from "../person/dto/person-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripResponseDto } from "./dto/trip-response.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";

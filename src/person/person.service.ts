@@ -1,9 +1,8 @@
-import { ExpenseResponseDto } from "src/expense/dto/expense-response.dto";
-import { TripResponseDto } from "src/trip/dto/trip-response.dto";
-
 import { Injectable } from "@nestjs/common";
 
+import { ExpenseResponseDto } from "../expense/dto/expense-response.dto";
 import { PrismaService } from "../prisma/prisma.service";
+import { TripResponseDto } from "../trip/dto/trip-response.dto";
 import { CreatePersonDto } from "./dto/create-person.dto";
 import { PersonResponseDto } from "./dto/person-response.dto";
 import { UpdatePersonDto } from "./dto/update-person.dto";
