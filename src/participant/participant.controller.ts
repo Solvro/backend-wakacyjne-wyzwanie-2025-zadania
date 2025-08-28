@@ -221,4 +221,42 @@ export class ParticipantController {
       tripId,
     );
   }
+
+  @Post(":participantId/expenses/:expenseId")
+  @ApiOperation({
+    summary: "Add participant to expense",
+    description: "connect a participant with an expense",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Participant added to expense successfully",
+  })
+  async addParticipantToExpense(
+    @Param("participantId", ParseIntPipe) participantId: number,
+    @Param("expenseId", ParseIntPipe) expenseId: number,
+  ) {
+    return this.participantService.addParticipantToExpense(
+      participantId,
+      expenseId,
+    );
+  }
+
+  @Delete(":participantId/expenses/:expenseId")
+  @ApiOperation({
+    summary: "Remove participant from expense",
+    description: "Remove the connection between a participant and an expense",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Participant removed from expense successfully",
+  })
+  async removeParticipantFromExpense(
+    @Param("participantId", ParseIntPipe) participantId: number,
+    @Param("expenseId", ParseIntPipe) expenseId: number,
+  ) {
+    return this.participantService.removeParticipantFromExpense(
+      participantId,
+      expenseId,
+    );
+  }
 }

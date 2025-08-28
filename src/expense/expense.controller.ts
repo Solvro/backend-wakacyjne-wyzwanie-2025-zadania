@@ -227,38 +227,4 @@ export class ExpenseController {
       orderBy: parsedOrderBy,
     });
   }
-
-  @Post(":expenseId/participant/:participantId")
-  @ApiOperation({
-    summary: "Add expense to participant",
-    description: "Connect an expense with a participant",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Expense added to participant successfully",
-  })
-  async addExpenseToParticipant(
-    @Param("expenseId", ParseIntPipe) expenseId: number,
-    @Param("participantId", ParseIntPipe) participantId: number,
-  ) {
-    return this.expenseService.addExpenseToParticipant(
-      expenseId,
-      participantId,
-    );
-  }
-
-  @Delete(":expenseId/participant")
-  @ApiOperation({
-    summary: "Remove expense from participant",
-    description: "Remove the connection between an expense and a participant",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Expense removed from participant successfully",
-  })
-  async removeExpenseFromParticipant(
-    @Param("expenseId", ParseIntPipe) expenseId: number,
-  ) {
-    return this.expenseService.removeExpenseFromParticipant(expenseId);
-  }
 }
