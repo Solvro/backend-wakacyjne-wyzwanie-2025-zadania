@@ -32,7 +32,7 @@ export class ParticipantController {
   }
 
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {

@@ -13,16 +13,6 @@ export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
-    if (
-      (await this.database.participant.findUnique({
-        where: { email: createParticipantDto.email },
-      })) !== null
-    ) {
-      throw new ConflictException(
-        "Participant with this e-mail address already exists!",
-      );
-    }
-
     return this.database.participant.create({
       data: {
         name: createParticipantDto.name,
@@ -49,8 +39,22 @@ export class ParticipantService {
     return participant;
   }
 
-  update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    return `This action updates a #${id} participant`;
+  async update(id: number, updateParticipantDto: UpdateParticipantDto) {
+    if (
+      (await this.database.participant.findUnique({ where: { id } })) === null
+    ) {
+      throw new NotFoundException(
+        `Not found participant with ID: ${id.toString()}`,
+      );
+    }
+
+    return this.database.participant.update({
+      where: { id },
+      data: {
+        name: updateParticipantDto.name,
+        email: updateParticipantDto.email,
+      },
+    });
   }
 
   async remove(id: number) {
@@ -65,5 +69,17 @@ export class ParticipantService {
     }
 
     return this.database.participant.delete({ where: { id } });
+  }
+
+  async checkEmail(email: string) {
+    if (
+      (await this.database.participant.findUnique({
+        where: { email },
+      })) !== null
+    ) {
+      throw new ConflictException(
+        "Participant with this e-mail address already exists!",
+      );
+    }
   }
 }
