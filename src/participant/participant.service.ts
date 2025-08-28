@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
@@ -17,7 +17,17 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    return this.database.participant.findUnique({ where: { id } });
+    const participant = await this.database.participant.findUnique({
+      where: { id },
+    });
+
+    if (participant === null) {
+      throw new NotFoundException(
+        `Not found participant with ID: ${id.toString()}`,
+      );
+    }
+
+    return participant;
   }
 
   update(id: number, updateParticipantDto: UpdateParticipantDto) {
@@ -25,6 +35,16 @@ export class ParticipantService {
   }
 
   async remove(id: number) {
+    const participant = await this.database.participant.findUnique({
+      where: { id },
+    });
+
+    if (participant === null) {
+      throw new NotFoundException(
+        `Not found participant with ID: ${id.toString()}`,
+      );
+    }
+
     return this.database.participant.delete({ where: { id } });
   }
 }
