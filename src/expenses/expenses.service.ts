@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
-import type { CreateExpenseDto } from "./dto/expense.dto";
+import type { ExpenseDto } from "./dto/expense.dto";
 
 @Injectable()
 export class ExpensesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async addExpenseToTrip(tripId: number, createExpenseDto: CreateExpenseDto) {
+  async addExpenseToTrip(tripId: number, createExpenseDto: ExpenseDto) {
     // Validate that trip exists
     const existingTrip = await this.prisma.trip.findUnique({
       where: { id: tripId },
@@ -49,6 +49,46 @@ export class ExpensesService {
           },
         },
       },
+    });
+  }
+
+  async updateExpense(expenseId: number, updateExpenseDto: ExpenseDto) {
+    const existingExpense = await this.prisma.expense.findUnique({
+      where: { id: expenseId },
+    });
+
+    if (existingExpense === null) {
+      throw new NotFoundException(
+        `Expense with ID ${String(expenseId)} not found`,
+      );
+    }
+
+    return this.prisma.expense.update({
+      where: { id: expenseId },
+      data: {
+        title: updateExpenseDto.title,
+        description: updateExpenseDto.description,
+        amount: updateExpenseDto.amount,
+        category: updateExpenseDto.category,
+        date: new Date(updateExpenseDto.date),
+        participantId: updateExpenseDto.participantId,
+      },
+    });
+  }
+
+  async deleteExpense(expenseId: number) {
+    const existingExpense = await this.prisma.expense.findUnique({
+      where: { id: expenseId },
+    });
+
+    if (existingExpense === null) {
+      throw new NotFoundException(
+        `Expense with ID ${String(expenseId)} not found`,
+      );
+    }
+
+    return this.prisma.expense.delete({
+      where: { id: expenseId },
     });
   }
 }
