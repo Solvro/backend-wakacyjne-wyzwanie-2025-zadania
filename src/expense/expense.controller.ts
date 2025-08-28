@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { QueryParser } from "../parser";
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -20,25 +21,6 @@ import { ExpenseService } from "./expense.service";
 @ApiTags("expense")
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
-
-  private parseIntParam(value: string | undefined): number | undefined {
-    if (value == null) {
-      return undefined;
-    }
-
-    const parsed = Number.parseInt(value, 10);
-    return parsed;
-  }
-
-  private parseOrderBy(orderBy: string | undefined) {
-    if (orderBy !== undefined) {
-      const [field, direction] = orderBy.split(":");
-
-      return {
-        [field]: direction.toLowerCase() || "asc",
-      };
-    }
-  }
 
   @Post()
   @ApiOperation({
@@ -76,10 +58,16 @@ export class ExpenseController {
     @Query("take") take?: string,
     @Query("orderBy") orderBy?: string,
   ) {
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+
     return this.expenseService.findAll({
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
     });
   }
 
@@ -161,10 +149,16 @@ export class ExpenseController {
     @Query("take") take?: string,
     @Query("orderBy") orderBy?: string,
   ) {
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+
     return this.expenseService.findExpensesByTrip(tripId, {
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
     });
   }
 
@@ -221,10 +215,16 @@ export class ExpenseController {
     @Query("take") take?: string,
     @Query("orderBy") orderBy?: string,
   ) {
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+
     return this.expenseService.findExpensesByParticipant(participantId, {
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
     });
   }
 

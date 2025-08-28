@@ -11,33 +11,24 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { QueryParser } from "../parser";
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
 @Controller("participant")
-@ApiTags("participants")
+@ApiTags("participant")
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
-  private parseIntParam(value: string | undefined): number | undefined {
-    if (value == null) {
-      return undefined;
-    }
-
-    const parsed = Number.parseInt(value, 10);
-    return parsed;
-  }
-
-  private parseOrderBy(orderBy: string | undefined) {
-    if (orderBy !== undefined) {
-      const [field, direction] = orderBy.split(":");
-
-      return {
-        [field]: direction.toLowerCase() || "asc",
-      };
-    }
+  private parseIncludeOptions(include?: string) {
+    return include !== undefined && include.length > 0
+      ? {
+          trips: include.includes("trips"),
+          expenses: include.includes("expenses"),
+        }
+      : undefined;
   }
 
   @Post()
@@ -82,18 +73,17 @@ export class ParticipantController {
     @Query("orderBy") orderBy?: string,
     @Query("include") include?: string,
   ) {
-    const includeOptions =
-      include !== undefined && include.length > 0
-        ? {
-            trips: include.includes("trips"),
-            expenses: include.includes("expenses"),
-          }
-        : undefined;
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+    const includeOptions = this.parseIncludeOptions(include);
 
     return this.participantService.findAll({
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
       include: includeOptions,
     });
   }
@@ -182,18 +172,17 @@ export class ParticipantController {
     @Query("orderBy") orderBy?: string,
     @Query("include") include?: string,
   ) {
-    const includeOptions =
-      include !== undefined && include.length > 0
-        ? {
-            trips: include.includes("trips"),
-            expenses: include.includes("expenses"),
-          }
-        : undefined;
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+    const includeOptions = this.parseIncludeOptions(include);
 
     return this.participantService.findParticipantsByTrip(tripId, {
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
       include: includeOptions,
     });
   }
@@ -230,44 +219,6 @@ export class ParticipantController {
     return this.participantService.removeParticipantFromTrip(
       participantId,
       tripId,
-    );
-  }
-
-  @Post(":participantId/expenses/:expenseId")
-  @ApiOperation({
-    summary: "Add participant to expense",
-    description: "connect a participant with an expense",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Participant added to expense successfully",
-  })
-  async addParticipantToExpense(
-    @Param("participantId", ParseIntPipe) participantId: number,
-    @Param("expenseId", ParseIntPipe) expenseId: number,
-  ) {
-    return this.participantService.addParticipantToExpense(
-      participantId,
-      expenseId,
-    );
-  }
-
-  @Delete(":participantId/expenses/:expenseId")
-  @ApiOperation({
-    summary: "Remove participant from expense",
-    description: "Remove the connection between a participant and an expense",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Participant removed from expense successfully",
-  })
-  async removeParticipantFromExpense(
-    @Param("participantId", ParseIntPipe) participantId: number,
-    @Param("expenseId", ParseIntPipe) expenseId: number,
-  ) {
-    return this.participantService.removeParticipantFromExpense(
-      participantId,
-      expenseId,
     );
   }
 }

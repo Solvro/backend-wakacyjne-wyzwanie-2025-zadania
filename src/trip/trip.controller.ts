@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { QueryParser } from "../parser";
 import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -21,23 +22,13 @@ import { TripService } from "./trip.service";
 export class TripController {
   constructor(private readonly tripService: TripService) {}
 
-  private parseIntParam(value: string | undefined): number | undefined {
-    if (value == null) {
-      return undefined;
-    }
-
-    const parsed = Number.parseInt(value, 10);
-    return parsed;
-  }
-
-  private parseOrderBy(orderBy: string | undefined) {
-    if (orderBy !== undefined) {
-      const [field, direction] = orderBy.split(":");
-
-      return {
-        [field]: direction.toLowerCase() || "asc",
-      };
-    }
+  private parseIncludeOptions(include?: string) {
+    return include !== undefined && include.length > 0
+      ? {
+          participants: include.includes("participants"),
+          expenses: include.includes("expenses"),
+        }
+      : undefined;
   }
 
   @Post()
@@ -82,18 +73,17 @@ export class TripController {
     @Query("orderBy") orderBy?: string,
     @Query("include") include?: string,
   ) {
-    const includeOptions =
-      include !== undefined && include.length > 0
-        ? {
-            participants: include.includes("participants"),
-            expenses: include.includes("expenses"),
-          }
-        : undefined;
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+    const includeOptions = this.parseIncludeOptions(include);
 
     return this.tripService.findAll({
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
       include: includeOptions,
     });
   }
@@ -182,83 +172,18 @@ export class TripController {
     @Query("orderBy") orderBy?: string,
     @Query("include") include?: string,
   ) {
-    const includeOptions =
-      include !== undefined && include.length > 0
-        ? {
-            participants: include.includes("participants"),
-            expenses: include.includes("expenses"),
-          }
-        : undefined;
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+    const includeOptions = this.parseIncludeOptions(include);
 
     return this.tripService.findTripsByParticipant(participantId, {
-      skip: this.parseIntParam(skip),
-      take: this.parseIntParam(take),
-      orderBy: this.parseOrderBy(orderBy),
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
       include: includeOptions,
     });
-  }
-
-  @Post(":tripId/participants/:participantId")
-  @ApiOperation({
-    summary: "Add trip to participant",
-    description: "connect a trip with a participant",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Trip added to participant successfully",
-  })
-  async addTripToParticipant(
-    @Param("tripId", ParseIntPipe) tripId: number,
-    @Param("participantId", ParseIntPipe) participantId: number,
-  ) {
-    return this.tripService.addTripToParticipant(tripId, participantId);
-  }
-
-  @Delete(":tripId/participants/:participantId")
-  @ApiOperation({
-    summary: "Remove trip from participant",
-    description: "Remove the connection between a trip and a participant",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Trip removed from participant successfully",
-  })
-  async removeTripFromParticipant(
-    @Param("tripId", ParseIntPipe) tripId: number,
-    @Param("participantId", ParseIntPipe) participantId: number,
-  ) {
-    return this.tripService.removeTripFromParticipant(tripId, participantId);
-  }
-
-  @Post(":tripId/expenses/:expenseId")
-  @ApiOperation({
-    summary: "Add trip to expense",
-    description: "connect a trip with an expense",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Trip added to expense successfully",
-  })
-  async addTripToExpense(
-    @Param("tripId", ParseIntPipe) tripId: number,
-    @Param("expenseId", ParseIntPipe) expenseId: number,
-  ) {
-    return this.tripService.addTripToExpense(tripId, expenseId);
-  }
-
-  @Delete(":tripId/expenses/:expenseId")
-  @ApiOperation({
-    summary: "Remove trip from expense",
-    description: "Remove the connection between a trip and an expense",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Trip removed from expense successfully",
-  })
-  async removeTripFromExpense(
-    @Param("tripId", ParseIntPipe) tripId: number,
-    @Param("expenseId", ParseIntPipe) expenseId: number,
-  ) {
-    return this.tripService.removeTripFromExpense(tripId, expenseId);
   }
 }
