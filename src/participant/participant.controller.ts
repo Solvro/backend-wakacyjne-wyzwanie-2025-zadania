@@ -17,7 +17,7 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
-  create(@Body() createParticipantDto: CreateParticipantDto) {
+  async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
 

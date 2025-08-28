@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
@@ -8,8 +12,23 @@ import { UpdateParticipantDto } from "./dto/update-participant.dto";
 export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
-  create(createParticipantDto: CreateParticipantDto) {
-    return "This action adds a new participant";
+  async create(createParticipantDto: CreateParticipantDto) {
+    if (
+      (await this.database.participant.findUnique({
+        where: { email: createParticipantDto.email },
+      })) !== null
+    ) {
+      throw new ConflictException(
+        "Participant with this e-mail address already exists!",
+      );
+    }
+
+    return this.database.participant.create({
+      data: {
+        name: createParticipantDto.name,
+        email: createParticipantDto.email,
+      },
+    });
   }
 
   async findAll() {
