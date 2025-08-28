@@ -143,47 +143,4 @@ export class TripController {
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.tripService.remove(id);
   }
-
-  @Get("participant/:participantId")
-  @ApiOperation({
-    summary: "Get trips by participant",
-    description: "Retrieve trips connected with a participant",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Participant trips retrieved successfully",
-  })
-  @ApiQuery({ name: "skip", required: false, type: Number })
-  @ApiQuery({ name: "take", required: false, type: Number })
-  @ApiQuery({
-    name: "orderBy",
-    required: false,
-    description: "Order by field:direction [id:asc, name:desc]",
-  })
-  @ApiQuery({
-    name: "include",
-    required: false,
-    description: "Include related data [participants, expenses]",
-  })
-  async getTripsByParticipant(
-    @Param("participantId", ParseIntPipe) participantId: number,
-    @Query("skip") skip?: string,
-    @Query("take") take?: string,
-    @Query("orderBy") orderBy?: string,
-    @Query("include") include?: string,
-  ) {
-    const {
-      skip: parsedSkip,
-      take: parsedTake,
-      orderBy: parsedOrderBy,
-    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
-    const includeOptions = this.parseIncludeOptions(include);
-
-    return this.tripService.findTripsByParticipant(participantId, {
-      skip: parsedSkip,
-      take: parsedTake,
-      orderBy: parsedOrderBy,
-      include: includeOptions,
-    });
-  }
 }
