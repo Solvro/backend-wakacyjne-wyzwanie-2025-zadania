@@ -8,11 +8,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
+import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
 
@@ -46,8 +48,8 @@ export class TripController {
     description: "List of trips returned successfully",
     type: [CreateTripResponseDto],
   })
-  async findAll() {
-    return this.tripService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.tripService.findAll(paginationDto);
   }
 
   @Get(":id")

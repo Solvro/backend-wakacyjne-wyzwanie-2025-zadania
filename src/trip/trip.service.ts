@@ -3,7 +3,9 @@ import { DatabaseService } from "src/database/database.service";
 import { Injectable } from "@nestjs/common";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
+import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
+import { DEFAULT_PAGE_SIZE } from "./utils/constants";
 
 @Injectable()
 export class TripService {
@@ -19,8 +21,11 @@ export class TripService {
     });
   }
 
-  async findAll() {
-    return this.database.trip.findMany();
+  async findAll(paginationDto: PaginationDto) {
+    return this.database.trip.findMany({
+      skip: paginationDto.offset,
+      take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
+    });
   }
 
   async findOne(trip_id: number) {

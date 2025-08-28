@@ -3,7 +3,9 @@ import { DatabaseService } from "src/database/database.service";
 import { Injectable } from "@nestjs/common";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
+import { DEFAULT_PAGE_SIZE } from "./utils/constants";
 
 @Injectable()
 export class ExpenseService {
@@ -22,8 +24,11 @@ export class ExpenseService {
     });
   }
 
-  async findAll() {
-    return this.database.expense.findMany();
+  async findAll(paginationDto: PaginationDto) {
+    return this.database.expense.findMany({
+      skip: paginationDto.offset,
+      take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
+    });
   }
 
   async findOne(expense_id: number) {

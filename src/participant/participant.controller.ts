@@ -8,11 +8,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
@@ -46,8 +48,8 @@ export class ParticipantController {
     description: "List of participants returned successfully",
     type: [CreateParticipantResponseDto],
   })
-  async findAll() {
-    return this.participantService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.participantService.findAll(paginationDto);
   }
 
   @Get(":id")

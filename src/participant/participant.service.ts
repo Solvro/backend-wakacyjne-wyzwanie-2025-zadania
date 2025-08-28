@@ -3,7 +3,9 @@ import { DatabaseService } from "src/database/database.service";
 import { Injectable } from "@nestjs/common";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
+import { DEFAULT_PAGE_SIZE } from "./utils/constants";
 
 @Injectable()
 export class ParticipantService {
@@ -18,8 +20,11 @@ export class ParticipantService {
     });
   }
 
-  async findAll() {
-    return this.database.participant.findMany();
+  async findAll(paginationDto: PaginationDto) {
+    return this.database.participant.findMany({
+      skip: paginationDto.offset,
+      take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
+    });
   }
 
   async findOne(participant_id: number) {

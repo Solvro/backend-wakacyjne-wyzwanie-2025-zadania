@@ -6,11 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
 
@@ -47,8 +49,8 @@ export class ExpenseController {
     description: "List of all expenses",
     type: [CreateExpenseResponseDto],
   })
-  async findAll() {
-    return this.expenseService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.expenseService.findAll(paginationDto);
   }
 
   @Get(":id")
