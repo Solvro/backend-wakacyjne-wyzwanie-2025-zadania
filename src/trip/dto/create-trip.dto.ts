@@ -60,16 +60,6 @@ export class CreateTripDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 6 })
-  latitude?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 6 })
-  longitude?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
   @IsString()
   note?: string;
 

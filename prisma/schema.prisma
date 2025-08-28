@@ -18,7 +18,7 @@ enum TripCategory {
   VACATION
   FAMILY
   PERSONAL
-  CONFERENCE
+  WEEKEND
   OTHER
 }
 
@@ -28,7 +28,6 @@ enum ExpenseCategory {
   FOOD
   ENTERTAINMENT
   HEALTH
-  GIFTS
   UTILITIES
   SHOPPING
   INSURANCE
@@ -39,6 +38,8 @@ enum ParticipantRole {
   ORGANIZER
   PARTICIPANT
   GUEST
+  DRIVER
+  VOLUNTEER
   OTHER
 }
 
@@ -61,11 +62,12 @@ model Expense {
   note          String?         @db.Text
   createdAt     DateTime        @default(now()) @db.Timestamptz
   updatedAt     DateTime        @default(now()) @db.Timestamptz
+  isArchived    Boolean         @default(false)
 
   participantId Int?
   tripId        Int?
-  participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade)
-  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Trip {
@@ -79,12 +81,11 @@ model Trip {
   accommodation  String?      @db.Text
   travelTime     Decimal?     @db.Decimal(10, 2)
   travelDistance Decimal?     @db.Decimal(10, 2)
-  latitude       Decimal?     @db.Decimal(10, 6)
-  longtitude     Decimal?     @db.Decimal(10, 6)
   category       TripCategory
   note           String?      @db.Text
   createdAt      DateTime     @default(now()) @db.Timestamptz
   updatedAt      DateTime     @default(now()) @db.Timestamptz
+  isArchived     Boolean      @default(false)
 
   expenses     Expense[]
   participants Participant[]
@@ -107,6 +108,7 @@ model Participant {
   note         String?         @db.Text
   createdAt    DateTime        @default(now()) @db.Timestamptz
   updatedAt    DateTime        @default(now()) @db.Timestamptz
+  isArchived   Boolean         @default(false)
 
   expenses Expense[]
   trips    Trip[]

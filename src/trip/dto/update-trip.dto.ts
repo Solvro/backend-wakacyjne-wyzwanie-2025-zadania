@@ -1,4 +1,4 @@
-import { IsDateString } from "class-validator";
+import { IsBoolean, IsDateString } from "class-validator";
 
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
@@ -9,4 +9,8 @@ export class UpdateTripDto extends PartialType(CreateTripDto) {
   @ApiProperty()
   @IsDateString()
   updatedAt: string = new Date().toString();
+
+  @ApiProperty()
+  @IsBoolean()
+  isArchived: boolean;
 }
