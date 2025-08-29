@@ -9,6 +9,9 @@ async function main() {
     create: {
       name: "Janusz",
       email: "janusz@example.com",
+      password: "Sigma admin 123",
+      role: "Admin",
+      isEnabled: true,
     },
   });
 

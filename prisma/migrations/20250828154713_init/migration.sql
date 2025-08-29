@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "public"."Category" AS ENUM ('Transport', 'Jedzenie', 'Nocleg', 'Rozrywka');
 
+-- CreateEnum
+CREATE TYPE "public"."Role" AS ENUM ('Participant', 'Admin', 'Trip_Coordinator');
+
 -- CreateTable
 CREATE TABLE "public"."Trip" (
     "trip_id" SERIAL NOT NULL,
@@ -30,6 +33,9 @@ CREATE TABLE "public"."Participant" (
     "participant_id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "public"."Role" NOT NULL DEFAULT 'Participant',
+    "isEnabled" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Participant_pkey" PRIMARY KEY ("participant_id")
 );

@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/roles.decorator";
+import { RoleGuard } from "src/auth/roles/roles.guard";
+
 import {
   Body,
   Controller,
@@ -6,15 +11,20 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
+  Request,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { PaginationDto } from "./dto/pagination.dto";
+import { ParticipantMetadata } from "./dto/participant-metadata.dto";
+import { ParticipantUpdateResponseDto } from "./dto/participant-update-response.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
@@ -34,6 +44,8 @@ export class ParticipantController {
     description: "Participant created",
     type: CreateParticipantResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
@@ -48,6 +60,7 @@ export class ParticipantController {
     description: "List of participants returned successfully",
     type: [CreateParticipantResponseDto],
   })
+  @UseGuards(AuthGuard)
   async findAll(@Query() paginationDto: PaginationDto) {
     return this.participantService.findAll(paginationDto);
   }
@@ -66,8 +79,10 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  async findOne(@Param("id") id: string) {
-    return this.participantService.findOne(+id);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.findOne(id);
   }
 
   @Patch(":id")
@@ -84,11 +99,13 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
-    return this.participantService.update(+id, updateParticipantDto);
+    return this.participantService.update(id, updateParticipantDto);
   }
 
   @Delete(":id")
@@ -104,7 +121,32 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.participantService.remove(+id);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.remove(id);
+  }
+
+  @Patch("")
+  @ApiOperation({
+    summary: "Update personal info",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User updated",
+  })
+  @UseGuards(AuthGuard)
+  async updateParticipantData(
+    @Request() request: { participant: ParticipantMetadata },
+    @Body() updateRequest: UpdateParticipantDto,
+  ): Promise<ParticipantUpdateResponseDto> {
+    const targetEmail =
+      request.participant.role === "Admin"
+        ? (updateRequest.email ?? request.participant.email)
+        : request.participant.email;
+    return this.participantService.updateParticipantData(
+      targetEmail,
+      updateRequest.name,
+    );
   }
 }

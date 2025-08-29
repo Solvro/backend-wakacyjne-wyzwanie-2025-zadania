@@ -33,6 +33,9 @@ model Participant {
   participant_id Int       @id @default(autoincrement())
   name           String
   email          String    @unique
+  password       String
+  role           Role      @default(Participant)
+  isEnabled      Boolean   @default(true)
   expenses       Expense[]
   trips          TripParticipant[]
 }
@@ -52,4 +55,10 @@ enum Category {
   Jedzenie
   Nocleg
   Rozrywka
+}
+
+enum Role {
+  Participant
+  Admin
+  Trip_Coordinator
 }

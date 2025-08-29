@@ -1,11 +1,12 @@
 import { Category } from "@prisma/client";
 import {
   IsDateString,
-  IsDecimal,
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  Validate,
 } from "class-validator";
+import { DateValidator } from "src/validators/date.validator";
 
 export class CreateExpenseDto {
   @IsNotEmpty()
@@ -14,17 +15,14 @@ export class CreateExpenseDto {
   @IsEnum(Category)
   category: Category;
 
-  @IsDecimal()
+  @IsNumber()
   amount: number;
 
   @IsDateString()
+  @Validate(DateValidator)
   date: string;
 
   @IsNotEmpty()
   @IsNumber()
   trip_id: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  participant_id: number;
 }

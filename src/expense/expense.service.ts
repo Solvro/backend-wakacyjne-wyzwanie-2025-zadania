@@ -11,7 +11,7 @@ import { DEFAULT_PAGE_SIZE } from "./utils/constants";
 export class ExpenseService {
   constructor(private database: DatabaseService) {}
 
-  async create(createExpenseDto: CreateExpenseDto) {
+  async create(createExpenseDto: CreateExpenseDto, id: number) {
     return this.database.expense.create({
       data: {
         title: createExpenseDto.title,
@@ -19,7 +19,7 @@ export class ExpenseService {
         amount: createExpenseDto.amount,
         date: createExpenseDto.date,
         trip_id: createExpenseDto.trip_id,
-        participant_id: createExpenseDto.participant_id,
+        participant_id: id,
       },
     });
   }

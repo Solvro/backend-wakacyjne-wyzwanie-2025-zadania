@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/roles.decorator";
+import { RoleGuard } from "src/auth/roles/roles.guard";
+
 import {
   Body,
   Controller,
@@ -6,9 +12,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -34,6 +42,8 @@ export class TripController {
     description: "Trip created successfully",
     type: CreateTripResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin, Role.Trip_Coordinator)
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
@@ -66,8 +76,8 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  async findOne(@Param("id") id: string) {
-    return this.tripService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.findOne(id);
   }
 
   @Patch(":id")
@@ -84,8 +94,13 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripService.update(+id, updateTripDto);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin, Role.Trip_Coordinator)
+  async update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateTripDto: UpdateTripDto,
+  ) {
+    return this.tripService.update(id, updateTripDto);
   }
 
   @Delete(":id")
@@ -101,7 +116,9 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.tripService.remove(+id);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin, Role.Trip_Coordinator)
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.remove(id);
   }
 }

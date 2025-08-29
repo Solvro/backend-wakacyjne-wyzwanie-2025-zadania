@@ -1,12 +1,20 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/roles.decorator";
+import { ParticipantMetadata } from "src/participant/dto/participant-metadata.dto";
+
 import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
+  Request,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -35,8 +43,13 @@ export class ExpenseController {
     status: 400,
     description: "Invalid input data",
   })
-  async create(@Body() createExpenseDto: CreateExpenseDto) {
-    return this.expenseService.create(createExpenseDto);
+  @UseGuards(AuthGuard)
+  async create(
+    @Body() createExpenseDto: CreateExpenseDto,
+    @Request() request: { participant: ParticipantMetadata },
+  ) {
+    const participant_id = request.participant.participant_id;
+    return this.expenseService.create(createExpenseDto, participant_id);
   }
 
   @Get()
@@ -49,6 +62,7 @@ export class ExpenseController {
     description: "List of all expenses",
     type: [CreateExpenseResponseDto],
   })
+  @UseGuards(AuthGuard)
   async findAll(@Query() paginationDto: PaginationDto) {
     return this.expenseService.findAll(paginationDto);
   }
@@ -67,8 +81,9 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  async findOne(@Param("id") id: string) {
-    return this.expenseService.findOne(+id);
+  @UseGuards(AuthGuard)
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.findOne(id);
   }
 
   @Patch(":id")
@@ -85,11 +100,12 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
+  @UseGuards(AuthGuard)
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
-    return this.expenseService.update(+id, updateExpenseDto);
+    return this.expenseService.update(id, updateExpenseDto);
   }
 
   @Delete(":id")
@@ -106,7 +122,9 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.expenseService.remove(+id);
+  @UseGuards(AuthGuard)
+  @Roles(Role.Admin)
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.remove(id);
   }
 }
