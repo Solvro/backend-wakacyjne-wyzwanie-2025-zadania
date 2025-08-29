@@ -13,11 +13,19 @@ export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
+    const { tripIds, ...participantData } = createParticipantDto;
+
     return this.database.participant.create({
       data: {
-        name: createParticipantDto.name,
-        email: createParticipantDto.email,
+        ...participantData,
+        ...(tripIds != null &&
+          tripIds.length > 0 && {
+            trips: {
+              connect: tripIds.map((id) => ({ id })),
+            },
+          }),
       },
+      include: { trips: true },
     });
   }
 
@@ -28,6 +36,7 @@ export class ParticipantService {
   async findOne(id: number) {
     const participant = await this.database.participant.findUnique({
       where: { id },
+      include: { trips: true },
     });
 
     if (participant === null) {
@@ -40,46 +49,27 @@ export class ParticipantService {
   }
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    if (
-      (await this.database.participant.findUnique({ where: { id } })) === null
-    ) {
-      throw new NotFoundException(
-        `Not found participant with ID: ${id.toString()}`,
-      );
-    }
+    const { tripIds, ...participantData } = updateParticipantDto;
+
+    await this.findOne(id);
 
     return this.database.participant.update({
       where: { id },
       data: {
-        name: updateParticipantDto.name,
-        email: updateParticipantDto.email,
+        ...participantData,
+        ...(tripIds != null && {
+          trips: {
+            set: tripIds.map((tripId) => ({ id: tripId })),
+          },
+        }),
       },
+      include: { trips: true },
     });
   }
 
   async remove(id: number) {
-    const participant = await this.database.participant.findUnique({
-      where: { id },
-    });
-
-    if (participant === null) {
-      throw new NotFoundException(
-        `Not found participant with ID: ${id.toString()}`,
-      );
-    }
+    await this.findOne(id);
 
     return this.database.participant.delete({ where: { id } });
-  }
-
-  async checkEmail(email: string) {
-    if (
-      (await this.database.participant.findUnique({
-        where: { email },
-      })) !== null
-    ) {
-      throw new ConflictException(
-        "Participant with this e-mail address already exists!",
-      );
-    }
   }
 }
