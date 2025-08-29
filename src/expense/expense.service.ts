@@ -101,7 +101,34 @@ export class ExpenseService {
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    await this.findOne(id);
+    const existingExpense = await this.findOne(id);
+
+    if (updateExpenseDto.tripId || updateExpenseDto.paidByParticipantId) {
+      const finalTripId = updateExpenseDto.tripId ?? existingExpense.trip.id;
+      const finalParticipantId =
+        updateExpenseDto.paidByParticipantId ?? existingExpense.paidBy.id;
+
+      const trip = await this.database.trip.findUnique({
+        where: { id: finalTripId },
+        include: { participants: true },
+      });
+
+      if (trip === null) {
+        throw new NotFoundException(
+          `Not found trip with ID: ${finalTripId.toString()}`,
+        );
+      }
+
+      const isParticipantInTrip = trip.participants.some(
+        (p) => p.id === finalParticipantId,
+      );
+
+      if (!isParticipantInTrip) {
+        throw new BadRequestException(
+          `Participant with ID: ${finalParticipantId.toString()} is not part of Trip with ID: ${finalTripId.toString()}`,
+        );
+      }
+    }
 
     return this.database.expense.update({
       where: { id },
