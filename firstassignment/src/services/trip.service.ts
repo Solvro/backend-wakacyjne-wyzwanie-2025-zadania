@@ -1,17 +1,18 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 import { Trip } from "../../generated/prisma";
 import { CreateTripDto } from "src/Dto/create-trip-dto";
+import { UpdateTripDto } from "src/Dto/update-tip-dto";
 
 @Injectable()
 export class TripsService{
     constructor(private prisma: PrismaService){}
 
-    async trip(id: number): Promise<Trip>{
-        return this.prisma.trip.findFirstOrThrow({where: {id}, include: {participants: {include: {expenses: true}}}});
+    async tripById(id: number){
+        return this.prisma.trip.findUnique({where: {id}, include: {participants: {include: {expenses: true}}}});
     }
 
-    async trips(): Promise<Trip[]>{
+    async allTrips(): Promise<Trip[]>{
         return this.prisma.trip.findMany({include: {participants: {include: {expenses: true}}}});
     }
 
@@ -29,21 +30,33 @@ export class TripsService{
     
     async updateTrip(parameters:{
         id: number;
-        newData: CreateTripDto;
-    }): Promise<Trip>{
+        newData: UpdateTripDto;
+    }){
         const { id, newData } = parameters;
-        return this.prisma.trip.update({
-            data: {
-                start_date: newData.start_date,
-                end_date: newData.end_date,
-                location: newData.location,
-                updated_at: new Date(),
-            },
-            where: {id},
-        })
+        const trip = await this.tripById(id);
+        if(trip === null){
+            throw new NotFoundException(`Wyacieczka z ID ${id.toString()} nie istnieje`);
+        }
+        else{
+            return this.prisma.trip.update({
+                data: {
+                    start_date: newData.start_date,
+                    end_date: newData.end_date,
+                    location: newData.location,
+                    updated_at: new Date(),
+                },
+                where: {id},
+            })
+        }
     }
 
     async deleteTrip(id: number): Promise<Trip>{
-        return this.prisma.trip.delete({where: {id},include:{ participants: {include: {expenses: true}}}})
+        const trip = await this.tripById(id);
+        if(trip === null){
+            throw new NotFoundException(`Wyacieczka z ID ${id.toString()} nie istnieje`);
+        }
+        else{
+            return this.prisma.trip.delete({where: {id},include:{ participants: {include: {expenses: true}}}})
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ParticipantsService } from '../services/participant.service';
 import { CreateParticipantDto } from '../Dto/create-participant-dto';
@@ -13,21 +13,21 @@ export class ParticipantController {
 
     @Get('participant/:id')
     @ApiOperation({description: "Zwraca uczestnika wraz, z jego wydatkami"})
-    @ApiResponse({ status: 201, description: "Sukces!"})
+    @ApiResponse({ status: 200, description: "Sukces!"})
     async getWholeParticipant(@Param('id') id: number){
-        return this.participantService.participant(id);
+        return this.participantService.participantById(id);
     }
 
     @Get('participants')
     @ApiOperation({description: "Zwraca uczestników wraz, z ich wydatkami"})
-    @ApiResponse({ status: 201, description: "Sukces!"})
+    @ApiResponse({ status: 200, description: "Sukces!"})
     async getWholeParticipants(){
-        return this.participantService.participants();
+        return this.participantService.allParticipants();
     }
 
     @Delete('deleteParticipant/:id')
     @ApiOperation({description: "Usuwa wybranego uczestnika"})
-    @ApiResponse({ status: 201, description: "Sukces!"})
+    @ApiResponse({ status: 200, description: "Sukces!"})
     async deleteParticipant(@Param('id') id: string){
         return this.participantService.deleteParticipant(Number.parseInt(id));
     }
@@ -39,9 +39,9 @@ export class ParticipantController {
         return this.participantService.createParticipant(createParticipantDto);
     }
 
-    @Put('updateParticipant/:id')
+    @Patch('updateParticipant/:id')
     @ApiOperation({description: "Dodaje nowy wydatek"})
-    @ApiResponse({ status: 201, description: "Sukces!"})
+    @ApiResponse({ status: 200, description: "Sukces!"})
     async updateParticipant(@Param('id') id: string, @Body() newData: CreateParticipantDto){
         const parameters = {id: Number.parseInt(id), newData}
         return this.participantService.updateParticipant(parameters);
