@@ -19,7 +19,7 @@ export class ExpensesService {
 
   async findAll(): Promise<ExpenseResponseDto[]> {
     const expenses = await this.prisma.expense.findMany({
-      include: { trip: true, person: true },
+      include: { trip: true, user: true },
     });
     return expenses.map((expense) => ({
       ...expense,
@@ -30,7 +30,7 @@ export class ExpensesService {
   async findOne(id: number): Promise<ExpenseResponseDto | null> {
     const expense = await this.prisma.expense.findUnique({
       where: { id },
-      include: { trip: true, person: true },
+      include: { trip: true, user: true },
     });
     if (expense === null) {
       return null;
@@ -45,7 +45,7 @@ export class ExpensesService {
     const expense = await this.prisma.expense.update({
       where: { id },
       data: dto,
-      include: { trip: true, person: true },
+      include: { trip: true, user: true },
     });
     return {
       ...expense,

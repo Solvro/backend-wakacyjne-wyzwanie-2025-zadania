@@ -33,11 +33,11 @@ export class CreateExpenseDto {
   trip_id: number;
 
   @ApiProperty({
-    description: "ID of the person who paid for the expense",
+    description: "ID of the user who paid for the expense",
     example: 2,
   })
   @IsInt()
-  person_id: number;
+  user_id: number;
 
   @ApiProperty({
     description: "ID of the participant associated with the expense",

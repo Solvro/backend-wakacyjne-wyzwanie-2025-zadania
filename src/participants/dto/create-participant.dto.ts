@@ -7,7 +7,7 @@ export class CreateParticipantDto {
   @IsInt()
   trip_id: number;
 
-  @ApiProperty({ description: "Person ID", example: 1 })
+  @ApiProperty({ description: "User ID", example: 1 })
   @IsInt()
-  person_id: number;
+  user_id: number;
 }

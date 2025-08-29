@@ -11,7 +11,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
-import { PersonResponseDto } from "../persons/dto/person-response.dto";
+import { UserResponseDto } from "../users/dto/user-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripResponseDto } from "./dto/trip-response.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -91,12 +91,12 @@ export class TripsController {
   @ApiResponse({
     status: 200,
     description: "List of participants.",
-    type: [PersonResponseDto],
+    type: [UserResponseDto],
   })
   @Get(":id/participants")
   async getParticipants(
     @Param("id", ParseIntPipe) id: number,
-  ): Promise<PersonResponseDto[]> {
+  ): Promise<UserResponseDto[]> {
     return await this.service.getParticipants(id);
   }
 

@@ -1,14 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class PersonResponseDto {
+export class UserResponseDto {
   @ApiProperty()
   id: number;
 
   @ApiPropertyOptional()
   name?: string | null;
 
-  @ApiPropertyOptional()
-  email?: string | null;
+  @ApiProperty()
+  email: string;
 
   @ApiPropertyOptional()
   birthday?: Date | null;

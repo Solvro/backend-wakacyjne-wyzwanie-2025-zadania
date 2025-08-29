@@ -6,9 +6,9 @@ async function main() {
   await prisma.expense.deleteMany();
   await prisma.participant.deleteMany();
   await prisma.trip.deleteMany();
-  await prisma.person.deleteMany();
+  await prisma.user.deleteMany();
 
-  const p1 = await prisma.person.create({
+  const u1 = await prisma.user.create({
     data: {
       name: "Jan Kowalski",
       email: "janko@gmail.com",
@@ -16,7 +16,7 @@ async function main() {
     },
   });
 
-  const p2 = await prisma.person.create({
+  const u2 = await prisma.user.create({
     data: {
       name: "Anna Nowak",
       email: "anka_n@gmail.com",
@@ -24,7 +24,7 @@ async function main() {
     },
   });
 
-  const p3 = await prisma.person.create({
+  const u3 = await prisma.user.create({
     data: {
       name: "Oskar Kowalik",
       email: "oskikowal2115@gmail.com",
@@ -45,19 +45,19 @@ async function main() {
     prisma.participant.create({
       data: {
         trip_id: trip.id,
-        person_id: p1.id,
+        user_id: u1.id,
       },
     }),
     prisma.participant.create({
       data: {
         trip_id: trip.id,
-        person_id: p2.id,
+        user_id: u2.id,
       },
     }),
     prisma.participant.create({
       data: {
         trip_id: trip.id,
-        person_id: p3.id,
+        user_id: u3.id,
       },
     }),
   ]);
@@ -67,7 +67,7 @@ async function main() {
       what: "Nocleg",
       amount: 523.43,
       trip_id: trip.id,
-      person_id: p1.id,
+      user_id: u1.id,
     },
   });
 
@@ -77,7 +77,7 @@ async function main() {
       description: "Rybka w restauracji",
       amount: 213.54,
       trip_id: trip.id,
-      person_id: p2.id,
+      user_id: u2.id,
     },
   });
 
@@ -87,17 +87,16 @@ async function main() {
       description: "Bilety wjazdu",
       amount: 43.12,
       trip_id: trip.id,
-      person_id: p3.id,
+      user_id: u3.id,
     },
   });
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (error: unknown) => {
+  .catch((error: unknown) => {
     console.error(error);
-    await prisma.$disconnect();
     throw error;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

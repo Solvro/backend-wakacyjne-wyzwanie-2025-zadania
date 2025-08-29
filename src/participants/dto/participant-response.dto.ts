@@ -8,5 +8,5 @@ export class ParticipantResponseDto {
   trip_id: number;
 
   @ApiProperty()
-  person_id: number;
+  user_id: number;
 }
