@@ -103,7 +103,10 @@ export class ExpenseService {
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
     const existingExpense = await this.findOne(id);
 
-    if (updateExpenseDto.tripId || updateExpenseDto.paidByParticipantId) {
+    if (
+      updateExpenseDto.tripId != null ||
+      updateExpenseDto.paidByParticipantId != null
+    ) {
       const finalTripId = updateExpenseDto.tripId ?? existingExpense.trip.id;
       const finalParticipantId =
         updateExpenseDto.paidByParticipantId ?? existingExpense.paidBy.id;
