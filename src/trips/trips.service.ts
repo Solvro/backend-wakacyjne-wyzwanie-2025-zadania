@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 
-import { ExpenseResponseDto } from "../expense/dto/expense-response.dto";
-import { PersonResponseDto } from "../person/dto/person-response.dto";
+import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
+import { PersonResponseDto } from "../persons/dto/person-response.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripResponseDto } from "./dto/trip-response.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 
 @Injectable()
-export class TripService {
+export class TripsService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateTripDto): Promise<TripResponseDto> {

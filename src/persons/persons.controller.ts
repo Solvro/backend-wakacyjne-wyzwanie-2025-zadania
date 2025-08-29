@@ -10,17 +10,17 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { ExpenseResponseDto } from "../expense/dto/expense-response.dto";
-import { TripResponseDto } from "../trip/dto/trip-response.dto";
+import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
+import { TripResponseDto } from "../trips/dto/trip-response.dto";
 import { CreatePersonDto } from "./dto/create-person.dto";
 import { PersonResponseDto } from "./dto/person-response.dto";
 import { UpdatePersonDto } from "./dto/update-person.dto";
-import { PersonService } from "./person.service";
+import { PersonsService } from "./persons.service";
 
-@ApiTags("person")
-@Controller("person")
-export class PersonController {
-  constructor(private readonly personService: PersonService) {}
+@ApiTags("persons")
+@Controller("persons")
+export class PersonsController {
+  constructor(private readonly service: PersonsService) {}
 
   @ApiOperation({ summary: "Create a new person" })
   @ApiResponse({
@@ -30,7 +30,7 @@ export class PersonController {
   })
   @Post()
   async create(@Body() dto: CreatePersonDto): Promise<PersonResponseDto> {
-    return await this.personService.create(dto);
+    return await this.service.create(dto);
   }
 
   @ApiOperation({ summary: "Get all people" })
@@ -41,7 +41,7 @@ export class PersonController {
   })
   @Get()
   async findAll(): Promise<PersonResponseDto[]> {
-    return await this.personService.findAll();
+    return await this.service.findAll();
   }
 
   @ApiOperation({ summary: "Get person by ID" })
@@ -55,7 +55,7 @@ export class PersonController {
   async findOne(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<PersonResponseDto | null> {
-    return await this.personService.findOne(id);
+    return await this.service.findOne(id);
   }
 
   @ApiOperation({ summary: "Update person by ID" })
@@ -70,7 +70,7 @@ export class PersonController {
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdatePersonDto,
   ): Promise<PersonResponseDto> {
-    return await this.personService.update(id, dto);
+    return await this.service.update(id, dto);
   }
 
   @ApiOperation({ summary: "Delete person by ID" })
@@ -84,7 +84,7 @@ export class PersonController {
   async remove(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<PersonResponseDto> {
-    return await this.personService.remove(id);
+    return await this.service.remove(id);
   }
 
   @ApiOperation({ summary: "Get all expenses created by a person" })
@@ -97,7 +97,7 @@ export class PersonController {
   async getExpenses(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<ExpenseResponseDto[]> {
-    return await this.personService.getExpenses(id);
+    return await this.service.getExpenses(id);
   }
 
   @ApiOperation({ summary: "Get all trips the person participates in" })
@@ -110,6 +110,6 @@ export class PersonController {
   async getTrips(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<TripResponseDto[]> {
-    return await this.personService.getTrips(id);
+    return await this.service.getTrips(id);
   }
 }

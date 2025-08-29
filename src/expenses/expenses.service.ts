@@ -6,7 +6,7 @@ import { ExpenseResponseDto } from "./dto/expense-response.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
-export class ExpenseService {
+export class ExpensesService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateExpenseDto): Promise<ExpenseResponseDto> {

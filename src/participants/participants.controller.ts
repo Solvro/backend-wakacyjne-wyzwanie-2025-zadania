@@ -13,12 +13,12 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { ParticipantResponseDto } from "./dto/participant-response.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
-import { ParticipantService } from "./participant.service";
+import { ParticipantsService } from "./participants.service";
 
-@ApiTags("participant")
-@Controller("participant")
-export class ParticipantController {
-  constructor(private readonly participantService: ParticipantService) {}
+@ApiTags("participants")
+@Controller("participants")
+export class ParticipantsController {
+  constructor(private readonly service: ParticipantsService) {}
 
   @ApiOperation({ summary: "Create a new participant" })
   @ApiResponse({
@@ -30,7 +30,7 @@ export class ParticipantController {
   async create(
     @Body() dto: CreateParticipantDto,
   ): Promise<ParticipantResponseDto> {
-    return await this.participantService.create(dto);
+    return await this.service.create(dto);
   }
 
   @ApiOperation({ summary: "Get all participants" })
@@ -41,7 +41,7 @@ export class ParticipantController {
   })
   @Get()
   async findAll(): Promise<ParticipantResponseDto[]> {
-    return await this.participantService.findAll();
+    return await this.service.findAll();
   }
 
   @ApiOperation({ summary: "Get participant by ID" })
@@ -55,7 +55,7 @@ export class ParticipantController {
   async findOne(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<ParticipantResponseDto | null> {
-    return await this.participantService.findOne(id);
+    return await this.service.findOne(id);
   }
 
   @ApiOperation({ summary: "Update participant by ID" })
@@ -70,7 +70,7 @@ export class ParticipantController {
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateParticipantDto,
   ): Promise<ParticipantResponseDto> {
-    return await this.participantService.update(id, dto);
+    return await this.service.update(id, dto);
   }
 
   @ApiOperation({ summary: "Delete participant by ID" })
@@ -84,6 +84,6 @@ export class ParticipantController {
   async remove(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<ParticipantResponseDto> {
-    return await this.participantService.remove(id);
+    return await this.service.remove(id);
   }
 }

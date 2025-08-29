@@ -13,12 +13,12 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { ExpenseResponseDto } from "./dto/expense-response.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
-import { ExpenseService } from "./expense.service";
+import { ExpensesService } from "./expenses.service";
 
-@ApiTags("expense")
-@Controller("expense")
-export class ExpenseController {
-  constructor(private readonly expenseService: ExpenseService) {}
+@ApiTags("expenses")
+@Controller("expenses")
+export class ExpensesController {
+  constructor(private readonly service: ExpensesService) {}
 
   @ApiOperation({ summary: "Create a new expense" })
   @ApiResponse({
@@ -28,7 +28,7 @@ export class ExpenseController {
   })
   @Post()
   async create(@Body() dto: CreateExpenseDto): Promise<ExpenseResponseDto> {
-    return await this.expenseService.create(dto);
+    return await this.service.create(dto);
   }
 
   @ApiOperation({ summary: "Get all expenses" })
@@ -39,7 +39,7 @@ export class ExpenseController {
   })
   @Get()
   async findAll(): Promise<ExpenseResponseDto[]> {
-    return await this.expenseService.findAll();
+    return await this.service.findAll();
   }
 
   @ApiOperation({ summary: "Get expense by ID" })
@@ -53,7 +53,7 @@ export class ExpenseController {
   async findOne(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<ExpenseResponseDto | null> {
-    return await this.expenseService.findOne(id);
+    return await this.service.findOne(id);
   }
 
   @ApiOperation({ summary: "Delete expense by ID" })
@@ -67,7 +67,7 @@ export class ExpenseController {
   async remove(
     @Param("id", ParseIntPipe) id: number,
   ): Promise<ExpenseResponseDto> {
-    return await this.expenseService.remove(id);
+    return await this.service.remove(id);
   }
 
   @ApiOperation({ summary: "Update expense by ID" })
@@ -82,6 +82,6 @@ export class ExpenseController {
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateExpenseDto,
   ): Promise<ExpenseResponseDto> {
-    return await this.expenseService.update(id, dto);
+    return await this.service.update(id, dto);
   }
 }
