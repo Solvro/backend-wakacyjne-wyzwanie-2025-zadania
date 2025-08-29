@@ -1,4 +1,4 @@
-import { ExpenseCategory } from "@prisma/client";
+import type { ExpenseCategory } from "@prisma/client";
 
 export class CreateExpenseDto {
   description: string;

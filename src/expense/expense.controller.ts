@@ -17,27 +17,30 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
-  create(@Body() createExpenseDto: CreateExpenseDto) {
+  async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.expenseService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.expenseService.findOne(+id);
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
+  async update(
+    @Param("id") id: string,
+    @Body() updateExpenseDto: UpdateExpenseDto,
+  ) {
     return this.expenseService.update(+id, updateExpenseDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.expenseService.remove(+id);
   }
 }

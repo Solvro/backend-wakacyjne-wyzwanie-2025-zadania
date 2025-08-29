@@ -21,7 +21,9 @@ export class ExpenseService {
     });
 
     if (trip === null) {
-      throw new NotFoundException(`Not found trip with ID: ${tripId}`);
+      throw new NotFoundException(
+        `Not found trip with ID: ${tripId.toString()}`,
+      );
     }
 
     const isParticipantInTrip = trip.participants.some(
@@ -30,7 +32,7 @@ export class ExpenseService {
 
     if (!isParticipantInTrip) {
       throw new BadRequestException(
-        `Participant with ID: ${paidByParticipantId} is not part of Trip with ID: ${tripId}`,
+        `Participant with ID: ${paidByParticipantId.toString()} is not part of Trip with ID: ${tripId.toString()}`,
       );
     }
 
@@ -90,7 +92,9 @@ export class ExpenseService {
     });
 
     if (expense === null) {
-      throw new NotFoundException(`Not found expense with ID: ${id}`);
+      throw new NotFoundException(
+        `Not found expense with ID: ${id.toString()}`,
+      );
     }
 
     return expense;
