@@ -2,17 +2,14 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateExpenseDto {
   @ApiProperty()
-  Name: string;
+  name: string;
 
   @ApiPropertyOptional()
-  Description?: string;
+  description?: string;
 
   @ApiProperty()
-  Value: number;
+  value: number;
 
   @ApiProperty()
-  Trip_id: number;
-
-  @ApiProperty()
-  Participant_id: number;
+  trip_id: number;
 }

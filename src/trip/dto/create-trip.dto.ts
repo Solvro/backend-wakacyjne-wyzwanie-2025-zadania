@@ -2,14 +2,14 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateTripDto {
   @ApiProperty()
-  Destination: string;
+  destination: string;
 
   @ApiPropertyOptional()
-  Description?: string;
+  description?: string;
 
   @ApiProperty()
-  Start_Date: Date;
+  start_Date: Date;
 
   @ApiProperty()
-  End_Date: Date;
+  end_Date: Date;
 }

@@ -5,20 +5,17 @@ export class CreateParticipantResponseDto {
   id: number;
 
   @ApiProperty()
-  Name: string;
+  name: string;
 
   @ApiPropertyOptional()
-  Email?: string;
+  email?: string;
 
   @ApiProperty()
-  Date_of_birth: Date;
+  trip_id: number;
 
   @ApiProperty()
-  Trip_id: number;
+  created_At: Date;
 
   @ApiProperty()
-  Created_At: Date;
-
-  @ApiProperty()
-  Updated_At: Date;
+  updated_At: Date;
 }

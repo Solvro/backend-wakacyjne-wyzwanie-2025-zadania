@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -8,8 +13,14 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
@@ -33,6 +44,9 @@ export class TripController {
     description: "Trip created successfully",
     type: CreateTripResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, "TRIPCORD")
+  @ApiBearerAuth("access-token")
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
@@ -78,6 +92,9 @@ export class TripController {
     description: "Trip updated successfully",
     type: UpdateTripDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, "TRIPCORD")
+  @ApiBearerAuth("access-token")
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
@@ -92,6 +109,9 @@ export class TripController {
     status: 204,
     description: "Trip deleted successfully",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);
   }

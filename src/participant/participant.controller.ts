@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -8,8 +13,14 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateParticipantResponseDto } from "./dto/create-participant-respone.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
@@ -32,6 +43,9 @@ export class ParticipantController {
     description: "Participant created successfully",
     type: CreateParticipantResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIPCORD)
+  @ApiBearerAuth("access-token")
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
@@ -77,6 +91,9 @@ export class ParticipantController {
     description: "Participant updated successfully",
     type: UpdateParticipantDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIPCORD)
+  @ApiBearerAuth("access-token")
   async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
@@ -94,6 +111,9 @@ export class ParticipantController {
     status: 204,
     description: "Participant deleted successfully",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIPCORD)
+  @ApiBearerAuth("access-token")
   async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);
   }

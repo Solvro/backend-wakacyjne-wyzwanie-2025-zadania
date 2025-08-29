@@ -27,12 +27,12 @@ export class PrismaController {
   async testCreateTrips() {
     return await this.prisma.trip.create({
       data: {
-        Destination: "Test Trip",
-        Description: "This is a test trip.",
-        Start_date: new Date(),
-        End_date: new Date(),
-        Created_at: new Date(),
-        Updated_at: new Date(),
+        destination: "Test Trip",
+        description: "This is a test trip.",
+        start_date: new Date(),
+        end_date: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     });
   }
