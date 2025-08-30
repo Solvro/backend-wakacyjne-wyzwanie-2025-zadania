@@ -7,6 +7,8 @@ export class CreateParticipantDto {
   @ApiProperty()
   email: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    isArray: true,
+  })
   tripIds?: number[];
 }
