@@ -16,7 +16,9 @@ import {
 } from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { ExpenseResponseDto } from "./dto/expense-response.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
+import { ExpenseEntity } from "./entities/expense.entity";
 import { ExpenseService } from "./expense.service";
 
 @Controller("expense")
@@ -29,7 +31,7 @@ export class ExpenseController {
   @ApiResponse({
     status: 201,
     description: "The expense has been successfully created.",
-    type: CreateExpenseDto,
+    type: ExpenseEntity,
   })
   @ApiResponse({
     status: 400,
@@ -45,7 +47,11 @@ export class ExpenseController {
 
   @Get()
   @ApiOperation({ summary: "Retrieve all expenses" })
-  @ApiResponse({ status: 200, description: "A list of all expenses." })
+  @ApiResponse({
+    status: 200,
+    description: "A list of all expenses.",
+    type: ExpenseEntity,
+  })
   async findAll() {
     return this.expenseService.findAll();
   }
@@ -53,7 +59,11 @@ export class ExpenseController {
   @Get(":id")
   @ApiOperation({ summary: "Get a single expense by ID" })
   @ApiParam({ name: "id", description: "The ID of the expense to retrieve" })
-  @ApiResponse({ status: 200, description: "The requested expense." })
+  @ApiResponse({
+    status: 200,
+    description: "The requested expense.",
+    type: ExpenseResponseDto,
+  })
   @ApiResponse({ status: 404, description: "Expense not found." })
   async findOne(@Param("id") id: string) {
     return this.expenseService.findOne(+id);
@@ -66,7 +76,7 @@ export class ExpenseController {
   @ApiResponse({
     status: 200,
     description: "The expense has been successfully updated.",
-    type: UpdateExpenseDto,
+    type: ExpenseEntity,
   })
   @ApiResponse({ status: 400, description: "Bad Request." })
   @ApiResponse({ status: 404, description: "Expense not found." })
@@ -83,6 +93,7 @@ export class ExpenseController {
   @ApiResponse({
     status: 200,
     description: "The expense has been successfully deleted.",
+    type: ExpenseEntity,
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
   async remove(@Param("id") id: string) {
