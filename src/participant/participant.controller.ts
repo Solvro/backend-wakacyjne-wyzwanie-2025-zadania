@@ -16,7 +16,9 @@ import {
 } from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { ParticipantResponseDto } from "./dto/participant-response.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
+import { ParticipantEntity } from "./entities/participant.entity";
 import { ParticipantService } from "./participant.service";
 
 @Controller("participant")
@@ -29,7 +31,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 201,
     description: "The participant has been successfully created.",
-    type: CreateParticipantDto,
+    type: ParticipantResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -44,7 +46,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "A list of all participants.",
-    type: [CreateParticipantDto],
+    type: [ParticipantEntity],
   })
   async findAll() {
     return this.participantService.findAll();
@@ -59,7 +61,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "The requested participant.",
-    type: CreateParticipantDto,
+    type: ParticipantResponseDto,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
   async findOne(@Param("id") id: string) {
@@ -73,7 +75,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "The participant has been successfully updated.",
-    type: UpdateParticipantDto,
+    type: ParticipantResponseDto,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
   async update(
@@ -89,6 +91,7 @@ export class ParticipantController {
   @ApiResponse({
     status: 200,
     description: "The participant has been successfully deleted.",
+    type: ParticipantEntity,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
   async remove(@Param("id") id: string) {
