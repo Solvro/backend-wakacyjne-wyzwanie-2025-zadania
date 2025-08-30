@@ -10,7 +10,12 @@ describe("ExpenseController", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExpenseController],
-      providers: [ExpenseService],
+      providers: [
+        {
+          provide: ExpenseService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<ExpenseController>(ExpenseController);

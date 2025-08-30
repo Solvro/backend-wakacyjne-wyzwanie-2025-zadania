@@ -10,7 +10,12 @@ describe("ParticipantController", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ParticipantController],
-      providers: [ParticipantService],
+      providers: [
+        {
+          provide: ParticipantService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<ParticipantController>(ParticipantController);
