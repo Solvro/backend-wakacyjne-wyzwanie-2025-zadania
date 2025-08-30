@@ -15,6 +15,7 @@ export class ParticipantService {
         lastName: createParticipantDto.lastName,
         address: createParticipantDto.address,
         phoneNumber: createParticipantDto.phoneNumber,
+        email: createParticipantDto.email,
         sex: createParticipantDto.sex,
       },
     });

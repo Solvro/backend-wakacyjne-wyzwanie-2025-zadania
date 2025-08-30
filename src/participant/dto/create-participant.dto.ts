@@ -10,6 +10,9 @@ export class CreateParticipantDto {
   lastName!: string;
 
   @ApiProperty()
+  email!: string;
+
+  @ApiProperty()
   address!: string;
 
   @ApiPropertyOptional()
