@@ -15,6 +15,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Public } from "../common/decorators/public.decorator";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
@@ -24,6 +25,7 @@ import { ParticipantService } from "./participant.service";
 export class ParticipantController {
   constructor(private readonly service: ParticipantService) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "Get all participants" })
   @ApiOkResponse({ description: "List all participants" })
@@ -31,6 +33,7 @@ export class ParticipantController {
     return this.service.findAll();
   }
 
+  @Public()
   @Get(":id")
   @ApiOperation({ summary: "Get specific participant" })
   @ApiOkResponse({ description: "Get one participant" })
@@ -46,6 +49,7 @@ export class ParticipantController {
   }
 
   @Patch(":id")
+  @ApiOperation({ summary: "Update participant" })
   @ApiOkResponse({ description: "Updated participant" })
   async update(
     @Param("id", ParseIntPipe) id: number,
@@ -55,6 +59,7 @@ export class ParticipantController {
   }
 
   @Delete(":id")
+  @ApiOperation({ summary: "Delete participant" })
   @ApiOkResponse({ description: "Deleted participant" })
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.service.remove(id);
