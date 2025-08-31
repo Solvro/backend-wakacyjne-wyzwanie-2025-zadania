@@ -31,7 +31,7 @@ model Participant {
   last_name      String
   email          String             @unique
   phone          String?
-  participants   TripParticipants[]
+  trips          TripParticipants[]
   created_at     DateTime           @default(now())
   updated_at     DateTime           @updatedAt
 }
