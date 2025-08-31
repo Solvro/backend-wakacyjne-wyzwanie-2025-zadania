@@ -3,11 +3,18 @@ import * as bcrypt from "bcrypt";
 import { ConflictException, Injectable } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
+import { UserMetadata } from "../user/dto/user-metadata.dto";
+import { UserService } from "../user/user.service";
 import { UserSignupDto } from "./dto/auth.dto";
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly usersService: UserService,
+  ) {}
+
+  private readonly tokenPrefix = "token_";
 
   async signup(userSignupDto: UserSignupDto) {
     const existingUser = await this.prismaService.user.findFirst({
@@ -34,5 +41,17 @@ export class AuthService {
       email: userSignupDto.email,
       roles: rolesString,
     };
+  }
+
+  async validateToken(token: string): Promise<UserMetadata> {
+    return token.startsWith(this.tokenPrefix)
+      ? await this.usersService.findMetadataOrFail(
+          token.slice(this.tokenPrefix.length),
+        )
+      : Promise.reject(new Error("Invalid token"));
+  }
+
+  generateToken(email: string): string {
+    return `${this.tokenPrefix}${email}`;
   }
 }

@@ -7,6 +7,13 @@ export const Role = {
   GUEST: 3,
 };
 
+export interface Roles {
+  ADMIN: number;
+  MODERATOR: number;
+  USER: number;
+  GUEST: number;
+}
+
 export interface RolePermissions {
   role: number;
   name: string;
