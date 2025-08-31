@@ -41,7 +41,7 @@ CREATE TABLE "public"."Expense" (
     "amount" DOUBLE PRECISION NOT NULL,
     "category" "public"."ExpenseCategory" NOT NULL,
     "currency" VARCHAR(3) NOT NULL,
-    "paid_at" TIMESTAMP(3),
+    "paidAt" TIMESTAMP(3),
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
 );

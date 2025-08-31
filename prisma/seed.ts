@@ -1,12 +1,11 @@
-import "dotenv/config";
-
 import {
   ExpenseCategory,
   ParticipantRole,
   Prisma,
   PrismaClient,
   TripStatus,
-} from "../generated/prisma";
+} from "@prisma/client";
+import "dotenv/config";
 
 const prisma = new PrismaClient();
 
@@ -46,7 +45,7 @@ async function main() {
       amount: new Prisma.Decimal("120.00"),
       category: ExpenseCategory.FOOD,
       currency: "PLN",
-      paid_at: new Date(),
+      paidAt: new Date(),
     },
   });
 
@@ -56,7 +55,7 @@ async function main() {
       amount: new Prisma.Decimal("80.00"),
       category: ExpenseCategory.TRANSPORT,
       currency: "PLN",
-      paid_at: new Date(),
+      paidAt: new Date(),
     },
   });
 }
