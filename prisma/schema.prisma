@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  id          Int       @id @default(autoincrement())
+  name        String
+  destination String?
+  budget      Decimal?  @db.Decimal(12, 2)
+  startDate   DateTime  @db.Date
+  endDate     DateTime? @db.Date
+  createdAt   DateTime  @default(now())
+
+  members  TripParticipant[]
+  expenses Expense[]
+}
+
+model Participant {
+  id        Int    @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+
+  memberships  TripParticipant[]
+  paidExpenses Expense[]
+}
+
+model TripParticipant {
+  id            Int @id @default(autoincrement())
+  participantId Int
+  tripId        Int
+
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  trip        Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, participantId])
+  @@index([participantId])
+  @@index([tripId])
+}
+
+enum Type {
+  FOOD
+  TRANSPORT
+  ACCOMODATION
+  PARKING
+  OTHER
+}
+
+model Expense {
+  id          Int     @id @default(autoincrement())
+  description String
+  cost        Decimal @db.Decimal(12, 2)
+  type        Type
+  tripId      Int
+  payerId     Int
+
+  trip  Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  payer Participant @relation(fields: [payerId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@index([payerId])
+}
