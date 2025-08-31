@@ -1,13 +1,14 @@
+/* eslint-disable unicorn/prefer-spread */
 // Self-contained role utilities to avoid import issues
-export enum Role {
-  ADMIN = 0,
-  MODERATOR = 1,
-  USER = 2,
-  GUEST = 3,
-}
+export const Role = {
+  ADMIN: 0,
+  MODERATOR: 1,
+  USER: 2,
+  GUEST: 3,
+};
 
 export interface RolePermissions {
-  role: Role;
+  role: number;
   name: string;
   description: string;
   permissions: string[];
@@ -15,7 +16,7 @@ export interface RolePermissions {
 
 export type RoleString = string;
 
-const ROLE_DEFINITIONS: Record<Role, RolePermissions> = {
+const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
   [Role.ADMIN]: {
     role: Role.ADMIN,
     name: "Administrator",
@@ -60,31 +61,31 @@ const ROLE_DEFINITIONS: Record<Role, RolePermissions> = {
   },
 };
 
-export function hasRole(roleString: RoleString, role: Role): boolean {
+export function hasRole(roleString: RoleString, role: number): boolean {
   return roleString[role] === "1";
 }
 
-export function setRole(roleString: RoleString, role: Role): RoleString {
+export function setRole(roleString: RoleString, role: number): RoleString {
   const roles = roleString.split("");
   roles[role] = "1";
   return roles.join("");
 }
 
-export function removeRole(roleString: RoleString, role: Role): RoleString {
+export function removeRole(roleString: RoleString, role: number): RoleString {
   const roles = roleString.split("");
   roles[role] = "0";
   return roles.join("");
 }
 
-export function toggleRole(roleString: RoleString, role: Role): RoleString {
+export function toggleRole(roleString: RoleString, role: number): RoleString {
   return hasRole(roleString, role)
     ? removeRole(roleString, role)
     : setRole(roleString, role);
 }
 
-export function getUserRoles(roleString: RoleString): Role[] {
+export function getUserRoles(roleString: RoleString): number[] {
   return Object.values(Role).filter(
-    (role): role is Role =>
+    (role): role is number =>
       typeof role === "number" && hasRole(roleString, role),
   );
 }
