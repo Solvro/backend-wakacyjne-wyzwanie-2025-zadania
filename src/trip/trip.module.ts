@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { DatabaseService } from "src/database/database.service";
+import { DatabaseModule } from "src/database/database.module";
 
 import { TripController } from "./trip.controller";
 import { TripService } from "./trip.service";
@@ -7,6 +7,6 @@ import { TripService } from "./trip.service";
 @Module({
   controllers: [TripController],
   providers: [TripService],
-  imports: [DatabaseService],
+  imports: [DatabaseModule],
 })
 export class TripModule {}

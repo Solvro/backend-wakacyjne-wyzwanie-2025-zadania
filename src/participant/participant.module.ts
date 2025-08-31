@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { DatabaseService } from "src/database/database.service";
+import { DatabaseModule } from "src/database/database.module";
 
 import { ParticipantController } from "./participant.controller";
 import { ParticipantService } from "./participant.service";
@@ -7,6 +7,6 @@ import { ParticipantService } from "./participant.service";
 @Module({
   controllers: [ParticipantController],
   providers: [ParticipantService],
-  imports: [DatabaseService],
+  imports: [DatabaseModule],
 })
 export class ParticipantModule {}

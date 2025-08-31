@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { DatabaseService } from "src/database/database.service";
+import { DatabaseModule } from "src/database/database.module";
 
 import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
@@ -7,6 +7,6 @@ import { ExpenseService } from "./expense.service";
 @Module({
   controllers: [ExpenseController],
   providers: [ExpenseService],
-  imports: [DatabaseService],
+  imports: [DatabaseModule],
 })
 export class ExpenseModule {}
