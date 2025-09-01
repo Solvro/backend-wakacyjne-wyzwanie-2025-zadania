@@ -26,11 +26,11 @@ export class CreateUserDto {
   @IsBoolean({ message: "Pole is_enabled musi być typu boolean" })
   is_enabled: boolean;
 
-  @ApiPropertyOptional({ example: "Jan" })
+  @ApiProperty({ example: "Jan" })
   @IsOptional()
   @IsString({ message: "Pole name musi być tekstem" })
   @MaxLength(50, { message: "Pole name może mieć maksymalnie 50 znaków" })
-  name?: string;
+  name: string;
 
   @ApiProperty({ example: "Kowalski" })
   @IsString({ message: "Pole surname musi być tekstem" })

@@ -1,5 +1,15 @@
+import { CreateUserDto } from "src/user/dto/create-dto.user";
+import { ResponseUserDto } from "src/user/dto/response-dto.user";
+
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { AuthService } from "./auth.service";
 import { LoginRequestDto } from "./dto/login-request.dto";
@@ -24,5 +34,23 @@ export class AuthController {
   @Post("login")
   async signIn(@Body() signInDto: LoginRequestDto): Promise<LoginResponseDto> {
     return this.authService.signIn(signInDto.email, signInDto.password);
+  }
+  @Post("signup")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: "Tworzy nowego użytkownika",
+  })
+  @ApiCreatedResponse({
+    description: "Użytkonwik został stworzony poprawnie",
+    type: ResponseUserDto,
+  })
+  @ApiConflictResponse({
+    description: "Istnieje już użytkownik o podanym adresie email",
+  })
+  @ApiBadRequestResponse({
+    description: "Invalid input data",
+  })
+  async create(@Body() createUserDto: CreateUserDto) {
+    return this.authService.createUser(createUserDto);
   }
 }

@@ -46,8 +46,10 @@ model participant {
   age            Int
   phone_num      String?
   email          String?
+  user           User?                   @relation(fields: [email], references: [email])
   trips          trip_participant[]
   expenses       expense_participant[]
+  @@unique([email])
 }
 
 model expense {
@@ -82,12 +84,13 @@ model User {
   email      String   @id
   about_me   String?
   password   String
-  name       String?
+  name       String
   is_enabled  Boolean
   surname    String
   role       Role     @default(USER)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  participant participant? 
 }
 
 enum Role {

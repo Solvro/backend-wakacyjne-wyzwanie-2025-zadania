@@ -1,4 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
@@ -8,6 +12,26 @@ import { UpdateParticipantDto } from "./dto/update-participant.dto";
 export class ParticipantService {
   constructor(private database: DatabaseService) {}
   async create(createParticipantDto: CreateParticipantDto) {
+    const email = createParticipantDto.email;
+    if (!email) {
+      return this.database.participant.create({ data: createParticipantDto });
+    }
+    const existingUser = await this.database.user.findUnique({
+      where: { email },
+    });
+    if (!existingUser) {
+      throw new BadRequestException(
+        "Użytkownik o podanym emailu nie istnieje ",
+      );
+    }
+    const existingParticipant = await this.database.participant.findUnique({
+      where: { email },
+    });
+    if (existingParticipant) {
+      throw new ConflictException(
+        "Istnieje już participant przypisany do tego emaila",
+      );
+    }
     return this.database.participant.create({ data: createParticipantDto });
   }
 

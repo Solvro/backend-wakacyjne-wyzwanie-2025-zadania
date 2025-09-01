@@ -1,4 +1,5 @@
 import { compare } from "bcrypt";
+import { CreateUserDto } from "src/user/dto/create-dto.user";
 import { UserMetadata } from "src/user/dto/user-metadata";
 import { UserService } from "src/user/user.service";
 
@@ -51,5 +52,8 @@ export class AuthService {
     }
     const userMetadata = await this.userService.findMetaData(email);
     return userMetadata;
+  }
+  async createUser(createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 }

@@ -26,7 +26,7 @@ export class CreateTripDto {
   @Type(() => Date)
   @IsDate({ message: "Pole end_date musi być poprawną datą" })
   @IsAfterStartDate({
-    message: "Data zakończenia musi być późniejsza niż data rozpoczęcia",
+    message: "Pole end_date musi mieć późniejszą datę niż data start_date",
   })
   end_date?: Date;
 }
