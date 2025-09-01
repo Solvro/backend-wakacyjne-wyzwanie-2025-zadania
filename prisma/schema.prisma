@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum expense_category {
@@ -76,4 +77,21 @@ model expense_participant {
   participant  participant   @relation(fields: [par_id], references: [id_p])
 
   @@id([expense_id, par_id]) 
+}
+model User {
+  email      String   @id
+  about_me   String?
+  password   String
+  name       String?
+  is_enabled  Boolean
+  surname    String
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  COORDINATOR
+  ADMIN
 }
