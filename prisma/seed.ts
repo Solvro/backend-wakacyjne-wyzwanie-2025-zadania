@@ -283,6 +283,22 @@ async function main() {
       participantId: participant3.id,
     },
   });
+
+  await prisma.user.upsert({
+    where: {
+      id: 1, // Using ID 1 for the first user
+    },
+    create: {
+      email: "admin@test.com",
+      password: "$2a$12$nD/SAA0hn/9RcZ6goRfN6OPHWiqVDb3GE.fbegGK2CGE1lT6MbZHm",
+      roles: "10000",
+    },
+    update: {
+      email: "admin@test.com",
+      password: "$2a$12$nD/SAA0hn/9RcZ6goRfN6OPHWiqVDb3GE.fbegGK2CGE1lT6MbZHm",
+      roles: "10000",
+    },
+  });
 }
 
 main()
