@@ -6,8 +6,8 @@ import { AppModule } from "./app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // eslint-disable-next-line @darraghor/nestjs-typed/should-specify-forbid-unknown-values
   app.useGlobalPipes(
+    // eslint-disable-next-line @darraghor/nestjs-typed/should-specify-forbid-unknown-values
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
