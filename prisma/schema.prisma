@@ -12,7 +12,7 @@ model Expense {
   tripId             Int
   expenseAmount      Float
   expenseDescription String?
-  Trip               Trip    @relation(fields: [tripId], references: [tripId], onDelete: NoAction, onUpdate: NoAction, map: "trip_constraint")
+  trip               Trip    @relation(fields: [tripId], references: [tripId], onDelete: NoAction, onUpdate: NoAction, map: "trip_constraint")
 }
 
 model Participant {
@@ -22,7 +22,7 @@ model Participant {
   address       String  @db.VarChar(255)
   phoneNumber   String? @db.VarChar(20)
   sex           Sex?
-  Trip          Trip[]
+  trips         Trip[]
 }
 
 model Trip {
@@ -31,8 +31,8 @@ model Trip {
   destination   String      @db.VarChar(255)
   startDate     DateTime    @db.Timestamp(6)
   endDate       DateTime    @db.Timestamp(6)
-  Expense       Expense[]
-  Participant   Participant @relation(fields: [participantId], references: [participantId], onDelete: NoAction, onUpdate: NoAction, map: "participant_constraint")
+  expenses       Expense[]
+  participant   Participant @relation(fields: [participantId], references: [participantId], onDelete: NoAction, onUpdate: NoAction, map: "participant_constraint")
 }
 
 enum Sex {
