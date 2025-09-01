@@ -6,5 +6,6 @@ export class CreateParticipantResponseDto {
   lastName!: string;
   address!: string;
   phoneNumber?: string;
+  email!: string;
   sex?: Sex;
 }

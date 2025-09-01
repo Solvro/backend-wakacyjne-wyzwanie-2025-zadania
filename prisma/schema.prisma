@@ -21,8 +21,11 @@ model Participant {
   lastName      String  @db.VarChar(255)
   address       String  @db.VarChar(255)
   phoneNumber   String? @db.VarChar(20)
+  email         String
+  User          User     @relation(fields: [email], references: [email])
   sex           Sex?
   Trip          Trip[]
+
 }
 
 model Trip {
@@ -39,4 +42,20 @@ enum Sex {
   MALE
   FEMALE
   OTHER
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+
+model User {
+  email       String        @id
+  aboutMe     String?
+  password    String
+  role        Role
+  isEnabled   Boolean
+  name        String?
+  Participant Participant[]
 }
