@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
@@ -14,12 +14,12 @@ export class TripService {
     });
 
     if (participant == null) {
-      throw new BadRequestException("Participant not found");
+      throw new NotFoundException("Participant not found");
     }
 
     return this.database.trip.create({
       data: {
-        Participant: {
+        participant: {
           connect: { participantId: createTripDto.participantId },
         },
         destination: createTripDto.destination,
@@ -37,7 +37,7 @@ export class TripService {
     return this.database.trip.findUnique({
       where: { tripId: id },
       include: {
-        Participant: true,
+        participant: true,
       },
     });
   }
