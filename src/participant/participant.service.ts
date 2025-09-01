@@ -13,13 +13,13 @@ export class ParticipantService {
   constructor(private database: DatabaseService) {}
   async create(createParticipantDto: CreateParticipantDto) {
     const email = createParticipantDto.email;
-    if (!email) {
+    if (email == null) {
       return this.database.participant.create({ data: createParticipantDto });
     }
     const existingUser = await this.database.user.findUnique({
       where: { email },
     });
-    if (!existingUser) {
+    if (existingUser == null) {
       throw new BadRequestException(
         "Użytkownik o podanym emailu nie istnieje ",
       );
@@ -27,7 +27,7 @@ export class ParticipantService {
     const existingParticipant = await this.database.participant.findUnique({
       where: { email },
     });
-    if (existingParticipant) {
+    if (existingParticipant != null) {
       throw new ConflictException(
         "Istnieje już participant przypisany do tego emaila",
       );
