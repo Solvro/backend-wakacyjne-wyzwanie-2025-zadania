@@ -1,8 +1,7 @@
 {
   "name": "prisma-client-94c8920a4ea2def95c7691930aa0e78048f292b6604d2be4afe02f7b6ee00f4d",
-  "main": "index.js",
-  "types": "index.d.ts",
-  "browser": "index-browser.js",
+  "version": "6.14.0",
+  "sideEffects": false,
   "exports": {
     "./client": {
       "require": {
@@ -145,6 +144,7 @@
     },
     "./*": "./*"
   },
-  "version": "6.14.0",
-  "sideEffects": false
+  "main": "index.js",
+  "browser": "index-browser.js",
+  "types": "index.d.ts"
 }
