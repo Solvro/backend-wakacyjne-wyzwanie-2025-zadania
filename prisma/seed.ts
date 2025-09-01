@@ -1,4 +1,5 @@
 import { PrismaClient, Role, Sex } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -8,19 +9,23 @@ async function main() {
   await prisma.participant.deleteMany();
   await prisma.user.deleteMany();
 
+  const salt = 10;
+  const password = "password";
+  const hashedPassword = await hash(password, salt);
+
   await prisma.user.createMany({
     data: [
       {
         email: "ala.makota@example.com",
         name: "Ala Makota",
-        password: "$2b$12$va3nsup7yqWJP9Ae9adYE",
+        password: hashedPassword,
         role: Role.ADMIN,
         isEnabled: true,
       },
       {
         email: "barka@gmail.com",
         name: "Jan Paweł",
-        password: "SgPp7g1R.R7y", //password
+        password: hashedPassword, //password
         role: Role.USER,
         isEnabled: true,
       },
