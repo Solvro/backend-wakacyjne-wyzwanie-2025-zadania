@@ -1,3 +1,5 @@
+import { CreateUserDto } from "src/user/dto/create-user.dto";
+
 import {
   Body,
   Controller,
@@ -20,7 +22,7 @@ import { LoginUserDto } from "./dto/login-user.dto";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Post("login")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Log in as user",
@@ -33,14 +35,33 @@ export class AuthController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: "User not found",
+    description: "User not found (register first)",
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: "Wrong login credentials",
+    description: "Wrong password was given",
   })
   async singIn(@Body() loginUserDto: LoginUserDto) {
     return this.authService.signIn(loginUserDto.email, loginUserDto.password);
   }
   // todo: register service
+
+  @Post("register")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Register a new user",
+    description: "Add a new user to the db",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Registered successfully",
+    type: LoginResponseDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: "There is already a user with this email",
+  })
+  async register(@Body() createUserDto: CreateUserDto) {
+    return this.authService.register(createUserDto);
+  }
 }

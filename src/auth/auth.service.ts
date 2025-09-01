@@ -3,7 +3,12 @@ import { compare, hash } from "bcrypt";
 import { CreateUserResponseDto } from "src/user/dto/create-user-response.dto";
 import { CreateUserDto } from "src/user/dto/create-user.dto";
 
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import { UserService } from "../user/user.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
@@ -20,6 +25,13 @@ export class AuthService {
 
   async register(createUserDto: CreateUserDto) {
     const { email, password } = createUserDto;
+
+    const userInBase = await this.userService.findOne(email);
+    const isEmailAvailable = userInBase == null;
+
+    if (!isEmailAvailable) {
+      throw new ConflictException("There is already a user with this email");
+    }
 
     const salt = 10;
     const hashedPassword = await hash(password, salt);
@@ -39,11 +51,14 @@ export class AuthService {
 
   async signIn(email: string, password: string): Promise<LoginResponseDto> {
     const user = await this.userService.findOne(email);
-    if (
-      user === null ||
-      !(await compare(password, user.password).catch(() => false))
-    ) {
-      throw new UnauthorizedException();
+
+    if (user == null) {
+      throw new NotFoundException(
+        "User with this email does not exist (register first)",
+      );
+    }
+    if (!(await compare(password, user.password).catch(() => false))) {
+      throw new ForbiddenException("Wrong password was given");
     }
     return { token: this.generateToken(user.email) };
   }
