@@ -7,9 +7,9 @@ export class CreateTripDto {
   @ApiProperty()
   destination!: string;
 
-  @ApiProperty()
-  startDate!: string;
+  @ApiProperty({ type: String, format: "date-time" })
+  startDate!: Date;
 
-  @ApiProperty()
-  endDate!: string;
+  @ApiProperty({ type: String, format: "date-time" })
+  endDate!: Date;
 }

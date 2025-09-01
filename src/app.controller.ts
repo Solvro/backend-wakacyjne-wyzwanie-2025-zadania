@@ -14,7 +14,7 @@ export class AppController {
     description: "Just here to look awesome",
   })
   @ApiResponse({
-    status: 200,
+    status: 418,
     description:
       "It is here just to avoid angering eslint (not sure if i can delete it)",
   })

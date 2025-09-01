@@ -2,8 +2,4 @@ import { PartialType } from "@nestjs/mapped-types";
 
 import { CreateExpenseDto } from "./create-expense.dto";
 
-export class UpdateExpenseDto extends PartialType(CreateExpenseDto) {
-  tripId?: number;
-  expenseAmount?: number;
-  expenseDescription?: string;
-}
+export class UpdateExpenseDto extends PartialType(CreateExpenseDto) {}

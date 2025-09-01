@@ -29,7 +29,7 @@ export class ParticipantController {
       "Add a participant to which you can add new trips and expenses",
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: "Participant created",
     type: CreateParticipantResponseDto,
   })
@@ -43,7 +43,7 @@ export class ParticipantController {
     description: "Retrieve a list of all participants in the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "List of participants retrieved successfully",
     type: [CreateParticipantResponseDto],
   })
@@ -57,12 +57,12 @@ export class ParticipantController {
     description: "Retrieve detailed information about a specific participant",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Participant details retrieved successfully",
     type: CreateParticipantResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
   async findOne(@Param("id") id: string) {
@@ -75,12 +75,12 @@ export class ParticipantController {
     description: "Modify information for an existing participant",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Participant updated successfully",
     type: CreateParticipantResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
   async update(
@@ -97,11 +97,11 @@ export class ParticipantController {
       "Remove a participant and all its associated data from the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Participant deleted successfully",
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
   async remove(@Param("id") id: string) {

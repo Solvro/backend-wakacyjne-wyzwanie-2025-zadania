@@ -28,7 +28,7 @@ export class ExpenseController {
     description: "Add a expense for which you can add description",
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: "Expense created",
     type: CreateExpenseResponseDto,
   })
@@ -42,7 +42,7 @@ export class ExpenseController {
     description: "Retrieve a list of all expenses in the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "List of expenses retrieved successfully",
     type: [CreateExpenseResponseDto],
   })
@@ -56,12 +56,12 @@ export class ExpenseController {
     description: "Retrieve detailed information about a specific expense",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Expense details retrieved successfully",
     type: CreateExpenseResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Expense not found (lucky you)",
   })
   async findOne(@Param("id") id: string) {
@@ -74,12 +74,12 @@ export class ExpenseController {
     description: "Modify information for an existing expense",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Expense updated successfully",
     type: CreateExpenseResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Expense not found",
   })
   async update(
@@ -95,11 +95,11 @@ export class ExpenseController {
     description: "Remove a expense and all its associated data from the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Expense deleted successfully",
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Expense not found",
   })
   async remove(@Param("id") id: string) {

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
@@ -9,9 +9,19 @@ export class ExpenseService {
   constructor(private database: DatabaseService) {}
 
   async create(createExpenseDto: CreateExpenseDto) {
+    const trip = await this.database.trip.findUnique({
+      where: { tripId: createExpenseDto.tripId },
+    });
+
+    if (trip == null) {
+      throw new BadRequestException("Trip not found");
+    }
+
     return this.database.expense.create({
       data: {
-        tripId: createExpenseDto.tripId,
+        Trip: {
+          connect: { tripId: createExpenseDto.tripId },
+        },
         expenseAmount: createExpenseDto.expenseAmount,
         expenseDescription: createExpenseDto.expenseDescription,
       },
@@ -25,6 +35,9 @@ export class ExpenseService {
   async findOne(id: number) {
     return this.database.expense.findUnique({
       where: { expenseId: id },
+      include: {
+        Trip: true,
+      },
     });
   }
 

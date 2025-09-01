@@ -29,7 +29,7 @@ export class TripController {
       "Add a trip to which you can add participants and connect to expenses",
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: "Trip created",
     type: CreateTripResponseDto,
   })
@@ -43,7 +43,7 @@ export class TripController {
     description: "Retrieve a list of all trips in the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "List of trips retrieved successfully",
     type: [CreateTripResponseDto],
   })
@@ -57,12 +57,12 @@ export class TripController {
     description: "Retrieve detailed information about a specific trip",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Trip details retrieved successfully",
     type: CreateTripResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
   async findOne(@Param("id") id: string) {
@@ -75,12 +75,12 @@ export class TripController {
     description: "Modify information for an existing trip",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Trip updated successfully",
     type: CreateTripResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
@@ -93,11 +93,11 @@ export class TripController {
     description: "Remove a trip and all its associated data from the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Trip deleted successfully",
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
   async remove(@Param("id") id: string) {
