@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -19,6 +20,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Role } from "@/lib/roles";
+
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import { TripsService } from "../trips/trips.service";
 import { ExpenseDto } from "./dto/expense.dto";
 import { ExpensesService } from "./expenses.service";
@@ -61,6 +67,8 @@ export class ExpensesController {
 
   // POST /trips/:tripId/expenses - Add expense to trip
   @Post()
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR, Role.USER)
+  @UseGuards(AuthGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Add expense to trip",
@@ -118,6 +126,8 @@ export class ExpensesController {
   }
 
   @Put(":id")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR, Role.USER)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiOperation({
     summary: "Update expense",
     description: "Update an existing expense",
@@ -139,6 +149,8 @@ export class ExpensesController {
   }
 
   @Delete(":id")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiOperation({
     summary: "Delete expense",
     description: "Delete an existing expense",

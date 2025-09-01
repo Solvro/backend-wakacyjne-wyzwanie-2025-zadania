@@ -1,10 +1,10 @@
 /* eslint-disable unicorn/prefer-spread */
-// Self-contained role utilities to avoid import issues
 export const Role = {
   ADMIN: 0,
   MODERATOR: 1,
   USER: 2,
   GUEST: 3,
+  TRIP_COORDINATOR: 4,
 };
 
 export interface Roles {
@@ -23,6 +23,8 @@ export interface RolePermissions {
 
 export type RoleString = string;
 
+export const ROLES_NUMBER = Object.keys(Role).length;
+
 const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
   [Role.ADMIN]: {
     role: Role.ADMIN,
@@ -37,7 +39,6 @@ const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
     permissions: [
       "trips:read",
       "trips:update",
-      "trips:delete",
       "users:read",
       "users:update",
       "participants:read",
@@ -51,7 +52,6 @@ const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
     name: "User",
     description: "Standard user access",
     permissions: [
-      "trips:create",
       "trips:read",
       "expenses:create",
       "expenses:read",
@@ -65,6 +65,21 @@ const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
     name: "Guest",
     description: "Read-only access",
     permissions: ["trips:read", "expenses:read", "participants:read"],
+  },
+  [Role.TRIP_COORDINATOR]: {
+    role: Role.TRIP_COORDINATOR,
+    name: "Trip Coordinator",
+    description: "Manage trips and participants",
+    permissions: [
+      "trips:create",
+      "trips:read",
+      "trips:update",
+      "trips:delete",
+      "participants:create",
+      "participants:read",
+      "participants:update",
+      "expenses:read",
+    ],
   },
 };
 
