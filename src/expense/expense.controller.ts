@@ -21,14 +21,14 @@ export class ExpenseController {
   @Post()
   @ApiOperation({ summary: "Create a new expense" })
   @ApiResponse({ status: 201, description: "Expense created successfully" })
-  create(@Body() createExpenseDto: CreateExpenseDto) {
+  async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
 
   @Get()
   @ApiOperation({ summary: "Get all expenses" })
   @ApiResponse({ status: 200, description: "List of expenses retrieved" })
-  findAll() {
+  async findAll() {
     return this.expenseService.findAll();
   }
 
@@ -36,7 +36,7 @@ export class ExpenseController {
   @ApiOperation({ summary: "Get expense by ID" })
   @ApiResponse({ status: 200, description: "Expense details retrieved" })
   @ApiResponse({ status: 404, description: "Expense not found" })
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.expenseService.findOne(+id);
   }
 
@@ -44,7 +44,10 @@ export class ExpenseController {
   @ApiOperation({ summary: "Update expense by ID" })
   @ApiResponse({ status: 200, description: "Expense updated successfully" })
   @ApiResponse({ status: 404, description: "Expense not found" })
-  update(@Param("id") id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
+  async update(
+    @Param("id") id: string,
+    @Body() updateExpenseDto: UpdateExpenseDto,
+  ) {
     return this.expenseService.update(+id, updateExpenseDto);
   }
 
@@ -52,7 +55,7 @@ export class ExpenseController {
   @ApiOperation({ summary: "Delete expense by ID" })
   @ApiResponse({ status: 200, description: "Expense deleted successfully" })
   @ApiResponse({ status: 404, description: "Expense not found" })
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.expenseService.remove(+id);
   }
 }

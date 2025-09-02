@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { DatabaseService } from "src/database/database.service";
 
 import { Injectable, NotFoundException } from "@nestjs/common";
@@ -13,9 +14,10 @@ export class ExpenseService {
     const trip = await this.database.trip.findUnique({
       where: { trip_id: createExpenseDto.trip_id },
     });
-    if (!trip) {
+
+    if (trip == null) {
       throw new NotFoundException(
-        `Trip with ID ${createExpenseDto.trip_id} not found`,
+        `Trip with ID ${String(createExpenseDto.trip_id)} not found`,
       );
     }
 
@@ -39,7 +41,7 @@ export class ExpenseService {
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.database.expense.findMany({
       include: {
         trip: {
@@ -58,9 +60,10 @@ export class ExpenseService {
       },
     });
 
-    if (!expense) {
-      throw new NotFoundException(`Expense with ID ${id} not found`);
+    if (expense == null) {
+      throw new NotFoundException(`Expense with ID ${String(id)} not found`);
     }
+
     return expense;
   }
 
@@ -68,29 +71,36 @@ export class ExpenseService {
     const expense = await this.database.expense.findUnique({
       where: { expense_id: id },
     });
-    if (!expense) {
-      throw new NotFoundException(`Expense with ID ${id} not found`);
+
+    if (expense == null) {
+      throw new NotFoundException(`Expense with ID ${String(id)} not found`);
     }
 
     if (updateExpenseDto.trip_id !== undefined) {
       const trip = await this.database.trip.findUnique({
         where: { trip_id: updateExpenseDto.trip_id },
       });
-      if (!trip) {
+      if (trip == null) {
         throw new NotFoundException(
-          `Trip with ID ${updateExpenseDto.trip_id} not found`,
+          `Trip with ID ${String(updateExpenseDto.trip_id)} not found`,
         );
       }
     }
 
-    const data: any = {
+    // jawny null/empty-check dla expense_date (bez truthy-checka)
+    const nextExpenseDate =
+      updateExpenseDto.expense_date == null ||
+      updateExpenseDto.expense_date === ""
+        ? expense.expense_date
+        : new Date(updateExpenseDto.expense_date);
+
+    const data: Prisma.ExpenseUpdateInput = {
       expense_type: updateExpenseDto.expense_type,
-      expense_date: updateExpenseDto.expense_date
-        ? new Date(updateExpenseDto.expense_date)
-        : expense.expense_date,
+      expense_date: nextExpenseDate,
       cost: updateExpenseDto.cost,
       description: updateExpenseDto.description,
     };
+
     if (updateExpenseDto.trip_id !== undefined) {
       data.trip = { connect: { trip_id: updateExpenseDto.trip_id } };
     }
@@ -108,11 +118,12 @@ export class ExpenseService {
     const expense = await this.database.expense.findUnique({
       where: { expense_id: id },
     });
-    if (!expense) {
-      throw new NotFoundException(`Expense with ID ${id} not found`);
+
+    if (expense == null) {
+      throw new NotFoundException(`Expense with ID ${String(id)} not found`);
     }
 
     await this.database.expense.delete({ where: { expense_id: id } });
-    return { message: `Expense with ID ${id} deleted successfully` };
+    return { message: `Expense with ID ${String(id)} deleted successfully` };
   }
 }

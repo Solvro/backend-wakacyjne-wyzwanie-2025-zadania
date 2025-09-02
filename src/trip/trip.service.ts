@@ -1,7 +1,6 @@
 import { DatabaseService } from "src/database/database.service";
 
-import { Injectable } from "@nestjs/common";
-import { NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -16,9 +15,10 @@ export class TripService {
         name: createTripDto.name,
         destination: createTripDto.destination,
         start_date: new Date(createTripDto.start_date),
-        end_date: createTripDto.end_date
-          ? new Date(createTripDto.end_date)
-          : null,
+        end_date:
+          createTripDto.end_date == null
+            ? null
+            : new Date(createTripDto.end_date),
         budget: createTripDto.budget,
       },
       include: {
@@ -28,7 +28,7 @@ export class TripService {
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.database.trip.findMany({
       include: {
         expenses: { orderBy: { expense_date: "desc" } },
@@ -47,8 +47,8 @@ export class TripService {
       },
     });
 
-    if (!trip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+    if (trip == null) {
+      throw new NotFoundException(`Trip with ID ${String(id)} not found`);
     }
 
     return trip;
@@ -59,8 +59,8 @@ export class TripService {
       where: { trip_id: id },
     });
 
-    if (!trip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+    if (trip == null) {
+      throw new NotFoundException(`Trip with ID ${String(id)} not found`);
     }
 
     return this.database.trip.update({
@@ -80,15 +80,14 @@ export class TripService {
       where: { trip_id: id },
     });
 
-    if (!trip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+    if (trip == null) {
+      throw new NotFoundException(`Trip with ID ${String(id)} not found`);
     }
 
     await this.database.expense.deleteMany({ where: { trip_id: id } });
     await this.database.participant.deleteMany({ where: { trip_id: id } });
-
     await this.database.trip.delete({ where: { trip_id: id } });
 
-    return { message: `Trip with ID ${id} deleted successfully` };
+    return { message: `Trip with ID ${String(id)} deleted successfully` };
   }
 }

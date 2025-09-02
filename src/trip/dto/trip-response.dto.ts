@@ -23,7 +23,7 @@ export class TripResponseDto {
   end_date?: Date;
 
   @ApiPropertyOptional({
-    example: 1200.0,
+    example: 1200,
     description: "Budget planned for the trip",
   })
   budget?: number;

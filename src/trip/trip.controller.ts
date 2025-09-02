@@ -37,7 +37,7 @@ export class TripController {
     status: 400,
     description: "Invalid input data",
   })
-  create(@Body() createTripDto: CreateTripDto) {
+  async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
 
@@ -52,7 +52,7 @@ export class TripController {
     description: "List of trips retrieved successfully",
     type: [TripResponseDto],
   })
-  findAll() {
+  async findAll() {
     return this.tripService.findAll();
   }
 
@@ -71,7 +71,7 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.tripService.findOne(+id);
   }
 
@@ -89,7 +89,7 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
+  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
 
@@ -106,7 +106,7 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);
   }
 }

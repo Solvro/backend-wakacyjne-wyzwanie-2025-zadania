@@ -34,7 +34,7 @@ export class CreateTripDto {
 
   @ApiPropertyOptional({
     description: "Planned budget for the trip",
-    example: 1200.0,
+    example: 1200,
   })
   @IsOptional()
   @IsNumber()
