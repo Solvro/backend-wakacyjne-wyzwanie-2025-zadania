@@ -17,9 +17,6 @@ export class CreateExpenseResponseDto {
   Trip_id: number;
 
   @ApiProperty()
-  Participant_id: number;
-
-  @ApiProperty()
   Created_At: Date;
 
   @ApiProperty()

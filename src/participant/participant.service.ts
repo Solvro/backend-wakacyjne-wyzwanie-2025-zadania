@@ -11,10 +11,9 @@ export class ParticipantService {
   async create(createParticipantDto: CreateParticipantDto) {
     return this.prisma.participant.create({
       data: {
-        Name: createParticipantDto.Name,
-        Email: createParticipantDto.Email,
-        Date_of_birth: createParticipantDto.Date_of_birth,
-        Trip_id: createParticipantDto.Trip_id,
+        name: createParticipantDto.name,
+        email: createParticipantDto.email,
+        trip_id: createParticipantDto.trip_id,
       },
     });
   }

@@ -1,3 +1,5 @@
+import { AuthGuard } from "src/auth/auth.guard";
+
 import {
   Body,
   Controller,
@@ -8,8 +10,14 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
@@ -32,6 +40,8 @@ export class ExpenseController {
     description: "Expense created successfully",
     type: CreateExpenseResponseDto,
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
@@ -77,6 +87,8 @@ export class ExpenseController {
     description: "Expense updated successfully",
     type: UpdateExpenseDto,
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   async update(
     @Param("id") id: string,
     @Body() updateExpenseDto: UpdateExpenseDto,
@@ -94,6 +106,8 @@ export class ExpenseController {
     status: 204,
     description: "Expense deleted successfully",
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   async remove(@Param("id") id: string) {
     return this.expenseService.remove(+id);
   }

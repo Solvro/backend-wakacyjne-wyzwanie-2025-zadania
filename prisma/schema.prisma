@@ -13,39 +13,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  TRIPCORD
+  USER
+}
+
 model Participant {
-  id            Int       @id @default(autoincrement())
-  Name          String
-  Email         String?   @unique
-  Date_of_birth DateTime
-  Created_at    DateTime  @default(now())
-  Updated_at    DateTime  @updatedAt
-  Trip          Trip      @relation(fields: [Trip_id], references: [id])
-  Trip_id       Int
-  Expenses      Expense[]
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  user       User     @relation(fields: [email], references: [email])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  trip       Trip     @relation(fields: [trip_id], references: [id])
+  trip_id    Int
 }
 
 model Trip {
   id           Int           @id @default(autoincrement())
-  Destination  String
-  Description  String?
-  Start_date   DateTime
-  End_date     DateTime
-  Created_at   DateTime      @default(now())
-  Updated_at   DateTime      @updatedAt
-  espenses     Expense[]
-  Participants Participant[]
+  destination  String
+  description  String?
+  start_date   DateTime
+  end_date     DateTime
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  expenses     Expense[]
+  participants Participant[]
 }
 
 model Expense {
-  id             Int         @id @default(autoincrement())
-  Name           String
-  Description    String?
-  Value          Float
-  Trip           Trip        @relation(fields: [Trip_id], references: [id])
-  Trip_id        Int
-  Participant    Participant @relation(fields: [Participant_id], references: [id])
-  Participant_id Int
-  Created_at     DateTime    @default(now())
-  Updated_at     DateTime    @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  value       Float
+  trip        Trip     @relation(fields: [trip_id], references: [id])
+  trip_id     Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model User {
+  email        String        @id @unique
+  password     String
+  about_me     String?
+  role         Role          @default(USER)
+  is_enabled   Boolean
+  name         String?
+  participants Participant[]
 }

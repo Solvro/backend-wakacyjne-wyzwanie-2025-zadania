@@ -10,11 +10,10 @@ export class ExpenseService {
   async create(createExpenseDto: CreateExpenseDto) {
     return this.prisma.expense.create({
       data: {
-        Name: createExpenseDto.Name,
-        Description: createExpenseDto.Description,
-        Value: createExpenseDto.Value,
-        Trip_id: createExpenseDto.Trip_id,
-        Participant_id: createExpenseDto.Participant_id,
+        name: createExpenseDto.name,
+        description: createExpenseDto.description,
+        value: createExpenseDto.value,
+        trip_id: createExpenseDto.trip_id,
       },
     });
   }

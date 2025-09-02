@@ -13,6 +13,10 @@ async function bootstrap() {
     .addTag("trip", "Zarządzanie wycieczkami")
     .addTag("participant", "Zarządzanie uczestnikami")
     .addTag("expense", "Zarządzanie wydatkami")
+    .addBearerAuth(
+      { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+      "access-token",
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, documentFactory());

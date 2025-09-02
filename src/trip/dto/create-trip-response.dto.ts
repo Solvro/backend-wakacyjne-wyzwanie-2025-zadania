@@ -5,20 +5,20 @@ export class CreateTripResponseDto {
   id: number;
 
   @ApiProperty()
-  Destination: string;
+  destination: string;
 
   @ApiPropertyOptional()
-  Description?: string;
+  description?: string;
 
   @ApiProperty()
-  Start_Date: Date;
+  start_Date: Date;
 
   @ApiProperty()
-  End_Date: Date;
+  end_Date: Date;
 
   @ApiProperty()
-  Created_At: Date;
+  created_At: Date;
 
   @ApiProperty()
-  Updated_At: Date;
+  updated_At: Date;
 }
