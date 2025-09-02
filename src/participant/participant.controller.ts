@@ -1,3 +1,7 @@
+import { Role } from "@prisma/client";
+import { Roles } from "src/auth/roles/roles.decorator";
+import { RoleGuard } from "src/auth/roles/roles.guard";
+
 import {
   Body,
   Controller,
@@ -8,9 +12,16 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -22,6 +33,9 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @ApiBearerAuth("access-token")
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a participant",
@@ -70,6 +84,9 @@ export class ParticipantController {
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Update participant details",
     description: "Modify information for an existing participant",
@@ -91,6 +108,9 @@ export class ParticipantController {
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Delete a participant",
     description:

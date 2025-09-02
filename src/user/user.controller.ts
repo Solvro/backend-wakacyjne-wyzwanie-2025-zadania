@@ -1,16 +1,29 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/roles.decorator";
+import { RoleGuard } from "src/auth/roles/roles.guard";
+
 import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { CurrentUser } from "../auth/roles/current-user";
 import { CreateUserResponseDto } from "./dto/create-user-response.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -28,7 +41,7 @@ export class UserController {
     description: "Add a user to which you can add new participant",
   })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: "User created",
     type: CreateUserResponseDto,
   })
@@ -42,7 +55,7 @@ export class UserController {
     description: "Retrieve a list of all users in the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "List of users retrieved successfully",
     type: [CreateUserResponseDto],
   })
@@ -56,12 +69,12 @@ export class UserController {
     description: "Retrieve detailed information about a specific user",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "User details retrieved successfully",
     type: CreateUserResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
   async findOne(@Param("id") id: string) {
@@ -69,37 +82,98 @@ export class UserController {
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Update user details",
     description: "Modify information for an existing user",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "User updated successfully",
     type: CreateUserResponseDto,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
-  async update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param("id") id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: { id: string; role: Role },
+  ) {
+    if (currentUser.role !== Role.ADMIN && currentUser.id !== id) {
+      throw new ForbiddenException("You can only update your own profile");
+    }
+
     return this.userService.update(id, updateUserDto);
   }
 
-  @Delete(":id")
+  @Delete(":email")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Delete a user",
     description: "Remove a user and all its associated data from the system",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "User deleted successfully",
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.userService.remove(id);
+  async remove(@Param("email") email: string) {
+    return this.userService.remove(email);
+  }
+
+  @Patch("enable/:email")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "Enable a user",
+    description: "Enable a user to be used",
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: "User enabled successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found",
+  })
+  async enableUser(@Param("email") email: string) {
+    return this.userService.enableUser(email);
+  }
+
+  @Patch("disable/:email")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "Disable a user",
+    description: "Disable a user",
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: "User disabled successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "Cannot disable an admin account",
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "Missing privileges",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found",
+  })
+  async disableUser(@Param("email") email: string) {
+    return this.userService.disableUser(email);
   }
 }

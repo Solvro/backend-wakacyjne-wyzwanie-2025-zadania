@@ -1,3 +1,7 @@
+import { Role } from "@prisma/client";
+import { Roles } from "src/auth/roles/roles.decorator";
+import { RoleGuard } from "src/auth/roles/roles.guard";
+
 import {
   Body,
   Controller,
@@ -8,9 +12,16 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -22,6 +33,9 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a expense",
@@ -69,6 +83,9 @@ export class ExpenseController {
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Update expense details",
     description: "Modify information for an existing expense",
@@ -90,6 +107,9 @@ export class ExpenseController {
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Delete a expense",
     description: "Remove a expense and all its associated data from the system",

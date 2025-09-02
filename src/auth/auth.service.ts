@@ -2,6 +2,7 @@ import { Role } from "@prisma/client";
 import { compare, hash } from "bcrypt";
 import { CreateUserResponseDto } from "src/user/dto/create-user-response.dto";
 import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { UserMetadata } from "src/user/dto/user-metadata";
 
 import {
   ConflictException,
@@ -18,6 +19,14 @@ export class AuthService {
   constructor(private userService: UserService) {}
 
   private readonly tokenPrefix = "token_";
+
+  async validateToken(token: string): Promise<UserMetadata> {
+    return token.startsWith(this.tokenPrefix)
+      ? await this.userService.findMetadataOrFail(
+          token.slice(this.tokenPrefix.length),
+        )
+      : Promise.reject(new Error("Invalid token"));
+  }
 
   generateToken(email: string): string {
     return `${this.tokenPrefix}${email}`;
@@ -50,13 +59,8 @@ export class AuthService {
   }
 
   async signIn(email: string, password: string): Promise<LoginResponseDto> {
-    const user = await this.userService.findOne(email);
+    const user = await this.userService.findByIdOrFail(email);
 
-    if (user == null) {
-      throw new NotFoundException(
-        "User with this email does not exist (register first)",
-      );
-    }
     if (!(await compare(password, user.password).catch(() => false))) {
       throw new ForbiddenException("Wrong password was given");
     }

@@ -39,12 +39,11 @@ export class AuthController {
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: "Wrong password was given",
+    description: "Wrong password was given or account disabled",
   })
   async singIn(@Body() loginUserDto: LoginUserDto) {
     return this.authService.signIn(loginUserDto.email, loginUserDto.password);
   }
-  // todo: register service
 
   @Post("register")
   @HttpCode(HttpStatus.OK)

@@ -25,15 +25,14 @@ async function main() {
       {
         email: "barka@gmail.com",
         name: "Jan Paweł",
-        password: hashedPassword, //password
-        role: Role.USER,
+        password: hashedPassword,
+        role: Role.COORDINATOR,
         isEnabled: true,
       },
       {
         email: "marian@gmail.com",
         name: "Jaś Melon",
-        password:
-          "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y", //password
+        password: hashedPassword,
         role: Role.USER,
         isEnabled: false,
       },
