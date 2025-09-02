@@ -4,7 +4,7 @@ import { JsonRequest } from "./interfaces/json-request.interface";
 
 const jsonRequest: JsonRequest = {
   title: "Wakacyjne Wyzwanie Solvro!!!",
-  quote: "Jakaś twoja złota myśl - liczę na kreatywność",
+  quote: "Ludzie z natury są mało kreatywni",
 };
 
 @Injectable()
