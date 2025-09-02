@@ -8,7 +8,6 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
 } from "@nestjs/common";
 
 import { UserService } from "../user/user.service";
@@ -19,17 +18,28 @@ export class AuthService {
   constructor(private userService: UserService) {}
 
   private readonly tokenPrefix = "token_";
+  private expiryTime = Number(process.env.EXPIRY_TIME_MS);
 
   async validateToken(token: string): Promise<UserMetadata> {
-    return token.startsWith(this.tokenPrefix)
-      ? await this.userService.findMetadataOrFail(
-          token.slice(this.tokenPrefix.length),
-        )
-      : Promise.reject(new Error("Invalid token"));
+    if (!token.startsWith(this.tokenPrefix)) {
+      throw new Error("Invalid token");
+    }
+
+    const parts = token.split("_");
+    const email = parts[1];
+    const createdAt = Number(parts[2]);
+
+    if (createdAt + this.expiryTime < Date.now()) {
+      throw new Error("Token expired");
+    }
+
+    return await this.userService.findMetadataOrFail(email);
   }
 
   generateToken(email: string): string {
-    return `${this.tokenPrefix}${email}`;
+    const currentTime = Date.now().toString();
+
+    return `${this.tokenPrefix}${email}_${currentTime}`;
   }
 
   async register(createUserDto: CreateUserDto) {
