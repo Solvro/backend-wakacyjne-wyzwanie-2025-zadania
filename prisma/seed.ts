@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,6 +12,8 @@ async function main() {
     data: {
       name: "Jan Kowalski",
       email: "janko@gmail.com",
+      password: "$2b$10$IXAWBvtyftXhTkz5itSkDeRIvgOZlQP9mq4Ms9fsZTPLnum3tHAh2", // haslo_janko@gmail.com
+      role: Role.ADMIN,
       birthday: new Date("1990-01-01"),
     },
   });
@@ -20,6 +22,8 @@ async function main() {
     data: {
       name: "Anna Nowak",
       email: "anka_n@gmail.com",
+      password: "$2b$10$ebhd5QFCJWSowAaj5uTsFuwWmUX/IVAm9SdTBHTavhlpokqGFT9bG", // haslo_anka_n@gmail.com
+      role: Role.USER,
       birthday: new Date("1992-02-02"),
     },
   });
@@ -27,7 +31,9 @@ async function main() {
   const u3 = await prisma.user.create({
     data: {
       name: "Oskar Kowalik",
-      email: "oskikowal2115@gmail.com",
+      email: "oski.kowal2115@gmail.com",
+      password: "$2b$10$am9oMXh99Uvw5SpVNEoUB.A0wiBzHCQWeCZAYyBX6VRlc6japFbHu", // haslo_oski.kowal2115@gmail.com
+      role: Role.TRIP_COORDINATOR,
       birthday: new Date("1994-03-03"),
     },
   });
@@ -45,19 +51,19 @@ async function main() {
     prisma.participant.create({
       data: {
         trip_id: trip.id,
-        user_id: u1.id,
+        user_email: u1.email,
       },
     }),
     prisma.participant.create({
       data: {
         trip_id: trip.id,
-        user_id: u2.id,
+        user_email: u2.email,
       },
     }),
     prisma.participant.create({
       data: {
         trip_id: trip.id,
-        user_id: u3.id,
+        user_email: u3.email,
       },
     }),
   ]);
@@ -67,7 +73,7 @@ async function main() {
       what: "Nocleg",
       amount: 523.43,
       trip_id: trip.id,
-      user_id: u1.id,
+      user_email: u1.email,
     },
   });
 
@@ -77,7 +83,7 @@ async function main() {
       description: "Rybka w restauracji",
       amount: 213.54,
       trip_id: trip.id,
-      user_id: u2.id,
+      user_email: u2.email,
     },
   });
 
@@ -87,7 +93,7 @@ async function main() {
       description: "Bilety wjazdu",
       amount: 43.12,
       trip_id: trip.id,
-      user_id: u3.id,
+      user_email: u3.email,
     },
   });
 }

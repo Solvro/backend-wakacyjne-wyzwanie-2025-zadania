@@ -19,21 +19,21 @@ export class UsersService {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(id: number): Promise<UserResponseDto | null> {
-    return await this.prisma.user.findUnique({ where: { id } });
+  async findOne(email: string): Promise<UserResponseDto | null> {
+    return await this.prisma.user.findUnique({ where: { email } });
   }
 
-  async update(id: number, dto: UpdateUserDto): Promise<UserResponseDto> {
-    return await this.prisma.user.update({ where: { id }, data: dto });
+  async update(email: string, dto: UpdateUserDto): Promise<UserResponseDto> {
+    return await this.prisma.user.update({ where: { email }, data: dto });
   }
 
-  async remove(id: number): Promise<UserResponseDto> {
-    return await this.prisma.user.delete({ where: { id } });
+  async remove(email: string): Promise<UserResponseDto> {
+    return await this.prisma.user.delete({ where: { email } });
   }
 
-  async getExpenses(id: number): Promise<ExpenseResponseDto[]> {
+  async getExpenses(email: string): Promise<ExpenseResponseDto[]> {
     const expenses = await this.prisma.expense.findMany({
-      where: { user_id: id },
+      where: { user_email: email },
     });
     return expenses.map((expense) => ({
       ...expense,
@@ -41,11 +41,11 @@ export class UsersService {
     }));
   }
 
-  async getTrips(id: number): Promise<TripResponseDto[]> {
+  async getTrips(email: string): Promise<TripResponseDto[]> {
     return await this.prisma.trip.findMany({
       where: {
         participants: {
-          some: { user_id: id },
+          some: { user_email: email },
         },
       },
     });

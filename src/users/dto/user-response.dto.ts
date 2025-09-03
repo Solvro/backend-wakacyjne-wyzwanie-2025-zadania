@@ -1,14 +1,19 @@
+import { Role } from "@prisma/client";
+
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class UserResponseDto {
   @ApiProperty()
-  id: number;
+  email: string;
+
+  @ApiProperty()
+  password: string;
 
   @ApiPropertyOptional()
   name?: string | null;
 
   @ApiProperty()
-  email: string;
+  role: Role;
 
   @ApiPropertyOptional()
   birthday?: Date | null;

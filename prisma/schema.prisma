@@ -13,10 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+  TRIP_COORDINATOR
+}
+
 model User {
-  id         Int       @id @default(autoincrement())
+  email      String    @id
+  password   String
   name       String?
-  email      String    @unique
+  role       Role      @default(USER)
   birthday   DateTime?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -45,12 +52,12 @@ model Trip {
 model Participant {
   id         Int      @id @default(autoincrement())
   trip_id    Int
-  user_id    Int
+  user_email String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   trip Trip @relation(fields: [trip_id], references: [id], onDelete: Cascade)
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_email], references: [email], onDelete: Cascade)
 
   @@map("Participant")
 }
@@ -61,12 +68,12 @@ model Expense {
   description String?
   amount      Decimal  @db.Decimal(10, 2)
   trip_id     Int
-  user_id     Int
+  user_email  String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
   trip   Trip   @relation(fields: [trip_id], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [user_email], references: [email], onDelete: Cascade)
 
   @@map("Expense")
 }

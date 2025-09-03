@@ -1,4 +1,4 @@
-import { IsInt } from "class-validator";
+import { IsEmail, IsInt } from "class-validator";
 
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -7,7 +7,7 @@ export class CreateParticipantDto {
   @IsInt()
   trip_id: number;
 
-  @ApiProperty({ description: "User ID", example: 1 })
-  @IsInt()
-  user_id: number;
+  @ApiProperty({ description: "User email", example: "user@example.com" })
+  @IsEmail()
+  user_email: string;
 }

@@ -17,5 +17,5 @@ export class ExpenseResponseDto {
   trip_id: number;
 
   @ApiProperty()
-  user_id: number;
+  user_email: string;
 }

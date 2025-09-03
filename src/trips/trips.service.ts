@@ -35,9 +35,9 @@ export class TripsService {
     const participants = await this.prisma.participant.findMany({
       where: { trip_id: id },
     });
-    const userIds = participants.map((p) => p.user_id);
+    const userEmails = participants.map((p) => p.user_email);
     return await this.prisma.user.findMany({
-      where: { id: { in: userIds } },
+      where: { email: { in: userEmails } },
     });
   }
 

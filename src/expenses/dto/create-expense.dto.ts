@@ -1,4 +1,10 @@
-import { IsInt, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsEmail,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -33,11 +39,11 @@ export class CreateExpenseDto {
   trip_id: number;
 
   @ApiProperty({
-    description: "ID of the user who paid for the expense",
-    example: 2,
+    description: "Email of the user who paid for the expense",
+    example: "janko@gmail.com",
   })
-  @IsInt()
-  user_id: number;
+  @IsEmail()
+  user_email: string;
 
   @ApiProperty({
     description: "ID of the participant associated with the expense",

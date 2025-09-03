@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
 } from "@nestjs/common";
@@ -44,47 +43,45 @@ export class UsersController {
     return await this.service.findAll();
   }
 
-  @ApiOperation({ summary: "Get user by ID" })
+  @ApiOperation({ summary: "Get user by email" })
   @ApiResponse({
     status: 200,
     description: "User found.",
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: "User not found." })
-  @Get(":id")
+  @Get(":email")
   async findOne(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("email") email: string,
   ): Promise<UserResponseDto | null> {
-    return await this.service.findOne(id);
+    return await this.service.findOne(email);
   }
 
-  @ApiOperation({ summary: "Update user by ID" })
+  @ApiOperation({ summary: "Update user by email" })
   @ApiResponse({
     status: 200,
     description: "User updated successfully.",
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: "User not found." })
-  @Patch(":id")
+  @Patch(":email")
   async update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("email") email: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    return await this.service.update(id, dto);
+    return await this.service.update(email, dto);
   }
 
-  @ApiOperation({ summary: "Delete user by ID" })
+  @ApiOperation({ summary: "Delete user by email" })
   @ApiResponse({
     status: 200,
     description: "User deleted successfully.",
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: "User not found." })
-  @Delete(":id")
-  async remove(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<UserResponseDto> {
-    return await this.service.remove(id);
+  @Delete(":email")
+  async remove(@Param("email") email: string): Promise<UserResponseDto> {
+    return await this.service.remove(email);
   }
 
   @ApiOperation({ summary: "Get all expenses created by a user" })
@@ -93,11 +90,11 @@ export class UsersController {
     description: "List of expenses.",
     type: [ExpenseResponseDto],
   })
-  @Get(":id/expenses")
+  @Get(":email/expenses")
   async getExpenses(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("email") email: string,
   ): Promise<ExpenseResponseDto[]> {
-    return await this.service.getExpenses(id);
+    return await this.service.getExpenses(email);
   }
 
   @ApiOperation({ summary: "Get all trips the user participates in" })
@@ -106,10 +103,8 @@ export class UsersController {
     description: "List of trips.",
     type: [TripResponseDto],
   })
-  @Get(":id/trips")
-  async getTrips(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<TripResponseDto[]> {
-    return await this.service.getTrips(id);
+  @Get(":email/trips")
+  async getTrips(@Param("email") email: string): Promise<TripResponseDto[]> {
+    return await this.service.getTrips(email);
   }
 }
