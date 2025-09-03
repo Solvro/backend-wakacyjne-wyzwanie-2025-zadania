@@ -69,12 +69,7 @@ export class AuthService {
       throw new UnauthorizedException("Invalid token");
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (
-      user.tokenExpiry !== null &&
-      user.tokenExpiry !== undefined &&
-      new Date() > user.tokenExpiry
-    ) {
+    if (user.tokenExpiry !== undefined && new Date() > user.tokenExpiry) {
       throw new UnauthorizedException("Token has expired");
     }
 
