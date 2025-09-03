@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum expense_category {
@@ -29,7 +30,7 @@ enum trip_type {
 }
 
 model trip {
-  id_t           Int                @id @default(autoincrement())
+  id           Int                @id @default(autoincrement())
   destination    String
   type           trip_type
   start_date     DateTime
@@ -39,22 +40,24 @@ model trip {
 }
 
 model participant {
-  id_p           Int                     @id @default(autoincrement())
+  id           Int                     @id @default(autoincrement())
   name           String
   surname        String
   age            Int
   phone_num      String?
   email          String?
+  user           User?                   @relation(fields: [email], references: [email])
   trips          trip_participant[]
   expenses       expense_participant[]
+  @@unique([email])
 }
 
 model expense {
-  id_e           Int                     @id @default(autoincrement())
+  id           Int                     @id @default(autoincrement())
   trip_id        Int
   amount         Float
   category       expense_category
-  trip           trip                    @relation(fields: [trip_id], references: [id_t])
+  trip           trip                    @relation(fields: [trip_id], references: [id])
   participants   expense_participant[]
 }
 
@@ -62,8 +65,8 @@ model trip_participant {
   trip_id      Int
   par_id       Int
   status       trip_status
-  trip         trip          @relation(fields: [trip_id], references: [id_t])
-  participant  participant   @relation(fields: [par_id], references: [id_p])
+  trip         trip          @relation(fields: [trip_id], references: [id])
+  participant  participant   @relation(fields: [par_id], references: [id])
 
   @@id([trip_id, par_id]) 
 }
@@ -72,8 +75,26 @@ model expense_participant {
   expense_id   Int
   par_id       Int
   paid         Float
-  expense      expense       @relation(fields: [expense_id], references: [id_e])
-  participant  participant   @relation(fields: [par_id], references: [id_p])
+  expense      expense       @relation(fields: [expense_id], references: [id])
+  participant  participant   @relation(fields: [par_id], references: [id])
 
   @@id([expense_id, par_id]) 
+}
+model User {
+  email      String   @id
+  about_me   String?
+  password   String
+  name       String
+  is_enabled  Boolean
+  surname    String
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  participant participant? 
+}
+
+enum Role {
+  USER
+  COORDINATOR
+  ADMIN
 }

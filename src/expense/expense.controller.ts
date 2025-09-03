@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,8 +11,10 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -25,6 +32,9 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Tworzy nowy wydatek" })
   @ApiCreatedResponse({
     description: "Utworzono nowy wydatek",
@@ -55,6 +65,9 @@ export class ExpenseController {
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Aktualizuje dane wydatku" })
   @ApiOkResponse({
     description: "Zaktualizowano wydatek",
@@ -68,6 +81,9 @@ export class ExpenseController {
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Usuwa wydatek" })
   @ApiNoContentResponse({ description: "Wydatek został usunięty" })
   async remove(@Param("id") id: string) {

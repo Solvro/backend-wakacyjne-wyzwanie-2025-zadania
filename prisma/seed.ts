@@ -33,7 +33,7 @@ async function main(): Promise<void> {
     // Tworzenie wydatku
     const expense1 = await prisma.expense.create({
       data: {
-        trip_id: trip1.id_t,
+        trip_id: trip1.id,
         amount: 300,
         category: expense_category.accommodation,
       },
@@ -42,8 +42,8 @@ async function main(): Promise<void> {
     // Tworzenie relacji uczestnik-wycieczka
     await prisma.trip_participant.create({
       data: {
-        trip_id: trip1.id_t,
-        par_id: participant1.id_p,
+        trip_id: trip1.id,
+        par_id: participant1.id,
         status: trip_status.confirmed,
       },
     });
@@ -51,8 +51,8 @@ async function main(): Promise<void> {
     // Tworzenie relacji uczestnik-wydatek
     await prisma.expense_participant.create({
       data: {
-        expense_id: expense1.id_e,
-        par_id: participant1.id_p,
+        expense_id: expense1.id,
+        par_id: participant1.id,
         paid: 300,
       },
     });

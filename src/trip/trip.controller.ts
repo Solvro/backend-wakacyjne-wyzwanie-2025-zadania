@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,8 +11,10 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -25,6 +32,9 @@ export class TripController {
   constructor(private readonly tripService: TripService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Tworzy nową wycieczkę" })
   @ApiCreatedResponse({
     description: "Nowa wycieczka została stworzona",
@@ -49,6 +59,9 @@ export class TripController {
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Aktualizuję daną wycieczkę od id " })
   @ApiOkResponse({ description: "Wycieczka została zaktualizowana" })
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
@@ -56,6 +69,9 @@ export class TripController {
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Usuwa wycieczkę od id" })
   @ApiNoContentResponse({ description: "Dana wycieczka została usunięta" })
   async remove(@Param("id") id: string) {

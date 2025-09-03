@@ -17,17 +17,17 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    return this.database.trip.findUnique({ where: { id_t: id } });
+    return this.database.trip.findUnique({ where: { id } });
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
     return this.database.trip.update({
-      where: { id_t: id },
+      where: { id },
       data: updateTripDto,
     });
   }
 
   async remove(id: number) {
-    return this.database.trip.delete({ where: { id_t: id } });
+    return this.database.trip.delete({ where: { id } });
   }
 }

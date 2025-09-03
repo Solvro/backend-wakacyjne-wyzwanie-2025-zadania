@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,8 +11,10 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -25,6 +32,8 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Tworzy nowego uczestnika wycieczki" })
   @ApiCreatedResponse({
     description: "Utworzono nowego uczestnika wycieczki",
@@ -55,6 +64,9 @@ export class ParticipantController {
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Aktualizuje konkretnego uczestnika" })
   @ApiOkResponse({
     description: "Zaktualizowano uczestnika",
@@ -68,6 +80,9 @@ export class ParticipantController {
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Usuwa konkretnego uczestnika" })
   @ApiNoContentResponse({ description: "Uczestnik został usunięty" })
   async remove(@Param("id") id: string) {

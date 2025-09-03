@@ -1,4 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
@@ -8,6 +12,26 @@ import { UpdateParticipantDto } from "./dto/update-participant.dto";
 export class ParticipantService {
   constructor(private database: DatabaseService) {}
   async create(createParticipantDto: CreateParticipantDto) {
+    const email = createParticipantDto.email;
+    if (email == null) {
+      return this.database.participant.create({ data: createParticipantDto });
+    }
+    const existingUser = await this.database.user.findUnique({
+      where: { email },
+    });
+    if (existingUser == null) {
+      throw new BadRequestException(
+        "Użytkownik o podanym emailu nie istnieje ",
+      );
+    }
+    const existingParticipant = await this.database.participant.findUnique({
+      where: { email },
+    });
+    if (existingParticipant != null) {
+      throw new ConflictException(
+        "Istnieje już participant przypisany do tego emaila",
+      );
+    }
     return this.database.participant.create({ data: createParticipantDto });
   }
 
@@ -16,19 +40,19 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    return this.database.participant.findUnique({ where: { id_p: id } });
+    return this.database.participant.findUnique({ where: { id } });
   }
 
   async update(id: number, data: UpdateParticipantDto) {
     return this.database.participant.update({
-      where: { id_p: id },
+      where: { id },
       data,
     });
   }
 
   async remove(id: number) {
     return this.database.participant.delete({
-      where: { id_p: id },
+      where: { id },
     });
   }
 }

@@ -16,19 +16,19 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    return this.database.expense.findUnique({ where: { id_e: id } });
+    return this.database.expense.findUnique({ where: { id } });
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
     return this.database.expense.update({
-      where: { id_e: id },
+      where: { id },
       data: updateExpenseDto,
     });
   }
 
   async remove(id: number) {
     return this.database.expense.delete({
-      where: { id_e: id },
+      where: { id },
     });
   }
 }
