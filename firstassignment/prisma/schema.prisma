@@ -13,8 +13,8 @@ model Trip {
   start_date   DateTime
   end_date     DateTime
   location     String
-  created_at   DateTime
-  updated_at   DateTime
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt()
   participants Participant[]
 }
 
@@ -25,8 +25,8 @@ model Participant {
   gender     Gender?
   isVegan    Boolean   @default(false)
   tripId     Int?
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt()
   expenses   Expense[]
   trip       Trip?     @relation(fields: [tripId], references: [id], onDelete: Cascade)
 }
@@ -36,8 +36,8 @@ model Expense {
   amount        Float
   location      String
   participantId Int?
-  created_at    DateTime
-  updated_at    DateTime
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt()
   Participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade)
 }
 
@@ -47,8 +47,8 @@ model User {
   password   String
   email      String   @unique
   role       Role
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
 }
 
 enum Gender {

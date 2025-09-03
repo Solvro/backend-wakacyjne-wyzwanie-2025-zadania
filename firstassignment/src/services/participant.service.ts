@@ -10,7 +10,7 @@ export class ParticipantsService{
     constructor(private prisma: PrismaService, private tripService: TripsService){}
 
     async participantById(id: number){
-        return this.prisma.participant.findUnique({where: {id},include: {expenses: true}});
+        return this.prisma.participant.findUnique({where: {id}});
     }
 
     async allParticipants(): Promise<Participant[]>{
@@ -23,15 +23,7 @@ export class ParticipantsService{
             throw new NotFoundException(`Wyacieczka z ID ${data.tripId.toString()} nie istnieje`);
         }else{
             return this.prisma.participant.create({
-                data:{
-                    imie: data.imie,
-                    nazwisko: data.nazwisko,
-                    gender: data.gender,
-                    isVegan: data.isVegan,
-                    tripId: data.tripId,
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                }
+                data
             })
         }
     }
@@ -53,14 +45,7 @@ export class ParticipantsService{
         }
         else{
             return this.prisma.participant.update({
-            data: {
-                imie: newData.imie,
-                nazwisko: newData.nazwisko,
-                gender: newData.gender,
-                isVegan: newData.isVegan,
-                tripId: newData.tripId,
-                updated_at: new Date(),
-            },
+            data: newData,
             where: {id},
         })
         }
@@ -72,7 +57,7 @@ export class ParticipantsService{
             throw new NotFoundException(`Uczestnik z ID ${id.toString()} nie istnieje`);
         }
         else{
-            return this.prisma.participant.delete({where: {id}, include: {expenses: true}})
+            return this.prisma.participant.delete({where: {id}})
         }
     }
 }

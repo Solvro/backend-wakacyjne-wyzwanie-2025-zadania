@@ -6,6 +6,7 @@ import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/guards/role.decorator';
 import { Role } from 'generated/prisma';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { UpdateTripDto } from 'src/Dto/update-trip-dto';
 
 @ApiTags('Wycieczki')
 @Controller('budzetownik')
@@ -55,7 +56,7 @@ export class TripController {
     @Roles(Role.COORDINATOR,Role.ADMIN)
     @ApiOperation({description: "Aktualizuje wycieczkę"})
     @ApiResponse({ status: 200, description: "Sukces!"})
-    async updateTrip(@Param('id') id: string, @Body() newData: CreateTripDto){
+    async updateTrip(@Param('id') id: string, @Body() newData: UpdateTripDto){
         const parameters = {id: Number.parseInt(id), newData}
         return this.tripService.updateTrip(parameters);
     }

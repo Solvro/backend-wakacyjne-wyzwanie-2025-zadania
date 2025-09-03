@@ -44,8 +44,6 @@ export class UserService{
                     email: data.email,
                     password,
                     role: Role.USER,
-                    created_at: new Date(),
-                    updated_at: new Date(),
                 },
             })
             return {username: data.username, email: data.email} 
@@ -67,10 +65,7 @@ export class UserService{
         }
         else{
             return this.prisma.user.update({
-                data: {
-                    username: newData.username,
-                    updated_at: new Date(),
-                },
+                data: newData,
                 where: {id},
             })
         }
