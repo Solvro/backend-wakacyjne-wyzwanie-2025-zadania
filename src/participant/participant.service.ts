@@ -40,19 +40,19 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    return this.database.participant.findUnique({ where: { id_p: id } });
+    return this.database.participant.findUnique({ where: { id } });
   }
 
   async update(id: number, data: UpdateParticipantDto) {
     return this.database.participant.update({
-      where: { id_p: id },
+      where: { id },
       data,
     });
   }
 
   async remove(id: number) {
     return this.database.participant.delete({
-      where: { id_p: id },
+      where: { id },
     });
   }
 }

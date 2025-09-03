@@ -32,8 +32,7 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Tworzy nowego uczestnika wycieczki" })
   @ApiCreatedResponse({

@@ -11,27 +11,27 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateParticipantDto {
   @ApiProperty()
-  @IsString({ message: "Pole name musi być stringiem" })
-  @Length(2, 50, { message: "Pole imię musi być od 2 do 50 znaków" })
+  @IsString()
+  @Length(2, 50)
   name: string;
 
   @ApiProperty()
-  @IsString({ message: "Pole surname musi być stringiem" })
-  @Length(2, 50, { message: "Pole surname musi być od 2 do 50 znaków" })
+  @IsString()
+  @Length(2, 50)
   surname: string;
 
   @ApiProperty()
-  @IsNumber({}, { message: "Pole age musi być liczbą" })
-  @Min(0, { message: "Pole age nie może być ujemny" })
+  @IsNumber()
+  @Min(0)
   age: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString({ message: "Pole phone_num musi być stringiem" })
+  @IsString()
   phone_num?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEmail({ message: "Pole email musi być poprawnym emailem" })
+  @IsEmail()
   email?: string;
 }
