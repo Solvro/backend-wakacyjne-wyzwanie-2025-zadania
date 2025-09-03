@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ExpenseStatus {
+  PLANNED
+  PAID
+  SETTLED
+}
+
+model Participant {
+  id        Int           @id @default(autoincrement())
+  name      String
+  lastName  String?
+  email     String
+  status    AccountStatus
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  ParticipantOnTrip ParticipantOnTrip[]
+
+  expenses Expense[]
+}
+
+model Trip {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  destination String?
+  startDate   DateTime
+  endDate     DateTime
+  budget      Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ParticipantOnTrip ParticipantOnTrip[]
+
+  expenses Expense[]
+}
+
+model ParticipantOnTrip {
+  participant   Participant @relation(fields: [participantId], references: [id])
+  participantId Int
+  trip          Trip        @relation(fields: [tripId], references: [id])
+  tripId        Int
+
+  @@id([participantId, tripId])
+}
+
+model Expense {
+  id                  Int           @id @default(autoincrement())
+  trip                Trip          @relation(fields: [tripId], references: [id])
+  tripId              Int
+  payingParticipant   Participant   @relation(fields: [payingParticipantId], references: [id])
+  payingParticipantId Int
+  title               String
+  description         String?
+  amount              Float
+  status              ExpenseStatus
+  paymentDate         DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
