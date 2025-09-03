@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -14,19 +8,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  MALE
-  FEMALE
-}
-
 model Trip {
   id           Int           @id @default(autoincrement())
   start_date   DateTime
   end_date     DateTime
   location     String
-  participants Participant[]
   created_at   DateTime
   updated_at   DateTime
+  participants Participant[]
 }
 
 model Participant {
@@ -35,19 +24,41 @@ model Participant {
   nazwisko   String
   gender     Gender?
   isVegan    Boolean   @default(false)
-  expenses   Expense[]
-  trip       Trip?     @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   tripId     Int?
   created_at DateTime
   updated_at DateTime
+  expenses   Expense[]
+  trip       Trip?     @relation(fields: [tripId], references: [id], onDelete: Cascade)
 }
 
 model Expense {
   id            Int          @id @default(autoincrement())
   amount        Float
   location      String
-  Participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   participantId Int?
   created_at    DateTime
   updated_at    DateTime
+  Participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String
+  password   String
+  email      String   @unique
+  role       Role
+  created_at DateTime
+  updated_at DateTime
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  ADMIN
+  USER
+  COORDINATOR
+  PARTICIPANT
 }

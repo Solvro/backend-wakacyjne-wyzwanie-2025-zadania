@@ -9,7 +9,7 @@ export class TripsService{
     constructor(private prisma: PrismaService){}
 
     async tripById(id: number){
-        return this.prisma.trip.findUnique({where: {id}, include: {participants: {include: {expenses: true}}}});
+        return this.prisma.trip.findUnique({where: {id}});
     }
 
     async allTrips(): Promise<Trip[]>{

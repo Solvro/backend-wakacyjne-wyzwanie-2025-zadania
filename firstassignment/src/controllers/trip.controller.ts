@@ -1,7 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TripsService } from '../services/trip.service';
 import { CreateTripDto } from '../Dto/create-trip-dto';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/guards/role.decorator';
+import { Role } from 'generated/prisma';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @ApiTags('Wycieczki')
 @Controller('budzetownik')
@@ -14,8 +18,8 @@ export class TripController {
     @Get('trip/:id')
     @ApiOperation({description: "Zwraca wycieczkę wraz, z uczestnikami i ich wydatkami."})
     @ApiResponse({ status: 200, description: "Sukces!"})
-    async getWholeTrip(@Param('id') id: number){
-        return this.tripService.tripById(id);
+    async getWholeTrip(@Param('id') id: string){
+        return this.tripService.tripById(Number.parseInt(id));
     }
 
     @Get('trips')
@@ -26,6 +30,9 @@ export class TripController {
     }
 
     @Delete('deleteTrip/:id')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(Role.COORDINATOR,Role.ADMIN)
     @ApiOperation({description: "Usuwa wybraną wycieczkę"})
     @ApiResponse({ status: 200, description: "Sukces!"})
     async deleteTrip(@Param('id') id: string){
@@ -33,6 +40,9 @@ export class TripController {
     }
 
     @Post('addTrip')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(Role.COORDINATOR,Role.ADMIN)
     @ApiOperation({description: "Dodaje nową wycieczkę"})
     @ApiResponse({ status: 201, description: "Sukces!"})
     async addTrip(@Body() createTripDto: CreateTripDto){
@@ -40,6 +50,9 @@ export class TripController {
     }
 
     @Patch('updateTrip/:id')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(Role.COORDINATOR,Role.ADMIN)
     @ApiOperation({description: "Aktualizuje wycieczkę"})
     @ApiResponse({ status: 200, description: "Sukces!"})
     async updateTrip(@Param('id') id: string, @Body() newData: CreateTripDto){
