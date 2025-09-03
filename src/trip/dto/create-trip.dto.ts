@@ -1,4 +1,5 @@
-import { IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -21,16 +22,18 @@ export class CreateTripDto {
     description: "Start date of the trip (YYYY-MM-DD)",
     example: "2025-09-01",
   })
-  @IsDateString()
-  start_date: string;
+  @Type(() => Date)
+  @IsDate()
+  start_date: Date;
 
   @ApiPropertyOptional({
     description: "End date of the trip (YYYY-MM-DD)",
     example: "2025-09-03",
   })
   @IsOptional()
-  @IsDateString()
-  end_date?: string | null;
+  @Type(() => Date)
+  @IsDate()
+  end_date?: Date;
 
   @ApiPropertyOptional({
     description: "Planned budget for the trip",
@@ -38,5 +41,5 @@ export class CreateTripDto {
   })
   @IsOptional()
   @IsNumber()
-  budget?: number | null;
+  budget?: number;
 }

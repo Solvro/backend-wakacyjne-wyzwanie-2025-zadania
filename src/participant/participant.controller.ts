@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -52,10 +54,11 @@ export class ParticipantController {
   }
 
   @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "Delete participant by ID" })
-  @ApiResponse({ status: 200, description: "Participant deleted successfully" })
+  @ApiResponse({ status: 204, description: "Participant deleted successfully" })
   @ApiResponse({ status: 404, description: "Participant not found" })
-  async remove(@Param("id") id: string) {
-    return this.participantService.remove(+id);
+  async remove(@Param("id") id: number): Promise<void> {
+    await this.participantService.remove(id);
   }
 }

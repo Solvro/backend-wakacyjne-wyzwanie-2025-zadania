@@ -9,16 +9,23 @@ import { UpdateTripDto } from "./dto/update-trip.dto";
 export class TripService {
   constructor(private database: DatabaseService) {}
 
+  private async getTripOrThrow(id: number) {
+    const trip = await this.database.trip.findUnique({
+      where: { trip_id: id },
+    });
+    if (trip == null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+    }
+    return trip;
+  }
+
   async create(createTripDto: CreateTripDto) {
     return this.database.trip.create({
       data: {
         name: createTripDto.name,
         destination: createTripDto.destination,
-        start_date: new Date(createTripDto.start_date),
-        end_date:
-          createTripDto.end_date == null
-            ? null
-            : new Date(createTripDto.end_date),
+        start_date: createTripDto.start_date,
+        end_date: createTripDto.end_date,
         budget: createTripDto.budget,
       },
       include: {
@@ -48,20 +55,14 @@ export class TripService {
     });
 
     if (trip == null) {
-      throw new NotFoundException(`Trip with ID ${String(id)} not found`);
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
 
     return trip;
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    const trip = await this.database.trip.findUnique({
-      where: { trip_id: id },
-    });
-
-    if (trip == null) {
-      throw new NotFoundException(`Trip with ID ${String(id)} not found`);
-    }
+    await this.getTripOrThrow(id);
 
     return this.database.trip.update({
       where: { trip_id: id },
@@ -75,19 +76,10 @@ export class TripService {
     });
   }
 
-  async remove(id: number) {
-    const trip = await this.database.trip.findUnique({
-      where: { trip_id: id },
-    });
-
-    if (trip == null) {
-      throw new NotFoundException(`Trip with ID ${String(id)} not found`);
-    }
-
+  async remove(id: number): Promise<void> {
+    await this.getTripOrThrow(id);
     await this.database.expense.deleteMany({ where: { trip_id: id } });
     await this.database.participant.deleteMany({ where: { trip_id: id } });
     await this.database.trip.delete({ where: { trip_id: id } });
-
-    return { message: `Trip with ID ${String(id)} deleted successfully` };
   }
 }

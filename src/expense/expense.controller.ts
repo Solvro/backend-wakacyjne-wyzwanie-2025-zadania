@@ -3,7 +3,10 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from "@nestjs/common";
@@ -21,6 +24,12 @@ export class ExpenseController {
   @Post()
   @ApiOperation({ summary: "Create a new expense" })
   @ApiResponse({ status: 201, description: "Expense created successfully" })
+  @ApiResponse({ status: 400, description: "Invalid input data" })
+  @ApiResponse({ status: 404, description: "Trip not found" })
+  @ApiResponse({
+    status: 409,
+    description: "Expense conflict (duplicate or invalid state)",
+  })
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
@@ -36,8 +45,8 @@ export class ExpenseController {
   @ApiOperation({ summary: "Get expense by ID" })
   @ApiResponse({ status: 200, description: "Expense details retrieved" })
   @ApiResponse({ status: 404, description: "Expense not found" })
-  async findOne(@Param("id") id: string) {
-    return this.expenseService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.findOne(id);
   }
 
   @Patch(":id")
@@ -45,17 +54,18 @@ export class ExpenseController {
   @ApiResponse({ status: 200, description: "Expense updated successfully" })
   @ApiResponse({ status: 404, description: "Expense not found" })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
-    return this.expenseService.update(+id, updateExpenseDto);
+    return this.expenseService.update(id, updateExpenseDto);
   }
 
   @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "Delete expense by ID" })
-  @ApiResponse({ status: 200, description: "Expense deleted successfully" })
+  @ApiResponse({ status: 204, description: "Expense deleted successfully" })
   @ApiResponse({ status: 404, description: "Expense not found" })
-  async remove(@Param("id") id: string) {
-    return this.expenseService.remove(+id);
+  async remove(@Param("id") id: number): Promise<void> {
+    await this.expenseService.remove(id);
   }
 }

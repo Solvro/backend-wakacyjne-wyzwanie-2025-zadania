@@ -106,7 +106,7 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.tripService.remove(+id);
+  async remove(@Param("id") id: number): Promise<void> {
+    await this.tripService.remove(id);
   }
 }

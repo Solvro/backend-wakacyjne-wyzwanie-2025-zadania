@@ -1,6 +1,7 @@
 import { ExpenseType } from "@prisma/client";
+import { Type } from "class-transformer";
 import {
-  IsDateString,
+  IsDate,
   IsEnum,
   IsInt,
   IsNumber,
@@ -31,8 +32,9 @@ export class CreateExpenseDto {
     description: "Date when the expense occurred (YYYY-MM-DD)",
     example: "2025-09-01",
   })
-  @IsDateString()
-  expense_date: string;
+  @Type(() => Date)
+  @IsDate()
+  expense_date: Date;
 
   @ApiProperty({
     description: "Cost of the expense",
