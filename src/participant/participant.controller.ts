@@ -1,6 +1,4 @@
 import { Role } from "@prisma/client";
-import { Roles } from "src/auth/roles/roles.decorator";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 
 import {
   Body,
@@ -10,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -22,6 +21,8 @@ import {
 } from "@nestjs/swagger";
 
 import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -79,7 +80,7 @@ export class ParticipantController {
     status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.participantService.findOne(+id);
   }
 
@@ -101,7 +102,7 @@ export class ParticipantController {
     description: "Participant not found",
   })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
     return this.participantService.update(+id, updateParticipantDto);
@@ -124,7 +125,7 @@ export class ParticipantController {
     status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
-  async remove(@Param("id") id: string) {
+  async remove(@Param("id", ParseIntPipe) id: string) {
     return this.participantService.remove(+id);
   }
 }

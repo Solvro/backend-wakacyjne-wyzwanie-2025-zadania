@@ -1,7 +1,4 @@
 import { Role } from "@prisma/client";
-import { AuthGuard } from "src/auth/auth.guard";
-import { Roles } from "src/auth/roles/roles.decorator";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 
 import {
   Body,
@@ -23,7 +20,10 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { CurrentUser } from "../auth/roles/current-user";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateUserResponseDto } from "./dto/create-user-response.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -94,6 +94,10 @@ export class UserController {
     type: CreateUserResponseDto,
   })
   @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "You cannnot update this user",
+  })
+  @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
@@ -107,26 +111,6 @@ export class UserController {
     }
 
     return this.userService.update(id, updateUserDto);
-  }
-
-  @Delete(":email")
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN)
-  @ApiBearerAuth("access-token")
-  @ApiOperation({
-    summary: "Delete a user",
-    description: "Remove a user and all its associated data from the system",
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "User deleted successfully",
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: "User not found",
-  })
-  async remove(@Param("email") email: string) {
-    return this.userService.remove(email);
   }
 
   @Patch("enable/:email")
@@ -175,5 +159,25 @@ export class UserController {
   })
   async disableUser(@Param("email") email: string) {
     return this.userService.disableUser(email);
+  }
+
+  @Delete(":email")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
+  @ApiOperation({
+    summary: "Delete a user",
+    description: "Remove a user and all its associated data from the system",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "User deleted successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User not found",
+  })
+  async remove(@Param("email") email: string) {
+    return this.userService.remove(email);
   }
 }

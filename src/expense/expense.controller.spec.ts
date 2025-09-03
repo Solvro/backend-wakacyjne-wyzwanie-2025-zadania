@@ -1,6 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { AuthService } from "../auth/auth.service";
 import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
 
@@ -15,10 +16,18 @@ describe("ExpenseController", () => {
     remove: jest.fn(),
   };
 
+  const mockAuthService = {
+    login: jest.fn(),
+    register: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExpenseController],
-      providers: [{ provide: ExpenseService, useValue: mockExpenseService }],
+      providers: [
+        { provide: ExpenseService, useValue: mockExpenseService },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compile();
 
     controller = module.get<ExpenseController>(ExpenseController);

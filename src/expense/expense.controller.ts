@@ -1,6 +1,4 @@
 import { Role } from "@prisma/client";
-import { Roles } from "src/auth/roles/roles.decorator";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 
 import {
   Body,
@@ -10,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -22,6 +21,8 @@ import {
 } from "@nestjs/swagger";
 
 import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -78,7 +79,7 @@ export class ExpenseController {
     status: HttpStatus.NOT_FOUND,
     description: "Expense not found (lucky you)",
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.findOne(+id);
   }
 
@@ -100,7 +101,7 @@ export class ExpenseController {
     description: "Expense not found",
   })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: string,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
     return this.expenseService.update(+id, updateExpenseDto);
@@ -122,7 +123,7 @@ export class ExpenseController {
     status: HttpStatus.NOT_FOUND,
     description: "Expense not found",
   })
-  async remove(@Param("id") id: string) {
+  async remove(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.remove(+id);
   }
 }

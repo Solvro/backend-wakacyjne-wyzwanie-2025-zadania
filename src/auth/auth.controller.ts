@@ -1,18 +1,7 @@
-import { CreateUserDto } from "src/user/dto/create-user.dto";
-
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-} from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { CreateUserDto } from "../user/dto/create-user.dto";
 import { AuthService } from "./auth.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { LoginUserDto } from "./dto/login-user.dto";

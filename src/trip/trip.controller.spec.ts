@@ -1,6 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { AuthService } from "../auth/auth.service";
 import { TripController } from "./trip.controller";
 import { TripService } from "./trip.service";
 
@@ -15,10 +16,18 @@ describe("TripController", () => {
     remove: jest.fn(),
   };
 
+  const mockAuthService = {
+    login: jest.fn(),
+    register: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TripController],
-      providers: [{ provide: TripService, useValue: mockTripService }],
+      providers: [
+        { provide: TripService, useValue: mockTripService },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compile();
 
     controller = module.get<TripController>(TripController);
