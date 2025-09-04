@@ -1,7 +1,16 @@
 import { Role } from "@prisma/client";
-import { IsDate, IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
+import {
+  IsDate,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Validate,
+} from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { IsPastDate } from "../../validators/past-date.validator";
 
 export class CreateUserDto {
   @ApiProperty({ description: "Email address", example: "alice@example.com" })
@@ -23,6 +32,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({ description: "Birthday", example: "1990-01-01" })
   @IsDate()
   @IsOptional()
+  @Validate(IsPastDate)
   birthday?: Date | null;
 
   @ApiProperty({
