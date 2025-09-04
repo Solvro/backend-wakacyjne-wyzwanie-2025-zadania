@@ -1,8 +1,9 @@
 import { Type } from "class-transformer";
 import { IsDate, IsOptional, IsString, Validate } from "class-validator";
-import { CorrectEndDate } from "src/validators/correct-end-date.validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { CorrectEndDate } from "../../validators/correct-end-date.validator";
 
 export class CreateTripDto {
   @ApiProperty()

@@ -1,5 +1,3 @@
-import { AuthGuard } from "src/auth/auth.guard";
-
 import {
   Body,
   Controller,
@@ -14,6 +12,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { ParticipantMetadata } from "./dto/participant-metadata.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";

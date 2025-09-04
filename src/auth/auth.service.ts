@@ -1,7 +1,8 @@
 import { compare } from "bcrypt";
-import { ParticipantService } from "src/participant/participant.service";
 
 import { Injectable, UnauthorizedException } from "@nestjs/common";
+
+import { ParticipantService } from "../participant/participant.service";
 
 @Injectable()
 export class AuthService {

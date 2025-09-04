@@ -1,7 +1,3 @@
-import { AuthGuard } from "src/auth/auth.guard";
-import { Roles } from "src/auth/roles/role.decorator";
-import { RoleGuard } from "src/auth/roles/role.guard";
-
 import {
   Body,
   Controller,
@@ -14,6 +10,9 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
