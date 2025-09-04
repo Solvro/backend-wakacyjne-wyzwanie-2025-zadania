@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from "@nestjs/common";
@@ -54,7 +55,7 @@ export class ExpenseController {
     status: 200,
     description: "Request successful",
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.findOne(+id);
   }
 
@@ -68,7 +69,7 @@ export class ExpenseController {
     description: "Patch successful",
   })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: string,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
     return this.expenseService.update(+id, updateExpenseDto);
@@ -83,7 +84,7 @@ export class ExpenseController {
     status: 200,
     description: "Resource deleted",
   })
-  async remove(@Param("id") id: string) {
+  async remove(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.remove(+id);
   }
 }

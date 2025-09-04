@@ -8,6 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors({
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    origin: /^http:\/\/localhost:5[0-5][0-9][0-9]$/,
+    preflightContinue: false,
+  });
+
   const config = new DocumentBuilder()
     .setTitle("Wakacyjne API")
     .setDescription("Wakacyjne API description")

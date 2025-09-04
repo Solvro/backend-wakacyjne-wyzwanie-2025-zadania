@@ -34,9 +34,12 @@ datasource db {
 
   model Participant {
     id               Int     @id @default(autoincrement())
+    email            String  @db.VarChar(255) @unique
+    password         String  @db.VarChar(255)
     name             String  @db.VarChar(255)
     surname          String  @db.VarChar(255)
     account_type     AccountType 
+    role             Role
     trip_participant TripParticipant[]
   }
 
@@ -53,4 +56,10 @@ datasource db {
     BASIC
     TRIAL
     PREMIUM
+  }
+
+  enum Role {
+    USER
+    COORDINATOR
+    ADMIN
   }

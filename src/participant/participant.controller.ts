@@ -1,15 +1,21 @@
+import { AuthGuard } from "src/auth/auth.guard";
+
 import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { ParticipantMetadata } from "./dto/participant-metadata.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
@@ -27,6 +33,10 @@ export class ParticipantController {
   @ApiResponse({
     status: 201,
     description: "participant created",
+  })
+  @ApiResponse({
+    status: 209,
+    description: "Participant with this email address already exists",
   })
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
@@ -54,36 +64,61 @@ export class ParticipantController {
     status: 200,
     description: "Request successful",
   })
-  async findOne(@Param("id") id: string) {
-    return this.participantService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.findOne(id);
   }
 
-  @Patch(":id")
+  @UseGuards(AuthGuard)
+  @Patch("")
   @ApiOperation({
     summary: "Updates a particpant",
-    description: "Given an id, updates that record with the given data",
+    description:
+      "Admins can modify any user by supplying their id in request body, while users and coordinators can only modify themselves.",
   })
   @ApiResponse({
     status: 200,
     description: "Patch successful",
   })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized",
+  })
   async update(
-    @Param("id") id: string,
-    @Body() updateParticipantDto: UpdateParticipantDto,
+    @Request()
+    request: {
+      participant: ParticipantMetadata;
+    },
+    @Body() updateRequest: UpdateParticipantDto,
   ) {
-    return this.participantService.update(+id, updateParticipantDto);
+    if (request.participant.role === "ADMIN") {
+      return await this.participantService.updateAny(updateRequest);
+    }
+    return await this.participantService.updateSelf(
+      request.participant.id,
+      updateRequest,
+    );
   }
 
-  @Delete(":id")
+  @UseGuards(AuthGuard)
+  @Delete("")
   @ApiOperation({
-    summary: "Deletes a participant with given id",
+    summary: "Deletes a participant",
     description: "Given an id, deletes a participant record with that id",
   })
   @ApiResponse({
     status: 200,
     description: "Resource deleted",
   })
-  async remove(@Param("id") id: string) {
-    return this.participantService.remove(+id);
+  async remove(
+    @Request()
+    request: {
+      participant: ParticipantMetadata;
+    },
+    @Body() id: number,
+  ) {
+    if (request.participant.role === "ADMIN") {
+      return await this.participantService.deleteAny(id);
+    }
+    return await this.participantService.deleteSelf(id, request.participant.id);
   }
 }
