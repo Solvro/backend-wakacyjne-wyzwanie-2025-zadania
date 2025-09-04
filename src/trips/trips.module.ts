@@ -1,9 +1,8 @@
-import { AuthModule } from "src/auth/auth.module";
-import { RoleGuard } from "src/auth/role/role.guard";
-import { PrismaModule } from "src/prisma/prisma.module";
-
 import { Module } from "@nestjs/common";
 
+import { AuthModule } from "../auth/auth.module";
+import { RoleGuard } from "../auth/role/role.guard";
+import { PrismaModule } from "../prisma/prisma.module";
 import { TripsController } from "./trips.controller";
 import { TripsService } from "./trips.service";
 

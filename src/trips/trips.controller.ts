@@ -1,7 +1,4 @@
 import { Role } from "@prisma/client";
-import { AuthGuard } from "src/auth/auth.guard";
-import { Roles } from "src/auth/role/role.decorator";
-import { RoleGuard } from "src/auth/role/role.guard";
 
 import {
   Body,
@@ -16,6 +13,9 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/role/role.decorator";
+import { RoleGuard } from "../auth/role/role.guard";
 import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
 import { UserResponseDto } from "../users/dto/user-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";

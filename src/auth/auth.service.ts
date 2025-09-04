@@ -1,8 +1,5 @@
 import { Role } from "@prisma/client";
 import { compare, hash } from "bcrypt";
-import { CreateUserDto } from "src/users/dto/create-user.dto";
-import { UserMetadata } from "src/users/dto/user-metadata";
-import { UserResponseDto } from "src/users/dto/user-response.dto";
 
 import {
   ConflictException,
@@ -12,6 +9,9 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
+import { CreateUserDto } from "../users/dto/create-user.dto";
+import { UserMetadata } from "../users/dto/user-metadata";
+import { UserResponseDto } from "../users/dto/user-response.dto";
 import { UsersService } from "../users/users.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { LoginDto } from "./dto/login.dto";

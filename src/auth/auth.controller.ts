@@ -1,9 +1,8 @@
-import { CreateUserDto } from "src/users/dto/create-user.dto";
-import { UserResponseDto } from "src/users/dto/user-response.dto";
-
 import { Body, Controller, HttpStatus, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { CreateUserDto } from "../users/dto/create-user.dto";
+import { UserResponseDto } from "../users/dto/user-response.dto";
 import { AuthService } from "./auth.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { LoginDto } from "./dto/login.dto";
