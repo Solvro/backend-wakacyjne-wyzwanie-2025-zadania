@@ -1,6 +1,6 @@
 import { DatabaseService } from "src/database/database.service";
 
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -28,6 +28,15 @@ export class ParticipantService {
   }
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
+    const currentEntry = await this.database.participant.findUnique({
+      where: { id },
+    });
+    if (currentEntry === null) {
+      throw new NotFoundException(
+        `Participant with an Id of ${id.toString()} does not exist`,
+      );
+    }
+
     return this.database.participant.update({
       where: { id },
       data: {
@@ -39,6 +48,15 @@ export class ParticipantService {
   }
 
   async remove(id: number) {
+    const currentEntry = await this.database.participant.findUnique({
+      where: { id },
+    });
+    if (currentEntry === null) {
+      throw new NotFoundException(
+        `Participant with an Id of ${id.toString()} already does not exist`,
+      );
+    }
+
     return this.database.participant.delete({ where: { id } });
   }
 }
