@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/role/role.decorator";
+import { RoleGuard } from "src/auth/role/role.guard";
+
 import {
   Body,
   Controller,
@@ -7,6 +12,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -28,6 +34,8 @@ export class TripsController {
     description: "Trip created successfully.",
     type: TripResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Post()
   async create(@Body() dto: CreateTripDto): Promise<TripResponseDto> {
     return await this.service.create(dto);
@@ -80,6 +88,8 @@ export class TripsController {
     type: TripResponseDto,
   })
   @ApiResponse({ status: 404, description: "Trip not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Delete(":id")
   async remove(
     @Param("id", ParseIntPipe) id: number,
@@ -93,6 +103,8 @@ export class TripsController {
     description: "List of participants.",
     type: [UserResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Get(":id/participants")
   async getParticipants(
     @Param("id", ParseIntPipe) id: number,
@@ -106,6 +118,8 @@ export class TripsController {
     description: "List of expenses.",
     type: [ExpenseResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Get(":id/expenses")
   async getExpenses(
     @Param("id", ParseIntPipe) id: number,

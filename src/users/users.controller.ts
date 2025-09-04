@@ -1,17 +1,23 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/role/role.decorator";
+import { RoleGuard } from "src/auth/role/role.guard";
+
 import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
-  Post,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
 import { TripResponseDto } from "../trips/dto/trip-response.dto";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 import { UsersService } from "./users.service";
@@ -21,23 +27,14 @@ import { UsersService } from "./users.service";
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
-  @ApiOperation({ summary: "Create a new user" })
-  @ApiResponse({
-    status: 201,
-    description: "User created successfully.",
-    type: UserResponseDto,
-  })
-  @Post()
-  async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
-    return await this.service.create(dto);
-  }
-
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({
     status: 200,
     description: "List of all users.",
     type: [UserResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get()
   async findAll(): Promise<UserResponseDto[]> {
     return await this.service.findAll();
@@ -50,6 +47,8 @@ export class UsersController {
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: "User not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get(":email")
   async findOne(
     @Param("email") email: string,
@@ -63,12 +62,21 @@ export class UsersController {
     description: "User updated successfully.",
     type: UserResponseDto,
   })
-  @ApiResponse({ status: 404, description: "User not found." })
+  @ApiResponse({
+    status: 404,
+    description: "User not found.",
+  })
+  @UseGuards(AuthGuard)
   @Patch(":email")
   async update(
     @Param("email") email: string,
     @Body() dto: UpdateUserDto,
+    @Req() request: Request & { user: { email: string; role: Role } },
   ): Promise<UserResponseDto> {
+    if (email !== request.user.email) {
+      throw new ForbiddenException("You can only update your own user data");
+    }
+
     return await this.service.update(email, dto);
   }
 
@@ -79,6 +87,8 @@ export class UsersController {
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: "User not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Delete(":email")
   async remove(@Param("email") email: string): Promise<UserResponseDto> {
     return await this.service.remove(email);
@@ -90,6 +100,8 @@ export class UsersController {
     description: "List of expenses.",
     type: [ExpenseResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get(":email/expenses")
   async getExpenses(
     @Param("email") email: string,
@@ -103,6 +115,8 @@ export class UsersController {
     description: "List of trips.",
     type: [TripResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get(":email/trips")
   async getTrips(@Param("email") email: string): Promise<TripResponseDto[]> {
     return await this.service.getTrips(email);

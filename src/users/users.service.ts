@@ -1,10 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { TripResponseDto } from "../trips/dto/trip-response.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserMetadata, userToMetadata } from "./dto/user-metadata";
 import { UserResponseDto } from "./dto/user-response.dto";
 
 @Injectable()
@@ -49,5 +50,13 @@ export class UsersService {
         },
       },
     });
+  }
+
+  async findMetadataOrFail(email: string): Promise<UserMetadata> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (user === null) {
+      throw new NotFoundException("User not found");
+    }
+    return userToMetadata(user);
   }
 }

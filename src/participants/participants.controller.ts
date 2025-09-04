@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -7,9 +9,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/role/role.decorator";
+import { RoleGuard } from "../auth/role/role.guard";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { ParticipantResponseDto } from "./dto/participant-response.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -26,6 +32,8 @@ export class ParticipantsController {
     description: "Participant created successfully.",
     type: ParticipantResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Post()
   async create(
     @Body() dto: CreateParticipantDto,
@@ -39,6 +47,8 @@ export class ParticipantsController {
     description: "List of all participants.",
     type: [ParticipantResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get()
   async findAll(): Promise<ParticipantResponseDto[]> {
     return await this.service.findAll();
@@ -51,6 +61,8 @@ export class ParticipantsController {
     type: ParticipantResponseDto,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get(":id")
   async findOne(
     @Param("id", ParseIntPipe) id: number,
@@ -65,6 +77,8 @@ export class ParticipantsController {
     type: ParticipantResponseDto,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Patch(":id")
   async update(
     @Param("id", ParseIntPipe) id: number,
@@ -80,6 +94,8 @@ export class ParticipantsController {
     type: ParticipantResponseDto,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Delete(":id")
   async remove(
     @Param("id", ParseIntPipe) id: number,
