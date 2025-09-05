@@ -16,8 +16,9 @@ datasource db {
 enum TripCategory {
   BUSINESS
   VACATION
+  FAMILY
   PERSONAL
-  CONFERENCE
+  WEEKEND
   OTHER
 }
 
@@ -26,7 +27,10 @@ enum ExpenseCategory {
   TRANSPORT
   FOOD
   ENTERTAINMENT
+  HEALTH
+  UTILITIES
   SHOPPING
+  INSURANCE
   OTHER
 }
 
@@ -34,78 +38,78 @@ enum ParticipantRole {
   ORGANIZER
   PARTICIPANT
   GUEST
+  DRIVER
+  VOLUNTEER
   OTHER
 }
 
 enum ParticipantSex {
   FEMALE
   MALE
+  OTHER
 }
 
 model Expense {
-  id Int @id @default(autoincrement())
-  title String @db.VarChar(255)
-  recipient String? @db.VarChar(100)
-  amount Int? @db.Integer
-  currency String @db.VarChar(3)
-  value Decimal? @db.Decimal(10, 2)
-  left Decimal? @db.Decimal(10, 2)
-  category ExpenseCategory?
-  note String? @db.Text
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @default(now()) @db.Timestamptz
+  id            Int             @id @default(autoincrement())
+  title         String          @db.VarChar(255)
+  recipientName String?         @db.VarChar(100)
+  recipientIban String?         @db.VarChar(50)
+  quantity      Int?            @default(1)
+  currency      String          @default("PLN") @db.VarChar(3)
+  amount        Decimal?        @db.Decimal(10, 2)
+  budgetLeft    Decimal?        @db.Decimal(10, 2)
+  category      ExpenseCategory
+  note          String?         @db.Text
+  createdAt     DateTime        @default(now()) @db.Timestamptz
+  updatedAt     DateTime        @default(now()) @db.Timestamptz
+  isArchived    Boolean         @default(false)
 
-  participantId Int @map("participant_id")
-  tripId Int @map("trip_id")
-
-
-  participant Participant @relation(fields: [participantId], references: [id])
-  trip Trip @relation(fields: [tripId], references: [id])
-
-  @@map("expenses")
+  participantId Int?
+  tripId        Int?
+  participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Trip {
-  id Int @id @default(autoincrement())
-  title String @db.VarChar(255)
-  destination String? @db.Text
-  fromDate DateTime? @db.Timestamptz
-  toDate DateTime? @db.Timestamptz
-  departure String? @db.Text
-  accommodation String? @db.Text
-  travelTime Decimal? @db.Decimal(10, 2)
-  travelDistance Decimal? @db.Decimal(10, 2)
-  category TripCategory?
-  note String? @db.Text
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @default(now()) @db.Timestamptz
+  id             Int          @id @default(autoincrement())
+  title          String       @db.VarChar(255)
+  destination    String?      @db.Text
+  budget         Decimal?     @db.Decimal(10, 2)
+  startDate      DateTime?    @db.Timestamptz
+  endDate        DateTime?    @db.Timestamptz
+  departure      String?      @db.Text
+  accommodation  String?      @db.Text
+  travelTime     Decimal?     @db.Decimal(10, 2)
+  travelDistance Decimal?     @db.Decimal(10, 2)
+  category       TripCategory
+  note           String?      @db.Text
+  createdAt      DateTime     @default(now()) @db.Timestamptz
+  updatedAt      DateTime     @default(now()) @db.Timestamptz
+  isArchived     Boolean      @default(false)
 
-  expenses Expense[]
+  expenses     Expense[]
   participants Participant[]
-
-  @@map("trips")
 }
 
 model Participant {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(100)
-  surname String @db.VarChar(100)
-  nick String? @db.VarChar(50)
-  email String? @db.VarChar(255)
-  phone String? @db.VarChar(20)
-  address String? @db.Text
-  bankAccount String? @db.VarChar(50)
-  isAdult Boolean @default(true)
-  birthday DateTime? @db.Date
-  birthplace String? @db.Text
-  sex ParticipantSex?
-  role ParticipantRole?
-  note String? @db.Text
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @default(now()) @db.Timestamptz
+  id           Int             @id @default(autoincrement())
+  name         String          @db.VarChar(100)
+  surname      String          @db.VarChar(100)
+  nick         String?         @db.VarChar(50)
+  email        String?         @db.VarChar(200)
+  phone        String?         @db.VarChar(25)
+  address      String?         @db.Text
+  iban         String?         @db.VarChar(50)
+  isAdult      Boolean         @default(true)
+  dateOfBirth  DateTime?       @db.Date
+  placeOfBirth String?         @db.Text
+  sex          ParticipantSex
+  role         ParticipantRole
+  note         String?         @db.Text
+  createdAt    DateTime        @default(now()) @db.Timestamptz
+  updatedAt    DateTime        @default(now()) @db.Timestamptz
+  isArchived   Boolean         @default(false)
 
   expenses Expense[]
-  trips Trip[]
-
-  @@map("participants")
+  trips    Trip[]
 }

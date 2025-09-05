@@ -1,103 +1,146 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
-  InternalServerErrorException,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { DatabaseService } from "../database/database.service";
-import { CreateTripDto, TripResponseDto, UpdateTripDto } from "../dto/trip.dto";
+import { QueryParser } from "../parser";
+import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
+import { CreateTripDto } from "./dto/create-trip.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
+import { TripService } from "./trip.service";
 
-@Controller("trips")
-export class TripsController {
-  constructor(private readonly prisma: DatabaseService) {}
+@Controller("trip")
+@ApiTags("trip")
+export class TripController {
+  constructor(private readonly tripService: TripService) {}
+
+  private parseIncludeOptions(include?: string) {
+    return include !== undefined && include.length > 0
+      ? {
+          participants: include.includes("participants"),
+          expenses: include.includes("expenses"),
+        }
+      : undefined;
+  }
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateTripDto): Promise<TripResponseDto> {
-    try {
-      return await this.prisma.trip.create({
-        data: dto,
-        include: { participants: true },
-      });
-    } catch {
-      throw new BadRequestException("Failed to create participant");
-    }
+  @ApiOperation({
+    summary: "Create a new trip",
+    description: "Add a trip to which you can supply expenses and participants",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Trip created",
+    type: CreateTripResponseDto,
+  })
+  async create(@Body() createTripDto: CreateTripDto) {
+    return this.tripService.create(createTripDto);
   }
 
   @Get()
-  async findAll(): Promise<TripResponseDto[]> {
-    try {
-      return await this.prisma.trip.findMany({
-        include: { participants: true },
-        orderBy: { createdAt: "desc" },
-      });
-    } catch {
-      throw new InternalServerErrorException("Failed to retrieve trips");
-    }
+  @ApiOperation({
+    summary: "Get all trips",
+    description: "Retrieve a list of trips",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "List of trips retrieved successfully",
+    type: [CreateTripResponseDto],
+  })
+  @ApiQuery({ name: "skip", required: false, type: Number })
+  @ApiQuery({ name: "take", required: false, type: Number })
+  @ApiQuery({
+    name: "orderBy",
+    required: false,
+    description: "Order by field:direction [id:asc, name:desc]",
+  })
+  @ApiQuery({
+    name: "include",
+    required: false,
+    description: "Include related data [participants, expenses]",
+  })
+  async findAll(
+    @Query("skip") skip?: string,
+    @Query("take") take?: string,
+    @Query("orderBy") orderBy?: string,
+    @Query("include") include?: string,
+  ) {
+    const {
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+    } = QueryParser.parseQueryParameters({ skip, take, orderBy });
+    const includeOptions = this.parseIncludeOptions(include);
+
+    return this.tripService.findAll({
+      skip: parsedSkip,
+      take: parsedTake,
+      orderBy: parsedOrderBy,
+      include: includeOptions,
+    });
   }
 
   @Get(":id")
-  async findOne(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<TripResponseDto> {
-    const trip = await this.prisma.trip.findUnique({
-      where: { id },
-      include: {
-        participants: true,
-        expenses: true,
-      },
-    });
-    if (trip === null) {
-      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
-    }
-    return trip;
+  @ApiOperation({
+    summary: "Get trip by ID",
+    description: "Retrieve information about a trip",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip details retrieved successfully",
+    type: CreateTripResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.findOne(id);
   }
 
   @Patch(":id")
+  @ApiOperation({
+    summary: "Update trip details",
+    description: "Change information for an existing trip",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip updated successfully",
+    type: CreateTripResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
   async update(
     @Param("id", ParseIntPipe) id: number,
-    @Body() dto: UpdateTripDto,
-  ): Promise<TripResponseDto> {
-    try {
-      const trip = await this.prisma.trip.update({
-        where: { id },
-        data: dto,
-        include: {
-          participants: true,
-          expenses: true,
-        },
-      });
-      return trip;
-    } catch (error) {
-      const prismaError = error as { code?: string };
-      if (prismaError.code === "P2025") {
-        throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
-      }
-      throw new BadRequestException("Failed to update trip");
-    }
+    @Body() updateTripDto: UpdateTripDto,
+  ) {
+    return this.tripService.update(id, updateTripDto);
   }
 
   @Delete(":id")
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param("id", ParseIntPipe) id: number): Promise<void> {
-    try {
-      await this.prisma.trip.delete({ where: { id } });
-    } catch (error) {
-      const prismaError = error as { code?: string };
-      if (prismaError.code === "P2025") {
-        throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
-      }
-      throw new BadRequestException("Failed to delete trip");
-    }
+  @ApiOperation({
+    summary: "Delete a trip",
+    description: "Remove a trip and its data",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip deleted successfully",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.remove(id);
   }
 }
