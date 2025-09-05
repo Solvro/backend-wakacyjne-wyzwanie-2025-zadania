@@ -14,11 +14,13 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
+import { ExpenseEntity } from "./entities/expense.entity";
 import { ExpensesService } from "./expenses.service";
 
 @ApiTags("expenses")
@@ -28,28 +30,38 @@ export class ExpensesController {
 
   @Post()
   @ApiOperation({ summary: "Dodaj nowy wydatek" })
-  @ApiCreatedResponse({ description: "Utworzono wydatek" })
+  @ApiCreatedResponse({ description: "Utworzono wydatek", type: ExpenseEntity })
+  @ApiResponse({ status: 400, description: "Błędne dane wejściowe" })
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expensesService.create(createExpenseDto);
   }
 
   @Get()
   @ApiOperation({ summary: "Pobierz wszystkie wydatki" })
-  @ApiOkResponse({ description: "Zwraca listę wydatków" })
+  @ApiOkResponse({
+    description: "Zwraca listę wydatków",
+    type: [ExpenseEntity],
+  })
   async findAll() {
     return this.expensesService.findAll();
   }
 
   @Get(":id")
   @ApiOperation({ summary: "Pobierz wydatek" })
-  @ApiOkResponse({ description: "Zwraca wydatek" })
+  @ApiOkResponse({ description: "Zwraca wydatek", type: ExpenseEntity })
+  @ApiResponse({
+    status: 404,
+    description: "Nie znaleziono wydatku",
+  })
   async findOne(@Param("id", ParseIntPipe) id: number) {
     return this.expensesService.findOne(id);
   }
 
   @Patch(":id")
   @ApiOperation({ summary: "Aktualizuj wydatek" })
-  @ApiOkResponse({ description: "Zaktualizowano wydatek" })
+  @ApiOkResponse({ description: "Zaktualizowano wydatek", type: ExpenseEntity })
+  @ApiResponse({ status: 404, description: "Nie znaleziono wydatku" })
+  @ApiResponse({ status: 400, description: "Błędne dane wejściowe" })
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
@@ -60,6 +72,7 @@ export class ExpensesController {
   @Delete(":id")
   @ApiOperation({ summary: "Usuń wydatek" })
   @ApiNoContentResponse({ description: "Usunięto wydatek" })
+  @ApiResponse({ status: 404, description: "Nie znaleziono wydatku" })
   @HttpCode(204)
   async remove(@Param("id", ParseIntPipe) id: number) {
     await this.expensesService.remove(id);

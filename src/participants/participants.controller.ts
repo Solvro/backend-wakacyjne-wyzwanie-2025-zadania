@@ -68,6 +68,7 @@ export class ParticipantsController {
     description: "Uczestnik zaktualizowany.",
     type: ParticipantResponseDto,
   })
+  @ApiBadRequestResponse({ description: "Nieprawidłowe dane" })
   @ApiNotFoundResponse({ description: "Uczestnik nie istnieje." })
   async update(
     @Param("id", ParseIntPipe) id: number,
