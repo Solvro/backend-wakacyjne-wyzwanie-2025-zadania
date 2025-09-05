@@ -72,8 +72,8 @@ model Expense {
   title               String
   description         String?
   amount              Float
-  status              ExpenseStatus
-  paymentDate         DateTime
+  status              ExpenseStatus @default(PAID)
+  paymentDate         DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
