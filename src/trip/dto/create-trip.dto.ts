@@ -1,17 +1,27 @@
 import { TripCategory } from "@prisma/client";
 import {
+  IsCurrency,
   IsDateString,
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
+  MaxLength,
+  Validate,
 } from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { NiceDate } from "../../validators/date.validator";
+import { NiceText } from "../../validators/text.validator";
+
 export class CreateTripDto {
   @ApiProperty()
   @IsString()
+  @MaxLength(255)
+  @IsNotEmpty()
   title: string;
 
   @ApiProperty()
@@ -25,7 +35,8 @@ export class CreateTripDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsCurrency()
+  @IsPositive()
   budget?: number;
 
   @ApiPropertyOptional()
@@ -33,15 +44,11 @@ export class CreateTripDto {
   @IsDateString()
   startDate?: string = new Date().toString();
 
+  @NiceDate("startDate")
   @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
   endDate?: string = new Date().toString();
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  departure?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -51,13 +58,16 @@ export class CreateTripDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
   travelTime?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
   travelDistance?: number;
 
+  @Validate(NiceText)
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

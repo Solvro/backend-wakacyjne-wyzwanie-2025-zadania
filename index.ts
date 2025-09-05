@@ -1,10 +1,10 @@
-import { writeFileSync } from 'fs'
+import { writeFileSync } from "node:fs";
 
 function eloZelo(repeats: number): void {
-  const line: string = 'Elo żelo'
-  const file: string = 'elo-żelo.txt'
-  const contents: string = `${line}\n`.repeat(repeats)
-  writeFileSync(file, contents)
+  const line = "Elo żelo";
+  const file = "elo-żelo.txt";
+  const contents = `${line}\n`.repeat(repeats);
+  writeFileSync(file, contents);
 }
 
-eloZelo(new Date().getMinutes())
+eloZelo(new Date().getMinutes());

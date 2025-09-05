@@ -2,20 +2,32 @@ import { ParticipantRole, ParticipantSex } from "@prisma/client";
 import {
   IsBoolean,
   IsDateString,
+  IsEmail,
   IsEnum,
+  IsIBAN,
+  IsNotEmpty,
   IsOptional,
+  IsPhoneNumber,
   IsString,
+  MaxLength,
+  Validate,
 } from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { NiceText } from "../../validators/text.validator";
+
 export class CreateParticipantDto {
   @ApiProperty()
   @IsString()
+  @MaxLength(100)
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty()
   @IsString()
+  @MaxLength(100)
+  @IsNotEmpty()
   surname: string;
 
   @ApiProperty()
@@ -24,17 +36,16 @@ export class CreateParticipantDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsEmail()
   @IsString()
-  nick?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
+  @MaxLength(50)
   email?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsPhoneNumber()
   @IsString()
+  @MaxLength(25)
   phone?: string;
 
   @ApiPropertyOptional()
@@ -44,11 +55,14 @@ export class CreateParticipantDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsIBAN()
   @IsString()
+  @MaxLength(50)
   iban?: string;
 
   @ApiProperty()
   @IsBoolean()
+  @IsNotEmpty()
   isAdult: boolean;
 
   @ApiPropertyOptional()
@@ -65,6 +79,7 @@ export class CreateParticipantDto {
   @IsEnum(ParticipantSex)
   sex: ParticipantSex;
 
+  @Validate(NiceText)
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

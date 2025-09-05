@@ -1,12 +1,12 @@
-import { IsBoolean, IsDateString, IsNumber } from "class-validator";
+import { IsBoolean, IsDateString, IsInt } from "class-validator";
 
 import { ApiProperty } from "@nestjs/swagger";
 
-import { CreateTripDto } from "./create-trip.dto";
+import { CreateActivityDto } from "./create-activity.dto";
 
-export class CreateTripResponseDto extends CreateTripDto {
+export class ActivityResponseDto extends CreateActivityDto {
   @ApiProperty()
-  @IsNumber()
+  @IsInt()
   id: number;
 
   @ApiProperty()

@@ -1,12 +1,13 @@
-import { IsBoolean, IsDateString, IsNumber } from "class-validator";
+import { IsBoolean, IsDateString, IsInt, IsNotEmpty } from "class-validator";
 
 import { ApiProperty } from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./create-expense.dto";
 
-export class CreateExpenseResponseDto extends CreateExpenseDto {
+export class ExpenseResponseDto extends CreateExpenseDto {
   @ApiProperty()
-  @IsNumber()
+  @IsInt()
+  @IsNotEmpty()
   id: number;
 
   @ApiProperty()

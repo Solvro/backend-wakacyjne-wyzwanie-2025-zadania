@@ -1,18 +1,27 @@
 import { ExpenseCategory } from "@prisma/client";
 import {
+  IsCurrency,
   IsEnum,
+  IsIBAN,
   IsInt,
-  IsNumber,
+  IsNotEmpty,
   IsOptional,
+  IsPositive,
   IsString,
   Length,
+  MaxLength,
+  Validate,
 } from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { NiceText } from "../../validators/text.validator";
+
 export class CreateExpenseDto {
   @ApiProperty()
   @IsString()
+  @MaxLength(255)
+  @IsNotEmpty()
   title: string;
 
   @ApiProperty()
@@ -22,33 +31,40 @@ export class CreateExpenseDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   recipientName?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsIBAN()
   @IsString()
+  @MaxLength(50)
   recipientIban?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
+  @IsPositive()
   quantity?: number;
 
   @ApiProperty()
   @IsString()
   @Length(3, 3)
+  @IsNotEmpty()
   currency: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsCurrency()
+  @IsPositive()
   amount?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsCurrency()
   budgetLeft?: number;
 
+  @Validate(NiceText)
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
