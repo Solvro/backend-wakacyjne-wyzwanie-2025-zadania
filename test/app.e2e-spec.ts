@@ -26,7 +26,7 @@ describe("AppController (e2e)", () => {
       .expect({
         title: "Wakacyjne Wyzwanie Solvro!!!",
         quote:
-          "Unikwanie wyzwań sprawia, że stoimy w miejscu. Chyba, że chodzi o walkę z Solvro Configiem",
+          "Unikanie wyzwań sprawia, że stoimy w miejscu. Chyba, że chodzi o walkę z Solvro Configiem",
       });
   });
 });
