@@ -16,6 +16,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: Heimerhui69
           POSTGRES_DB: budzetownik
+          JWT_SECRET: giga_sekretny_jwt
         ports:
           - 5432:5432
         options: >-
