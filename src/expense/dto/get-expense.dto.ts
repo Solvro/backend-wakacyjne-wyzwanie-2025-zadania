@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class CreateExpenseDto {
+export class GetExpenseDto {
+  @ApiProperty()
+  id: number;
   @ApiProperty()
   tripId: number;
   @ApiProperty()
@@ -11,4 +13,8 @@ export class CreateExpenseDto {
   description?: string;
   @ApiProperty()
   amount: number;
+  @ApiProperty()
+  status: string;
+  @ApiPropertyOptional()
+  paymentDate?: Date;
 }
