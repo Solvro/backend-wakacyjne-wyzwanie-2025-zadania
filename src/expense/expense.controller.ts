@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { GetExpenseDto } from "./dto/get-expense.dto";
@@ -15,6 +15,7 @@ import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
 
 @Controller("expense")
+@ApiTags("expenses")
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
