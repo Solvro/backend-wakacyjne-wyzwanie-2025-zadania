@@ -25,7 +25,6 @@ jobs:
           --health-retries=10
 
     env:
-      # identycznie jak w Twoim .env (host = localhost na GitHub Actions)
       DATABASE_URL: postgresql://postgres:Heimerhui69@localhost:5432/budzetownik?schema=public
 
     steps:

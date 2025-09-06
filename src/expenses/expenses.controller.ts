@@ -8,8 +8,10 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -18,12 +20,15 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseEntity } from "./entities/expense.entity";
 import { ExpensesService } from "./expenses.service";
 
 @ApiTags("expenses")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller("expenses")
 export class ExpensesController {
   constructor(private readonly expensesService: ExpensesService) {}

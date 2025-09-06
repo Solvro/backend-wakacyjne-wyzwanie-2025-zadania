@@ -12,7 +12,6 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnApplicationShutdown
 {
-  // <-- Dodaj OnApplicationShutdown
   constructor() {
     super({
       log:

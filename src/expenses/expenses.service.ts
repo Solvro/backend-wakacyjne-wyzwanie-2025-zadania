@@ -1,3 +1,5 @@
+import { Expense } from "@prisma/client";
+
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../../prisma/prisma.service";
@@ -8,15 +10,15 @@ import { UpdateExpenseDto } from "./dto/update-expense.dto";
 export class ExpensesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createExpenseDto: CreateExpenseDto) {
+  async create(createExpenseDto: CreateExpenseDto): Promise<Expense> {
     return this.prisma.expense.create({ data: createExpenseDto });
   }
 
-  async findAll() {
+  async findAll(): Promise<Expense[]> {
     return this.prisma.expense.findMany({ include: { payer: true } });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Expense> {
     const expense = await this.prisma.expense.findUnique({ where: { id } });
     if (expense == null) {
       throw new NotFoundException(
@@ -26,7 +28,10 @@ export class ExpensesService {
     return expense;
   }
 
-  async update(id: number, updateExpenseDto: UpdateExpenseDto) {
+  async update(
+    id: number,
+    updateExpenseDto: UpdateExpenseDto,
+  ): Promise<Expense> {
     await this.findOne(id);
     return this.prisma.expense.update({
       where: { id },
@@ -34,7 +39,7 @@ export class ExpensesService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<Expense> {
     await this.findOne(id);
     return this.prisma.expense.delete({ where: { id } });
   }
