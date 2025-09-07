@@ -1,8 +1,9 @@
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from "src/database/database.module";
 
-import { Module } from '@nestjs/common';
-import { TripService } from './trip.service';
-import { TripController } from './trip.controller';
+import { Module } from "@nestjs/common";
+
+import { TripController } from "./trip.controller";
+import { TripService } from "./trip.service";
 
 @Module({
   controllers: [TripController],

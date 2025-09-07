@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { DatabaseService } from "src/database/database.service";
 
-import { DatabaseService } from 'src/database/database.service';
-import { CreateParticipantDto } from './dto/create-participant.dto';
-import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+
+import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { UpdateParticipantDto } from "./dto/update-participant.dto";
 
 @Injectable()
 export class ParticipantService {
@@ -20,7 +21,7 @@ export class ParticipantService {
 
   async findAll() {
     return this.prisma.participant.findMany({
-      orderBy: { id: 'asc' },
+      orderBy: { id: "asc" },
     });
   }
 
@@ -32,7 +33,9 @@ export class ParticipantService {
         paidExpenses: true,
       },
     });
-    if (p == null) {throw new NotFoundException(`Participant ${String(id)} not found`)};
+    if (p == null) {
+      throw new NotFoundException(`Participant ${String(id)} not found`);
+    }
     return p;
   }
 
@@ -51,7 +54,7 @@ export class ParticipantService {
     try {
       await this.prisma.participant.delete({ where: { id } });
       return { success: true };
-    } catch{
+    } catch {
       throw new NotFoundException(`Participant ${String(id)} not found`);
     }
   }
@@ -61,7 +64,7 @@ export class ParticipantService {
     const ms = await this.prisma.tripParticipant.findMany({
       where: { participantId },
       include: { trip: true },
-      orderBy: { tripId: 'asc' },
+      orderBy: { tripId: "asc" },
     });
     return ms.map((m) => m.trip);
   }
@@ -69,7 +72,9 @@ export class ParticipantService {
   async joinTrip(participantId: number, tripId: number) {
     await this.ensureParticipant(participantId);
     const trip = await this.prisma.trip.findUnique({ where: { id: tripId } });
-    if (trip == null) {throw new NotFoundException(`Trip ${String(tripId)} not found`)};
+    if (trip == null) {
+      throw new NotFoundException(`Trip ${String(tripId)} not found`);
+    }
 
     return this.prisma.tripParticipant.upsert({
       where: { tripId_participantId: { tripId, participantId } },
@@ -86,6 +91,8 @@ export class ParticipantService {
 
   private async ensureParticipant(id: number) {
     const p = await this.prisma.participant.findUnique({ where: { id } });
-    if (p == null) {throw new NotFoundException(`Participant ${String(id)} not found`)};
+    if (p == null) {
+      throw new NotFoundException(`Participant ${String(id)} not found`);
+    }
   }
 }

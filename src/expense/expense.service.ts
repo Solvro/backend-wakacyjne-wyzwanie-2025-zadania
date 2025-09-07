@@ -1,12 +1,14 @@
+import { Prisma } from "@prisma/client";
+import { DatabaseService } from "src/database/database.service";
+
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { Prisma} from '@prisma/client';
-import { DatabaseService } from 'src/database/database.service';
-import { CreateExpenseDto } from './dto/create-expense.dto';
-import { UpdateExpenseDto } from './dto/update-expense.dto';
+} from "@nestjs/common";
+
+import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
 export class ExpenseService {
@@ -30,7 +32,7 @@ export class ExpenseService {
   async findAll() {
     return this.prisma.expense.findMany({
       include: { trip: true, payer: true },
-      orderBy: { id: 'asc' },
+      orderBy: { id: "asc" },
     });
   }
 
@@ -39,13 +41,17 @@ export class ExpenseService {
       where: { id },
       include: { trip: true, payer: true },
     });
-    if (exp == null) {throw new NotFoundException(`Expense ${String(id)} not found`)};
+    if (exp == null) {
+      throw new NotFoundException(`Expense ${String(id)} not found`);
+    }
     return exp;
   }
 
   async update(id: number, dto: UpdateExpenseDto) {
     const current = await this.prisma.expense.findUnique({ where: { id } });
-    if (current == null) {throw new NotFoundException(`Expense ${String(id)} not found`)};
+    if (current == null) {
+      throw new NotFoundException(`Expense ${String(id)} not found`);
+    }
 
     const nextTripId = dto.tripId ?? current.tripId;
     const nextPayerId = dto.payerId ?? current.payerId;
@@ -59,10 +65,7 @@ export class ExpenseService {
       where: { id },
       data: {
         description: dto.description ?? undefined,
-        cost:
-          dto.cost === undefined
-            ? undefined
-            : new Prisma.Decimal(dto.cost),
+        cost: dto.cost === undefined ? undefined : new Prisma.Decimal(dto.cost),
         type: dto.type ?? undefined,
         tripId: dto.tripId ?? undefined,
         payerId: dto.payerId ?? undefined,
@@ -75,7 +78,7 @@ export class ExpenseService {
     try {
       await this.prisma.expense.delete({ where: { id } });
       return { success: true };
-    } catch{
+    } catch {
       throw new NotFoundException(`Expense ${String(id)} not found`);
     }
   }
@@ -83,7 +86,9 @@ export class ExpenseService {
   // — helpers —
   private async ensureTrip(tripId: number) {
     const t = await this.prisma.trip.findUnique({ where: { id: tripId } });
-    if (t == null) {throw new NotFoundException(`Trip ${String(tripId)} not found`);}
+    if (t == null) {
+      throw new NotFoundException(`Trip ${String(tripId)} not found`);
+    }
   }
 
   private async ensureMembership(tripId: number, participantId: number) {

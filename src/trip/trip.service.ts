@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { DatabaseService } from 'src/database/database.service';
-import { CreateTripDto } from './dto/create-trip.dto';
-import { UpdateTripDto } from './dto/update-trip.dto';
+import { Prisma } from "@prisma/client";
+import { DatabaseService } from "src/database/database.service";
+
+import { Injectable, NotFoundException } from "@nestjs/common";
+
+import { CreateTripDto } from "./dto/create-trip.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
 
 @Injectable()
 export class TripService {
@@ -27,7 +29,7 @@ export class TripService {
         expenses: true,
         members: { include: { participant: true } },
       },
-      orderBy: { id: 'asc' },
+      orderBy: { id: "asc" },
     });
   }
 
@@ -39,13 +41,15 @@ export class TripService {
         members: { include: { participant: true } },
       },
     });
-    if (trip == null) {throw new NotFoundException(`Trip ${String(id)} not found`)};
+    if (trip == null) {
+      throw new NotFoundException(`Trip ${String(id)} not found`);
+    }
     return trip;
   }
 
   async update(id: number, dto: UpdateTripDto) {
     const endDateField =
-      'endDate' in dto
+      "endDate" in dto
         ? { endDate: dto.endDate == null ? null : new Date(dto.endDate) }
         : {};
 
@@ -55,10 +59,9 @@ export class TripService {
         name: dto.name ?? undefined,
         destination: dto.destination ?? undefined,
         budget:
-          dto.budget === undefined
-            ? undefined
-            : new Prisma.Decimal(dto.budget),
-        startDate: dto.startDate === undefined ? undefined : new Date(dto.startDate),
+          dto.budget === undefined ? undefined : new Prisma.Decimal(dto.budget),
+        startDate:
+          dto.startDate === undefined ? undefined : new Date(dto.startDate),
         ...endDateField,
       },
     });
