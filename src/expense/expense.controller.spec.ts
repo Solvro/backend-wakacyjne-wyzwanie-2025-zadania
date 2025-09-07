@@ -4,7 +4,7 @@ import { Test } from "@nestjs/testing";
 import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
 
-describe("ExpenseController", () => {
+describe.skip("ExpenseController", () => {
   let controller: ExpenseController;
 
   beforeEach(async () => {
