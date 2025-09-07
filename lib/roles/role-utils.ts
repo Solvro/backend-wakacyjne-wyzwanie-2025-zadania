@@ -12,6 +12,7 @@ export interface Roles {
   MODERATOR: number;
   USER: number;
   GUEST: number;
+  TRIP_COORDINATOR: number;
 }
 
 export interface RolePermissions {
@@ -25,7 +26,7 @@ export type RoleString = string;
 
 export const ROLES_NUMBER = Object.keys(Role).length;
 
-const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
+export const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
   [Role.ADMIN]: {
     role: Role.ADMIN,
     name: "Administrator",
@@ -84,17 +85,38 @@ const ROLE_DEFINITIONS: Record<number, RolePermissions> = {
 };
 
 export function hasRole(roleString: RoleString, role: number): boolean {
+  if (role < 0 || role >= ROLES_NUMBER) {
+    return false;
+  }
   return roleString[role] === "1";
 }
 
 export function setRole(roleString: RoleString, role: number): RoleString {
+  if (role < 0 || role >= ROLES_NUMBER) {
+    throw new Error(
+      `Invalid role index: ${role.toString()}. Must be between 0 and ${String(ROLES_NUMBER - 1)}`,
+    );
+  }
   const roles = roleString.split("");
+  // Pad with zeros if roleString is shorter than needed
+  while (roles.length <= role) {
+    roles.push("0");
+  }
   roles[role] = "1";
   return roles.join("");
 }
 
 export function removeRole(roleString: RoleString, role: number): RoleString {
+  if (role < 0 || role >= ROLES_NUMBER) {
+    throw new Error(
+      `Invalid role index: ${role.toString()}. Must be between 0 and ${String(ROLES_NUMBER - 1)}`,
+    );
+  }
   const roles = roleString.split("");
+  // Pad with zeros if roleString is shorter than needed
+  while (roles.length <= role) {
+    roles.push("0");
+  }
   roles[role] = "0";
   return roles.join("");
 }
@@ -110,16 +132,4 @@ export function getUserRoles(roleString: RoleString): number[] {
     (role): role is number =>
       typeof role === "number" && hasRole(roleString, role),
   );
-}
-
-export function hasPermission(
-  roleString: RoleString,
-  permission: string,
-): boolean {
-  const userRoles = getUserRoles(roleString);
-
-  return userRoles.some((role): boolean => {
-    const rolePerms = ROLE_DEFINITIONS[role].permissions;
-    return rolePerms.includes("*") || rolePerms.includes(permission);
-  });
 }

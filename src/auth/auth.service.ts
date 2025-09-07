@@ -45,7 +45,7 @@ export class AuthService {
     });
 
     if (existingUser !== null) {
-      throw new ConflictException("A user with whis email already exists.");
+      throw new ConflictException("A user with this email already exists.");
     }
 
     const rolesString = generateRoleString(ROLES_NUMBER);

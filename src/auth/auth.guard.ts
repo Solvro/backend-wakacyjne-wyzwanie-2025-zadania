@@ -37,21 +37,3 @@ export class AuthGuard implements CanActivate {
     return type === "Bearer" ? token : undefined;
   }
 }
-
-// const user = request.user
-
-// if(user === undefined) {
-//   return false
-// }
-
-// const hasEmail = typeof user.email === 'string' && user.email.length > 0
-// const hasRoles = typeof user.roles === 'string' && user.roles.length > 0
-
-// if(!hasEmail || !hasRoles) {
-//   return false
-// }
-
-// const rolesPattern = /^[01]+$/
-// if(!rolesPattern.test(user.roles)) {
-//   return false
-// }
