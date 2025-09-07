@@ -13,9 +13,12 @@ import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [ConfigModule.forRoot({
+    isGlobal: true,
+  }), DatabaseModule],
   controllers: [AppController, ExpenseController, ParticipantController, TripController, UserController, AuthController],
   providers: [AppService, ExpensesService, ParticipantsService, TripsService, PrismaService, UserService, AuthService],
 })

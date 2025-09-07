@@ -7,7 +7,7 @@ import { compare } from "bcrypt"
 @Injectable()
 export class AuthService{
     private readonly tokenPrefix = 'token';
-    private readonly EXPIRY_TIME_MS = 1000 * 60 * 5;
+    private readonly EXPIRY_TIME_MS = Number.parseInt(process.env.EXPIRY_TIME_MS ?? "0");
     private readonly TOKENSEPARATOR = "_";
     private readonly TOKEN = 0;
     private readonly EMAIL = 1;
@@ -40,8 +40,7 @@ export class AuthService{
             throw new NotFoundException();
         }
         else{
-            // nie wiem czemu w innym projekcie działało
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+            //teraz już działa bez komentarzy
             const samePassword:boolean = await compare(password, user.password).catch(() => false);
             if(samePassword){
                 return {token: this.generateToken(user.email)}
