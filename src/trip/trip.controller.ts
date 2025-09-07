@@ -80,8 +80,8 @@ export class TripController {
     status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
-  async findOne(@Param("id", ParseIntPipe) id: string) {
-    return this.tripService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.findOne(id);
   }
 
   @Patch(":id")
@@ -102,10 +102,10 @@ export class TripController {
     description: "Trip not found",
   })
   async update(
-    @Param("id", ParseIntPipe) id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateTripDto: UpdateTripDto,
   ) {
-    return this.tripService.update(+id, updateTripDto);
+    return this.tripService.update(id, updateTripDto);
   }
 
   @Delete(":id")
@@ -124,7 +124,7 @@ export class TripController {
     status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
-  async remove(@Param("id", ParseIntPipe) id: string) {
-    return this.tripService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.remove(id);
   }
 }

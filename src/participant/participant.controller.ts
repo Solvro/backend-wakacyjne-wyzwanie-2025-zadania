@@ -80,8 +80,8 @@ export class ParticipantController {
     status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
-  async findOne(@Param("id", ParseIntPipe) id: string) {
-    return this.participantService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.findOne(id);
   }
 
   @Patch(":id")
@@ -102,10 +102,10 @@ export class ParticipantController {
     description: "Participant not found",
   })
   async update(
-    @Param("id", ParseIntPipe) id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
-    return this.participantService.update(+id, updateParticipantDto);
+    return this.participantService.update(id, updateParticipantDto);
   }
 
   @Delete(":id")
@@ -125,7 +125,7 @@ export class ParticipantController {
     status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
-  async remove(@Param("id", ParseIntPipe) id: string) {
-    return this.participantService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.remove(id);
   }
 }

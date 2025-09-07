@@ -24,7 +24,7 @@ model Participant {
   email         String
   User          User     @relation(fields: [email], references: [email])
   sex           Sex?
-  trips          Trip[]
+  trips         Trip[]
 
 }
 
@@ -34,7 +34,7 @@ model Trip {
   destination   String      @db.VarChar(255)
   startDate     DateTime    @db.Timestamp(6)
   endDate       DateTime    @db.Timestamp(6)
-  expenses       Expense[]
+  expenses      Expense[]
   participant   Participant @relation(fields: [participantId], references: [participantId], onDelete: NoAction, onUpdate: NoAction, map: "participant_constraint")
 }
 

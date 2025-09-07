@@ -79,8 +79,8 @@ export class ExpenseController {
     status: HttpStatus.NOT_FOUND,
     description: "Expense not found (lucky you)",
   })
-  async findOne(@Param("id", ParseIntPipe) id: string) {
-    return this.expenseService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.findOne(id);
   }
 
   @Patch(":id")
@@ -101,10 +101,10 @@ export class ExpenseController {
     description: "Expense not found",
   })
   async update(
-    @Param("id", ParseIntPipe) id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
-    return this.expenseService.update(+id, updateExpenseDto);
+    return this.expenseService.update(id, updateExpenseDto);
   }
 
   @Delete(":id")
@@ -123,7 +123,7 @@ export class ExpenseController {
     status: HttpStatus.NOT_FOUND,
     description: "Expense not found",
   })
-  async remove(@Param("id", ParseIntPipe) id: string) {
-    return this.expenseService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.remove(id);
   }
 }

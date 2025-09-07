@@ -72,7 +72,7 @@ export class UserService {
 
   async enableUser(email: string) {
     const user = await this.findByIdOrFail(email);
-    user.isEnabled = false;
+    user.isEnabled = true;
     await this.updateUser(user);
   }
 

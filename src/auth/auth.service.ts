@@ -17,7 +17,7 @@ import { LoginResponseDto } from "./dto/login-response.dto";
 export class AuthService {
   constructor(private userService: UserService) {}
 
-  private readonly tokenPrefix = "token_";
+  private readonly tokenPrefix = String(process.env.TOKEN_PREFIX);
   private expiryTime = Number(process.env.EXPIRY_TIME_MS);
 
   async validateToken(token: string): Promise<UserMetadata> {
@@ -42,7 +42,7 @@ export class AuthService {
     return `${this.tokenPrefix}${email}_${currentTime}`;
   }
 
-  async register(createUserDto: CreateUserDto) {
+  async register(createUserDto: CreateUserDto): Promise<CreateUserResponseDto> {
     const { email, password } = createUserDto;
 
     const userInBase = await this.userService.findOne(email);
@@ -65,7 +65,7 @@ export class AuthService {
     return {
       email: user.email,
       message: "User created",
-    } as CreateUserResponseDto;
+    };
   }
 
   async signIn(email: string, password: string): Promise<LoginResponseDto> {
