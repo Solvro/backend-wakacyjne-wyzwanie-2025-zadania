@@ -1,10 +1,18 @@
+import { Role } from "@prisma/client";
 import { compare } from "bcrypt";
+import * as bcrypt from "bcrypt";
 import { ParticipantMetadata } from "src/participant/dto/participant-metadata.dto";
 import { ParticipantService } from "src/participant/participant.service";
 
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 
 import { LoginResponseDto } from "./dto/login-response.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Injectable()
 export class AuthService {
@@ -37,5 +45,30 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     return { token: this.generateToken(participant.email) };
+  }
+
+  async signUp(registerDto: RegisterDto) {
+    const saltOrRounds = 10;
+    const password = registerDto.password;
+    const hash: string = await bcrypt.hash(password, saltOrRounds);
+
+    const email = await this.participantService.findOneByEmail(
+      registerDto.email,
+    );
+
+    if (email != null) {
+      throw new ConflictException("There is already user with this email");
+    }
+
+    if (!registerDto.name || !registerDto.email || !registerDto.password) {
+      throw new BadRequestException("Enter missing data");
+    }
+
+    await this.participantService.create({
+      name: registerDto.name,
+      email: registerDto.email,
+      password: hash,
+      role: Role.Admin,
+    });
   }
 }

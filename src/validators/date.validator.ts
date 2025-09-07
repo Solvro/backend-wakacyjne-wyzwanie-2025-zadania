@@ -1,8 +1,6 @@
-import {
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from "class-validator";
+import { ValidatorConstraint } from "class-validator";
+import { ValidationArguments } from "node_modules/class-validator/types/validation/ValidationArguments";
+import { ValidatorConstraintInterface } from "node_modules/class-validator/types/validation/ValidatorConstraintInterface";
 
 @ValidatorConstraint({ name: "dateValidator", async: false })
 export class DateValidator implements ValidatorConstraintInterface {

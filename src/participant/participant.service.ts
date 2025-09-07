@@ -1,17 +1,17 @@
 import { Participant } from "@prisma/client";
 import { DatabaseService } from "src/database/database.service";
+import { PaginationDto } from "src/pagination/pagination.dto";
+import { DEFAULT_PAGE_SIZE } from "src/pagination/utils/constants";
 
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
-import { PaginationDto } from "./dto/pagination.dto";
 import {
   ParticipantMetadata,
   participantToMetadata,
 } from "./dto/participant-metadata.dto";
 import { ParticipantUpdateResponseDto } from "./dto/participant-update-response.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
-import { DEFAULT_PAGE_SIZE } from "./utils/constants";
 
 @Injectable()
 export class ParticipantService {
@@ -30,7 +30,7 @@ export class ParticipantService {
 
   async findAll(paginationDto: PaginationDto) {
     return this.database.participant.findMany({
-      skip: paginationDto.offset,
+      skip: paginationDto.skip,
       take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
     });
   }

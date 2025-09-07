@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Role } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 import { Roles } from "src/auth/roles/roles.decorator";
 import { RoleGuard } from "src/auth/roles/roles.guard";
+import { PaginationDto } from "src/pagination/pagination.dto";
 
 import {
   Body,
@@ -22,7 +22,6 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
-import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
 

@@ -1,6 +1,7 @@
 import { Role } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 import { Roles } from "src/auth/roles/roles.decorator";
+import { PaginationDto } from "src/pagination/pagination.dto";
 import { ParticipantMetadata } from "src/participant/dto/participant-metadata.dto";
 
 import {
@@ -20,7 +21,6 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
-import { PaginationDto } from "./dto/pagination.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
 
