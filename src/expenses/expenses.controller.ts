@@ -151,6 +151,7 @@ export class ExpensesController {
   @Delete(":id")
   @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @UseGuards(AuthGuard, RoleGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete expense",
     description: "Delete an existing expense",
