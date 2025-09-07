@@ -9,10 +9,17 @@ import { PrismaService } from './services/prisma.service';
 import { ExpenseController } from './controllers/expense.controller';
 import { ParticipantController } from './controllers/participant.controller';
 import { TripController } from './controllers/trip.controller';
+import { UserService } from './services/user.service';
+import { UserController } from './controllers/user.controller';
+import { AuthController } from './controllers/auth.controller';
+import { AuthService } from './services/auth.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [AppController, ExpenseController, ParticipantController, TripController],
-  providers: [AppService, ExpensesService, ParticipantsService, TripsService, PrismaService],
+  imports: [ConfigModule.forRoot({
+    isGlobal: true,
+  }), DatabaseModule],
+  controllers: [AppController, ExpenseController, ParticipantController, TripController, UserController, AuthController],
+  providers: [AppService, ExpensesService, ParticipantsService, TripsService, PrismaService, UserService, AuthService],
 })
 export class AppModule {}

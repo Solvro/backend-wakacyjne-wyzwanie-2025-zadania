@@ -1,7 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ParticipantsService } from '../services/participant.service';
 import { CreateParticipantDto } from '../Dto/create-participant-dto';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/guards/role.decorator';
+import { Role } from 'generated/prisma';
 
 @ApiTags('Uczestnicy')
 @Controller('budzetownik')
@@ -14,8 +18,8 @@ export class ParticipantController {
     @Get('participant/:id')
     @ApiOperation({description: "Zwraca uczestnika wraz, z jego wydatkami"})
     @ApiResponse({ status: 200, description: "Sukces!"})
-    async getWholeParticipant(@Param('id') id: number){
-        return this.participantService.participantById(id);
+    async getWholeParticipant(@Param('id') id: string){
+        return this.participantService.participantById(Number.parseInt(id));
     }
 
     @Get('participants')
@@ -26,6 +30,9 @@ export class ParticipantController {
     }
 
     @Delete('deleteParticipant/:id')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(Role.COORDINATOR)
     @ApiOperation({description: "Usuwa wybranego uczestnika"})
     @ApiResponse({ status: 200, description: "Sukces!"})
     async deleteParticipant(@Param('id') id: string){
@@ -33,6 +40,8 @@ export class ParticipantController {
     }
 
     @Post('addParticipant')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     @ApiOperation({description: "Dodaje nowego uczestnika"})
     @ApiResponse({ status: 201, description: "Sukces!"})
     async addParticipant(@Body() createParticipantDto: CreateParticipantDto){
@@ -40,6 +49,8 @@ export class ParticipantController {
     }
 
     @Patch('updateParticipant/:id')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     @ApiOperation({description: "Dodaje nowy wydatek"})
     @ApiResponse({ status: 200, description: "Sukces!"})
     async updateParticipant(@Param('id') id: string, @Body() newData: CreateParticipantDto){

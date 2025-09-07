@@ -24,13 +24,7 @@ export class ExpensesService{
         }
         else{
             return this.prisma.expense.create({
-                data: {
-                    amount: data.amount,
-                    location: data.location,
-                    participantId: data.participantId,
-                    created_at: new Date(),
-                    updated_at: new Date(),
-                },
+                data,
             })
         }
     }
@@ -52,12 +46,7 @@ export class ExpensesService{
         }
         else{
             return this.prisma.expense.update({
-                data: {
-                    amount: newData.amount,
-                    location: newData.location,
-                    participantId: newData.participantId,
-                    updated_at: new Date(),
-                },
+                data: newData,
                 where: {id},
             })
         }
