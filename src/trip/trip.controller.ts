@@ -4,6 +4,7 @@ import { TripResponseDto } from './dto/trip-response.dto';
 import { TripService } from './trip.service';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
+// import { AddParticipantDto } from './dto/add-participant.dto';
 
 @Controller('trip')
 @ApiTags("trips")
@@ -19,21 +20,29 @@ export class TripController {
   }
 
   @Get()
+  @ApiOperation({ summary: "Get all trips" })
+  @ApiResponse({ status: 200, description: "List of all trips", type: TripResponseDto, isArray: true })
   async findAll() {
     return this.tripService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: "Get a trip by ID" })
+  @ApiResponse({ status: 200, description: "The trip with the specified ID", type: TripResponseDto })
   async findOne(@Param('id') id: string) {
     return this.tripService.findOne(+id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: "Update a trip by ID" })
+  @ApiResponse({ status: 200, description: "The trip has been successfully updated.", type: TripResponseDto })
   async update(@Param('id') id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: "Delete a trip by ID" })
+  @ApiResponse({ status: 200, description: "The trip has been successfully deleted." })
   async remove(@Param('id') id: string) {
     return this.tripService.remove(+id);
   }
