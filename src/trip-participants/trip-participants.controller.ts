@@ -1,3 +1,9 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import type { RequestWithUser } from "src/auth/dto/request-with-user.dto";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,9 +12,18 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateTripParticipantDto } from "./dto/create-trip-participant.dto";
 import { TripParticipantResponseDto } from "./dto/trip-participant-response.dto";
@@ -16,6 +31,7 @@ import { TripParticipantsService } from "./trip-participants.service";
 
 @Controller("trip-participants")
 @ApiTags("trip-participants")
+@ApiBearerAuth()
 export class TripParticipantsController {
   constructor(
     private readonly tripParticipantsService: TripParticipantsService,
@@ -44,8 +60,20 @@ export class TripParticipantsController {
     status: 409,
     description: "Trip participant already exists",
   })
-  async create(@Body() createTripParticipantDto: CreateTripParticipantDto) {
-    return this.tripParticipantsService.create(createTripParticipantDto);
+  @UseGuards(AuthGuard)
+  async create(
+    @Body() createTripParticipantDto: CreateTripParticipantDto,
+    @Req() request: RequestWithUser,
+  ) {
+    if (request.user == null) {
+      throw new UnauthorizedException(
+        "Authenticated user not found in request.",
+      );
+    }
+    return this.tripParticipantsService.create(
+      createTripParticipantDto,
+      request.user,
+    );
   }
 
   @Get()
@@ -58,8 +86,14 @@ export class TripParticipantsController {
     description: "List of participants retrieved successfully.",
     type: [TripParticipantResponseDto],
   })
-  async findAll() {
-    return this.tripParticipantsService.findAll();
+  @UseGuards(AuthGuard)
+  async findAll(@Req() request: RequestWithUser) {
+    if (request.user == null) {
+      throw new UnauthorizedException(
+        "Authenticated user not found in request.",
+      );
+    }
+    return this.tripParticipantsService.findAll(request.user);
   }
 
   @Get("trip/:id")
@@ -74,8 +108,20 @@ export class TripParticipantsController {
       "List of participants for the specified trip retrieved successfully.",
     type: [TripParticipantResponseDto],
   })
-  async findParticipantsOfTrip(@Param("id") id: string) {
-    return this.tripParticipantsService.findParticipantsOfTrip(+id);
+  @UseGuards(AuthGuard)
+  async findParticipantsOfTrip(
+    @Param("id", ParseIntPipe) id: number,
+    @Req() request: RequestWithUser,
+  ) {
+    if (request.user == null) {
+      throw new UnauthorizedException(
+        "Authenticated user not found in request.",
+      );
+    }
+    return this.tripParticipantsService.findParticipantsOfTrip(
+      id,
+      request.user,
+    );
   }
 
   @Get("participant/:id")
@@ -90,8 +136,20 @@ export class TripParticipantsController {
       "List of trips for the specified participant retrieved successfully.",
     type: [TripParticipantResponseDto],
   })
-  async findTripsByParticipant(@Param("id") id: string) {
-    return this.tripParticipantsService.findTripsByParticipant(+id);
+  @UseGuards(AuthGuard)
+  async findTripsByParticipant(
+    @Param("id", ParseIntPipe) id: number,
+    @Req() request: RequestWithUser,
+  ) {
+    if (request.user == null) {
+      throw new UnauthorizedException(
+        "Authenticated user not found in request.",
+      );
+    }
+    return this.tripParticipantsService.findTripsByParticipant(
+      id,
+      request.user,
+    );
   }
 
   @Delete(":tripId/:participantId")
@@ -107,11 +165,22 @@ export class TripParticipantsController {
     status: 404,
     description: "Trip participant not found",
   })
+  @UseGuards(AuthGuard)
   async remove(
-    @Param("tripId") tripId: string,
-    @Param("participantId") participantId: string,
+    @Param("tripId", ParseIntPipe) tripId: number,
+    @Param("participantId", ParseIntPipe) participantId: number,
+    @Req() request: RequestWithUser,
   ) {
-    return this.tripParticipantsService.remove(+tripId, +participantId);
+    if (request.user == null) {
+      throw new UnauthorizedException(
+        "Authenticated user not found in request.",
+      );
+    }
+    return this.tripParticipantsService.remove(
+      tripId,
+      participantId,
+      request.user,
+    );
   }
 
   @Delete("participant/:id")
@@ -127,9 +196,13 @@ export class TripParticipantsController {
     status: 404,
     description: "Participant not found",
   })
-  async removeParticipantFromAllTrips(@Param("id") participantId: string) {
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  async removeParticipantFromAllTrips(
+    @Param("id", ParseIntPipe) participantId: number,
+  ) {
     return this.tripParticipantsService.removeParticipantFromAllTrips(
-      +participantId,
+      participantId,
     );
   }
 
@@ -146,7 +219,11 @@ export class TripParticipantsController {
     status: 404,
     description: "Trip not found",
   })
-  async removeAllParticipantsFromTrip(@Param("id") tripId: string) {
-    return this.tripParticipantsService.removeAllParticipantsFromTrip(+tripId);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  async removeAllParticipantsFromTrip(
+    @Param("id", ParseIntPipe) tripId: number,
+  ) {
+    return this.tripParticipantsService.removeAllParticipantsFromTrip(tripId);
   }
 }

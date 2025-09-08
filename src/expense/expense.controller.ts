@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,10 +11,17 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { ExpenseResponseDto } from "./dto/expense-response.dto";
@@ -18,6 +30,7 @@ import { ExpenseService } from "./expense.service";
 
 @Controller("expense")
 @ApiTags("expenses")
+@ApiBearerAuth()
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
@@ -40,6 +53,8 @@ export class ExpenseController {
     status: 404,
     description: "Trip not found.",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
@@ -54,6 +69,7 @@ export class ExpenseController {
     description: "List of all expenses retrieved successfully.",
     type: [ExpenseResponseDto],
   })
+  @UseGuards(AuthGuard)
   async findAll() {
     return this.expenseService.findAll();
   }
@@ -73,8 +89,9 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found.",
   })
-  async findOne(@Param("id") id: string) {
-    return this.expenseService.findOne(+id);
+  @UseGuards(AuthGuard)
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.findOne(id);
   }
 
   @Patch(":id")
@@ -92,11 +109,13 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found.",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
-    return this.expenseService.update(+id, updateExpenseDto);
+    return this.expenseService.update(id, updateExpenseDto);
   }
 
   @Delete(":id")
@@ -112,7 +131,9 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found.",
   })
-  async remove(@Param("id") id: string) {
-    return this.expenseService.remove(+id);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.remove(id);
   }
 }

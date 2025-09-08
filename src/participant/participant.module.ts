@@ -1,3 +1,4 @@
+import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
 
 import { Module } from "@nestjs/common";
@@ -8,6 +9,6 @@ import { ParticipantService } from "./participant.service";
 @Module({
   controllers: [ParticipantController],
   providers: [ParticipantService],
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, AuthModule],
 })
 export class ParticipantModule {}

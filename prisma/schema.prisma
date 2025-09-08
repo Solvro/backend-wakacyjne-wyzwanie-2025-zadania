@@ -26,14 +26,16 @@ model Trip {
 }
 
 model Participant {
-  participant_id Int                @id @default(autoincrement())
-  first_name     String
-  last_name      String
-  email          String             @unique
-  phone          String?
-  trips          TripParticipants[]
-  created_at     DateTime           @default(now())
-  updated_at     DateTime           @updatedAt
+  participant_id     Int                @id @default(autoincrement())
+  created_by_user_id Int
+  created_by_user    User               @relation(fields: [created_by_user_id], references: [user_id])
+  first_name         String
+  last_name          String
+  email              String?
+  phone              String?
+  trips              TripParticipants[]
+  created_at         DateTime           @default(now())
+  updated_at         DateTime           @updatedAt
 }
 
 enum Category {
@@ -61,4 +63,23 @@ model TripParticipants {
   participant    Participant @relation(fields: [participant_id], references: [participant_id])
 
   @@id([trip_id, participant_id])
+}
+
+enum Role {
+  ADMIN
+  USER
+  COORDINATOR
+}
+
+model User {
+  user_id              Int           @id @default(autoincrement())
+  email                String        @unique
+  password             String
+  role                 Role
+  name                 String?
+  about_me             String?
+  is_enabled           Boolean       @default(true)
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
+  created_participants Participant[]
 }

@@ -1,3 +1,6 @@
+import { AuthGuard } from "src/auth/auth.guard";
+import type { RequestWithUser } from "src/auth/dto/request-with-user.dto";
+
 import {
   Body,
   Controller,
@@ -6,10 +9,18 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { ParticipantResponseDto } from "./dto/participant-response.dto";
@@ -18,6 +29,7 @@ import { ParticipantService } from "./participant.service";
 
 @Controller("participant")
 @ApiTags("participants")
+@ApiBearerAuth()
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
@@ -37,8 +49,16 @@ export class ParticipantController {
     status: 400,
     description: "Invalid input data",
   })
-  async create(@Body() createParticipantDto: CreateParticipantDto) {
-    return this.participantService.create(createParticipantDto);
+  @UseGuards(AuthGuard)
+  async create(
+    @Body() createParticipantDto: CreateParticipantDto,
+    @Req() request: RequestWithUser,
+  ) {
+    const user = request.user;
+    if (user == null) {
+      throw new Error("Authenticated user not found in request");
+    }
+    return this.participantService.create(createParticipantDto, user);
   }
 
   @Get()
@@ -51,8 +71,13 @@ export class ParticipantController {
     description: "List of participants retrieved successfully",
     type: [ParticipantResponseDto],
   })
-  async findAll() {
-    return this.participantService.findAll();
+  @UseGuards(AuthGuard)
+  async findAll(@Req() request: RequestWithUser) {
+    const user = request.user;
+    if (user == null) {
+      throw new Error("Authenticated user not found in request");
+    }
+    return this.participantService.findAll(user);
   }
 
   @Get(":id")
@@ -70,8 +95,16 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  async findOne(@Param("id") id: string) {
-    return this.participantService.findOne(+id);
+  @UseGuards(AuthGuard)
+  async findOne(
+    @Param("id", ParseIntPipe) id: number,
+    @Req() request: RequestWithUser,
+  ) {
+    const user = request.user;
+    if (user == null) {
+      throw new Error("Authenticated user not found in request");
+    }
+    return this.participantService.findOne(id, user);
   }
 
   @Patch(":id")
@@ -89,11 +122,17 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
+  @UseGuards(AuthGuard)
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,
+    @Req() request: RequestWithUser,
   ) {
-    return this.participantService.update(+id, updateParticipantDto);
+    const user = request.user;
+    if (user == null) {
+      throw new Error("Authenticated user not found in request");
+    }
+    return this.participantService.update(id, updateParticipantDto, user);
   }
 
   @Delete(":id")
@@ -110,7 +149,15 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.participantService.remove(+id);
+  @UseGuards(AuthGuard)
+  async remove(
+    @Param("id", ParseIntPipe) id: number,
+    @Req() request: RequestWithUser,
+  ) {
+    const user = request.user;
+    if (user == null) {
+      throw new Error("Authenticated user not found in request");
+    }
+    return this.participantService.remove(id, user);
   }
 }

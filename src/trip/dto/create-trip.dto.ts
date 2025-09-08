@@ -1,4 +1,11 @@
-import { IsDateString, IsOptional, IsString, MinLength } from "class-validator";
+import {
+  IsDateString,
+  IsOptional,
+  IsString,
+  MinLength,
+  Validate,
+} from "class-validator";
+import { EndAfterStartValidator } from "src/validators/end-after-start.validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -39,5 +46,6 @@ export class CreateTripDto {
     { message: "End date must be a valid ISO 8601 date string (YYYY-MM-DD)" },
   )
   @IsOptional()
+  @Validate(EndAfterStartValidator)
   endDate?: string;
 }

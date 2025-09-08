@@ -1,5 +1,9 @@
+import { Role } from "@prisma/client";
+import { UserMetadata } from "src/users/dto/user-metadata.dto";
+
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -11,7 +15,10 @@ import { CreateTripParticipantDto } from "./dto/create-trip-participant.dto";
 export class TripParticipantsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(createTripParticipantDto: CreateTripParticipantDto) {
+  async create(
+    createTripParticipantDto: CreateTripParticipantDto,
+    currentUser: UserMetadata,
+  ) {
     const trip = await this.databaseService.trip.findUnique({
       where: { trip_id: createTripParticipantDto.tripId },
     });
@@ -21,6 +28,16 @@ export class TripParticipantsService {
 
     if (trip === null || participant === null) {
       throw new NotFoundException("Trip or participant not found");
+    }
+
+    if (
+      participant.created_by_user_id !== currentUser.userId &&
+      currentUser.role !== Role.ADMIN &&
+      currentUser.role !== Role.COORDINATOR
+    ) {
+      throw new ForbiddenException(
+        "You are not allowed to add this participant",
+      );
     }
 
     const tripParticipant =
@@ -43,11 +60,20 @@ export class TripParticipantsService {
     });
   }
 
-  async findAll() {
-    return this.databaseService.tripParticipants.findMany();
+  async findAll(currentUser: UserMetadata) {
+    return currentUser.role === Role.ADMIN ||
+      currentUser.role === Role.COORDINATOR
+      ? this.databaseService.tripParticipants.findMany()
+      : this.databaseService.tripParticipants.findMany({
+          where: {
+            participant: {
+              created_by_user_id: currentUser.userId,
+            },
+          },
+        });
   }
 
-  async findParticipantsOfTrip(tripId: number) {
+  async findParticipantsOfTrip(tripId: number, currentUser: UserMetadata) {
     const trip = await this.databaseService.trip.findUnique({
       where: { trip_id: tripId },
     });
@@ -56,26 +82,51 @@ export class TripParticipantsService {
       throw new NotFoundException("Trip not found");
     }
 
-    const participants = await this.databaseService.tripParticipants.findMany({
-      where: {
-        trip_id: tripId,
-      },
-      include: {
-        trip: true,
-        participant: true,
-      },
-    });
-
-    return participants;
+    return currentUser.role === Role.ADMIN ||
+      currentUser.role === Role.COORDINATOR
+      ? await this.databaseService.tripParticipants.findMany({
+          where: {
+            trip_id: tripId,
+          },
+          include: {
+            trip: true,
+            participant: true,
+          },
+        })
+      : await this.databaseService.tripParticipants.findMany({
+          where: {
+            trip_id: tripId,
+            participant: {
+              created_by_user_id: currentUser.userId,
+            },
+          },
+          include: {
+            trip: true,
+            participant: true,
+          },
+        });
   }
 
-  async findTripsByParticipant(participantId: number) {
+  async findTripsByParticipant(
+    participantId: number,
+    currentUser: UserMetadata,
+  ) {
     const participant = await this.databaseService.participant.findUnique({
       where: { participant_id: participantId },
     });
 
     if (participant === null) {
       throw new NotFoundException("Participant not found");
+    }
+
+    if (
+      currentUser.role !== Role.ADMIN &&
+      currentUser.role !== Role.COORDINATOR &&
+      participant.created_by_user_id !== currentUser.userId
+    ) {
+      throw new ForbiddenException(
+        "You are not allowed to view this participant's trips",
+      );
     }
 
     const trips = await this.databaseService.tripParticipants.findMany({
@@ -91,7 +142,11 @@ export class TripParticipantsService {
     return trips;
   }
 
-  async remove(tripId: number, participantId: number) {
+  async remove(
+    tripId: number,
+    participantId: number,
+    currentUser: UserMetadata,
+  ) {
     const tripParticipant =
       await this.databaseService.tripParticipants.findFirst({
         where: {
@@ -102,6 +157,21 @@ export class TripParticipantsService {
 
     if (tripParticipant === null) {
       throw new NotFoundException("Trip participant not found");
+    }
+
+    const participant = await this.databaseService.participant.findUnique({
+      where: { participant_id: participantId },
+    });
+
+    if (
+      currentUser.role !== Role.ADMIN &&
+      currentUser.role !== Role.COORDINATOR &&
+      (participant == null ||
+        participant.created_by_user_id !== currentUser.userId)
+    ) {
+      throw new ForbiddenException(
+        "You are not allowed to remove this participant from the trip",
+      );
     }
 
     await this.databaseService.tripParticipants.delete({

@@ -1,3 +1,10 @@
+import { Role } from "@prisma/client";
+import { plainToInstance } from "class-transformer";
+import { AuthGuard } from "src/auth/auth.guard";
+import type { RequestWithUser } from "src/auth/dto/request-with-user.dto";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,18 +13,28 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
-import { TripResponseDto } from "./dto/trip-response.dto";
+import { TripResponsePrivateDto } from "./dto/trip-response-private.dto";
+import { TripResponsePublicDto } from "./dto/trip-response-public.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
 
 @Controller("trip")
 @ApiTags("trips")
+@ApiBearerAuth()
 export class TripController {
   constructor(private readonly tripService: TripService) {}
 
@@ -31,12 +48,14 @@ export class TripController {
   @ApiResponse({
     status: 201,
     description: "Trip created successfully.",
-    type: TripResponseDto,
+    type: TripResponsePublicDto,
   })
   @ApiResponse({
     status: 400,
     description: "Invalid input data.",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
@@ -49,10 +68,20 @@ export class TripController {
   @ApiResponse({
     status: 200,
     description: "List of trips retrieved successfully.",
-    type: [TripResponseDto],
+    type: [TripResponsePublicDto],
   })
-  async findAll() {
-    return this.tripService.findAll();
+  @ApiResponse({
+    status: 200,
+    description: "Details of all trips retrieved successfully.",
+    type: [TripResponsePrivateDto],
+  })
+  async findAll(@Req() request: RequestWithUser) {
+    const user = request.user;
+    const trips = await this.tripService.findAll();
+
+    return user == null
+      ? plainToInstance(TripResponsePublicDto, trips)
+      : plainToInstance(TripResponsePrivateDto, trips);
   }
 
   @Get(":id")
@@ -63,15 +92,27 @@ export class TripController {
   })
   @ApiResponse({
     status: 200,
-    description: "Trip retrieved successfully.",
-    type: TripResponseDto,
+    description: "Public trip details retrieved successfully.",
+    type: TripResponsePublicDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: "All trip details retrieved successfully.",
+    type: TripResponsePrivateDto,
   })
   @ApiResponse({
     status: 404,
     description: "Trip not found.",
   })
-  async findOne(@Param("id") id: string) {
-    return this.tripService.findOne(+id);
+  async findOne(
+    @Param("id", ParseIntPipe) id: number,
+    @Req() request: RequestWithUser,
+  ) {
+    const user = request.user;
+    const trip = await this.tripService.findOne(id);
+    return user == null
+      ? plainToInstance(TripResponsePublicDto, trip)
+      : plainToInstance(TripResponsePrivateDto, trip);
   }
 
   @Patch(":id")
@@ -82,14 +123,19 @@ export class TripController {
   @ApiResponse({
     status: 200,
     description: "Trip updated successfully.",
-    type: TripResponseDto,
+    type: TripResponsePublicDto,
   })
   @ApiResponse({
     status: 404,
     description: "Trip not found.",
   })
-  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripService.update(+id, updateTripDto);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  async update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateTripDto: UpdateTripDto,
+  ) {
+    return this.tripService.update(id, updateTripDto);
   }
 
   @Delete(":id")
@@ -105,7 +151,9 @@ export class TripController {
     status: 404,
     description: "Trip not found.",
   })
-  async remove(@Param("id") id: string) {
-    return this.tripService.remove(+id);
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.remove(id);
   }
 }
