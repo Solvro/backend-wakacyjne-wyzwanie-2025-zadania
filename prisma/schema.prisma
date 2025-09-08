@@ -24,12 +24,14 @@ model Participant {
   first_name  String
   second_name String?
   last_name   String
+  email       String   @unique
   gender      Gender
   trips       Trip[]
 }
 
 model Trip {
   id             Int         @id @default(autoincrement())
+  destination    String
   participant_id Int
   expense        Expense[]
   date_start     DateTime
@@ -37,8 +39,9 @@ model Trip {
 }
 
 model Expense {
-  id      Int   @id @default(autoincrement())
-  trip_id Int
-  trip    Trip  @relation(fields: [trip_id], references: [id])
-  price   Float
+  id            Int   @id @default(autoincrement())
+  description   String
+  trip_id       Int
+  trip          Trip  @relation(fields: [trip_id], references: [id])
+  price         Float
 }
