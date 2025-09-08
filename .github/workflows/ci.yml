@@ -8,6 +8,25 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: budzetownik_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/budzetownik_test?schema=public
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,6 +41,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup database
+        run: npm run test:e2e:setup
 
       - name: Check commit name
         if: github.event_name == 'pull_request'

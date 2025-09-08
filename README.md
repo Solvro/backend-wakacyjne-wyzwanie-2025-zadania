@@ -180,6 +180,37 @@ Aby wypełnić bazę danych przykładowymi danymi:
 npm run seed
 ```
 
+### 🧪 Testowanie
+
+#### Uruchamianie testów jednostkowych
+
+```bash
+npm test
+```
+
+#### Uruchamianie testów e2e
+
+Testy e2e wymagają działającej bazy danych PostgreSQL. Ustaw zmienną środowiskową `DATABASE_URL` wskazującą na bazę testową:
+
+```bash
+# Skonfiguruj bazę testową
+export DATABASE_URL="postgresql://user:password@localhost:5432/budzetownik_test?schema=public"
+
+# Przygotuj bazę dla testów e2e
+npm run test:e2e:setup
+
+# Uruchom testy e2e
+npm run test:e2e
+```
+
+**Uwaga:** Testy e2e automatycznie czyszczą bazę danych przed każdym testem, więc używaj oddzielnej bazy testowej.
+
+#### Uruchamianie wszystkich testów
+
+```bash
+npm run preflight  # lint + format + typecheck + tests + e2e + build
+```
+
 ### 🚀 Uruchamianie aplikacji
 
 #### Konfiguracja środowiska
