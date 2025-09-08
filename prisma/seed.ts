@@ -1,4 +1,4 @@
-import { PrismaClient, Role, Transport } from "@prisma/client";
+import { PrismaClient, Role, Transport } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,7 @@ async function main() {
     },
   });
 
-  await prisma.participants.create({
+  await prisma.participant.create({
     data: {
       name: "Jan Kowalski",
       age: 35,
@@ -29,8 +29,6 @@ async function main() {
       tripId: trip.id,
     },
   });
-
-  console.log("Baza danych została zainicjalizowana przykładowymi danymi.");
 }
 
 main()

@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -14,28 +13,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Participants {
-  id            Int         @id @default(autoincrement())
-  tripId        Int
-  trip        Trip        @relation(fields: [tripId], reference: [id])
-  name          String
-  age           Int
-  role          Role
-}
-
-enum Role {
-  GUIDE
-  PARTICIPANT
-  DRIVER
-}
-
 model Trip {
-  id            Int         @id @default(autoincrement())
-  destination   String
-  date          DateTime
-  transport     Transport
-  attractions   String?
-  duration      Int
+  id           Int           @id @default(autoincrement())
+  expenses     Expense[]
+  Participants Participant[]
+  destination  String
+  date         DateTime
+  transport    Transport
+  attractions  String?
+  duration     Int
 }
 
 enum Transport {
@@ -45,10 +31,25 @@ enum Transport {
   BOAT
 }
 
+model Participant {
+  id     Int    @id @default(autoincrement())
+  tripId Int
+  trip   Trip   @relation(fields: [tripId], references: [id])
+  name   String
+  age    Int
+  role   Role
+}
+
+enum Role {
+  GUIDE
+  PARTICIPANT
+  DRIVER
+}
+
 model Expense {
-  id            Int         @id @default(autoincrement())
-  tripId        Int
-  trip        Trip        @relation(fields: [tripId], reference: [id])
-  cost          Float
-  additional    Float?
+  id         Int    @id @default(autoincrement())
+  tripId     Int
+  trip       Trip   @relation(fields: [tripId], references: [id])
+  cost       Float
+  additional Float?
 }
