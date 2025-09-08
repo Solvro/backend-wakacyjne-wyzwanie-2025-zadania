@@ -8,7 +8,7 @@ export class TripService {
 
   async getAllTrips() {
     return this.prisma.trip.findMany({
-      include: { participants: true, expenses: true },
+      include: { participants: true },
     });
   }
 
