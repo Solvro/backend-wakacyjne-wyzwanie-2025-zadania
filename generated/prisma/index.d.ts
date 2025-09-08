@@ -3373,21 +3373,21 @@ export namespace Prisma {
   export type ExpenseMinAggregateOutputType = {
     id: number | null
     trip_id: number | null
-    description: string | null
+    desc: string | null
     price: number | null
   }
 
   export type ExpenseMaxAggregateOutputType = {
     id: number | null
     trip_id: number | null
-    description: string | null
+    desc: string | null
     price: number | null
   }
 
   export type ExpenseCountAggregateOutputType = {
     id: number
     trip_id: number
-    description: number
+    desc: number
     price: number
     _all: number
   }
@@ -3408,21 +3408,21 @@ export namespace Prisma {
   export type ExpenseMinAggregateInputType = {
     id?: true
     trip_id?: true
-    description?: true
+    desc?: true
     price?: true
   }
 
   export type ExpenseMaxAggregateInputType = {
     id?: true
     trip_id?: true
-    description?: true
+    desc?: true
     price?: true
   }
 
   export type ExpenseCountAggregateInputType = {
     id?: true
     trip_id?: true
-    description?: true
+    desc?: true
     price?: true
     _all?: true
   }
@@ -3516,7 +3516,7 @@ export namespace Prisma {
   export type ExpenseGroupByOutputType = {
     id: number
     trip_id: number
-    description: string
+    desc: string
     price: number
     _count: ExpenseCountAggregateOutputType | null
     _avg: ExpenseAvgAggregateOutputType | null
@@ -3542,7 +3542,7 @@ export namespace Prisma {
   export type ExpenseSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     trip_id?: boolean
-    description?: boolean
+    desc?: boolean
     price?: boolean
     trip?: boolean | TripDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["expense"]>
@@ -3550,7 +3550,7 @@ export namespace Prisma {
   export type ExpenseSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     trip_id?: boolean
-    description?: boolean
+    desc?: boolean
     price?: boolean
     trip?: boolean | TripDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["expense"]>
@@ -3558,7 +3558,7 @@ export namespace Prisma {
   export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     trip_id?: boolean
-    description?: boolean
+    desc?: boolean
     price?: boolean
     trip?: boolean | TripDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["expense"]>
@@ -3566,11 +3566,11 @@ export namespace Prisma {
   export type ExpenseSelectScalar = {
     id?: boolean
     trip_id?: boolean
-    description?: boolean
+    desc?: boolean
     price?: boolean
   }
 
-  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "trip_id" | "description" | "price", ExtArgs["result"]["expense"]>
+  export type ExpenseOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "trip_id" | "desc" | "price", ExtArgs["result"]["expense"]>
   export type ExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     trip?: boolean | TripDefaultArgs<ExtArgs>
   }
@@ -3589,7 +3589,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       trip_id: number
-      description: string
+      desc: string
       price: number
     }, ExtArgs["result"]["expense"]>
     composites: {}
@@ -4017,7 +4017,7 @@ export namespace Prisma {
   interface ExpenseFieldRefs {
     readonly id: FieldRef<"Expense", 'Int'>
     readonly trip_id: FieldRef<"Expense", 'Int'>
-    readonly description: FieldRef<"Expense", 'String'>
+    readonly desc: FieldRef<"Expense", 'String'>
     readonly price: FieldRef<"Expense", 'Float'>
   }
     
@@ -4472,7 +4472,7 @@ export namespace Prisma {
   export const ExpenseScalarFieldEnum: {
     id: 'id',
     trip_id: 'trip_id',
-    description: 'description',
+    desc: 'desc',
     price: 'price'
   };
 
@@ -4704,7 +4704,7 @@ export namespace Prisma {
     NOT?: ExpenseWhereInput | ExpenseWhereInput[]
     id?: IntFilter<"Expense"> | number
     trip_id?: IntFilter<"Expense"> | number
-    description?: StringFilter<"Expense"> | string
+    desc?: StringFilter<"Expense"> | string
     price?: FloatFilter<"Expense"> | number
     trip?: XOR<TripScalarRelationFilter, TripWhereInput>
   }
@@ -4712,7 +4712,7 @@ export namespace Prisma {
   export type ExpenseOrderByWithRelationInput = {
     id?: SortOrder
     trip_id?: SortOrder
-    description?: SortOrder
+    desc?: SortOrder
     price?: SortOrder
     trip?: TripOrderByWithRelationInput
   }
@@ -4723,7 +4723,7 @@ export namespace Prisma {
     OR?: ExpenseWhereInput[]
     NOT?: ExpenseWhereInput | ExpenseWhereInput[]
     trip_id?: IntFilter<"Expense"> | number
-    description?: StringFilter<"Expense"> | string
+    desc?: StringFilter<"Expense"> | string
     price?: FloatFilter<"Expense"> | number
     trip?: XOR<TripScalarRelationFilter, TripWhereInput>
   }, "id">
@@ -4731,7 +4731,7 @@ export namespace Prisma {
   export type ExpenseOrderByWithAggregationInput = {
     id?: SortOrder
     trip_id?: SortOrder
-    description?: SortOrder
+    desc?: SortOrder
     price?: SortOrder
     _count?: ExpenseCountOrderByAggregateInput
     _avg?: ExpenseAvgOrderByAggregateInput
@@ -4746,7 +4746,7 @@ export namespace Prisma {
     NOT?: ExpenseScalarWhereWithAggregatesInput | ExpenseScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Expense"> | number
     trip_id?: IntWithAggregatesFilter<"Expense"> | number
-    description?: StringWithAggregatesFilter<"Expense"> | string
+    desc?: StringWithAggregatesFilter<"Expense"> | string
     price?: FloatWithAggregatesFilter<"Expense"> | number
   }
 
@@ -4864,7 +4864,7 @@ export namespace Prisma {
   }
 
   export type ExpenseCreateInput = {
-    description: string
+    desc: string
     price: number
     trip: TripCreateNestedOneWithoutExpenseInput
   }
@@ -4872,12 +4872,12 @@ export namespace Prisma {
   export type ExpenseUncheckedCreateInput = {
     id?: number
     trip_id: number
-    description: string
+    desc: string
     price: number
   }
 
   export type ExpenseUpdateInput = {
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     trip?: TripUpdateOneRequiredWithoutExpenseNestedInput
   }
@@ -4885,26 +4885,26 @@ export namespace Prisma {
   export type ExpenseUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     trip_id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
   }
 
   export type ExpenseCreateManyInput = {
     id?: number
     trip_id: number
-    description: string
+    desc: string
     price: number
   }
 
   export type ExpenseUpdateManyMutationInput = {
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
   }
 
   export type ExpenseUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     trip_id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
   }
 
@@ -5158,7 +5158,7 @@ export namespace Prisma {
   export type ExpenseCountOrderByAggregateInput = {
     id?: SortOrder
     trip_id?: SortOrder
-    description?: SortOrder
+    desc?: SortOrder
     price?: SortOrder
   }
 
@@ -5171,14 +5171,14 @@ export namespace Prisma {
   export type ExpenseMaxOrderByAggregateInput = {
     id?: SortOrder
     trip_id?: SortOrder
-    description?: SortOrder
+    desc?: SortOrder
     price?: SortOrder
   }
 
   export type ExpenseMinOrderByAggregateInput = {
     id?: SortOrder
     trip_id?: SortOrder
-    description?: SortOrder
+    desc?: SortOrder
     price?: SortOrder
   }
 
@@ -5567,13 +5567,13 @@ export namespace Prisma {
   }
 
   export type ExpenseCreateWithoutTripInput = {
-    description: string
+    desc: string
     price: number
   }
 
   export type ExpenseUncheckedCreateWithoutTripInput = {
     id?: number
-    description: string
+    desc: string
     price: number
   }
 
@@ -5631,7 +5631,7 @@ export namespace Prisma {
     NOT?: ExpenseScalarWhereInput | ExpenseScalarWhereInput[]
     id?: IntFilter<"Expense"> | number
     trip_id?: IntFilter<"Expense"> | number
-    description?: StringFilter<"Expense"> | string
+    desc?: StringFilter<"Expense"> | string
     price?: FloatFilter<"Expense"> | number
   }
 
@@ -5732,24 +5732,24 @@ export namespace Prisma {
 
   export type ExpenseCreateManyTripInput = {
     id?: number
-    description: string
+    desc: string
     price: number
   }
 
   export type ExpenseUpdateWithoutTripInput = {
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
   }
 
   export type ExpenseUncheckedUpdateWithoutTripInput = {
     id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
   }
 
   export type ExpenseUncheckedUpdateManyWithoutTripInput = {
     id?: IntFieldUpdateOperationsInput | number
-    description?: StringFieldUpdateOperationsInput | string
+    desc?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
   }
 

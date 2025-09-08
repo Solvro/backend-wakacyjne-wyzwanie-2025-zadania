@@ -139,7 +139,7 @@ exports.Prisma.TripScalarFieldEnum = {
 exports.Prisma.ExpenseScalarFieldEnum = {
   id: 'id',
   trip_id: 'trip_id',
-  description: 'description',
+  desc: 'desc',
   price: 'price'
 };
 
