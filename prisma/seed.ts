@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import { PrismaClient, Role, Transport } from "../generated/prisma";
 
 const prisma = new PrismaClient();
@@ -29,6 +30,8 @@ async function main() {
       tripId: trip.id,
     },
   });
+
+  console.warn("Baza danych została seedowana pomyślnie.");
 }
 
 main()

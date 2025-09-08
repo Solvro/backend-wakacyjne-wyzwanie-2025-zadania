@@ -1,5 +1,5 @@
-import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
 
 import { TripService } from "./trip.service";
 
