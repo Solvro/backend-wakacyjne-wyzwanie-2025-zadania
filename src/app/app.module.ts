@@ -1,11 +1,10 @@
-import { AuthModule } from "src/auth/auth.module";
-import { UserModule } from "src/user/user.module";
-
 import { Module } from "@nestjs/common";
 
+import { AuthModule } from "../auth/auth.module";
 import { DatabaseModule } from "../database/database.module";
 import { ExpenseModule } from "../expense/expense.module";
 import { ParticipantModule } from "../participant/participant.module";
+import { UserModule } from "../user/user.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 

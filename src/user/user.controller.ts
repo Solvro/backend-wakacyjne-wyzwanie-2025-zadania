@@ -1,6 +1,4 @@
 import { AuthRole, User } from "@prisma/client";
-import { AuthGuard } from "src/auth/auth.guard";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 
 import {
   Body,
@@ -16,7 +14,9 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
 import { UserService } from "./user.service";
