@@ -6,11 +6,10 @@ import { DatabaseModule } from "./database/database.module";
 import { DatabaseService } from "./database/database.service";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
-import { ParticipantsController } from "./participants/participants.controller";
 
 @Module({
   imports: [ParticipantModule, DatabaseModule, ExpenseModule],
-  controllers: [AppController, ParticipantsController],
-  providers: [AppService, DatabaseService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
