@@ -1,0 +1,37 @@
+import { Test } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+
+import { PrismaService } from "../prisma/prisma.service";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
+
+describe("UsersController", () => {
+  let controller: UserController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UserController],
+      providers: [
+        UserService,
+        {
+          provide: PrismaService,
+          useValue: {
+            user: {
+              findUnique: jest.fn(),
+              create: jest.fn(),
+              findMany: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
+            },
+          },
+        },
+      ],
+    }).compile();
+
+    controller = module.get<UserController>(UserController);
+  });
+
+  it("should be defined", () => {
+    expect(controller).toBeDefined();
+  });
+});
