@@ -12,11 +12,13 @@ export class DatabaseService extends PrismaClient implements OnModuleInit {
     const trips = await this.trip.findMany({
       include: { participants: true, expenses: true },
     });
+    const users = await this.user.findMany();
     const participants = await this.participant.findMany();
     const expenses = await this.expense.findMany();
 
     return {
       trips,
+      users,
       participants,
       expenses,
     };

@@ -1,8 +1,7 @@
+import { Role } from "@prisma/client";
 import { IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
 
 import { ApiPropertyOptional } from "@nestjs/swagger";
-
-import { Role } from "./create-participant.dto";
 
 export class UpdateParticipantDto {
   @ApiPropertyOptional({

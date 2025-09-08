@@ -1,3 +1,6 @@
+import { AuthModule } from "src/auth/auth.module";
+import { UserModule } from "src/user/user.module";
+
 import { Module } from "@nestjs/common";
 
 import { DatabaseModule } from "../database/database.module";
@@ -7,7 +10,13 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 
 @Module({
-  imports: [DatabaseModule, ParticipantModule, ExpenseModule],
+  imports: [
+    DatabaseModule,
+    ParticipantModule,
+    ExpenseModule,
+    UserModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

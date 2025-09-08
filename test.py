@@ -108,8 +108,37 @@ def expense_test():
     response = requests.get(base_url + "/all")
     print("GET Response body:", response.text)
 
+def login():
+    login_data = {
+        "email": "jan.juskowiak@example.com",
+        "password": "password",
+    }
 
+    login_response = requests.post("http://localhost:3000/api/v1/auth/login", json=login_data)
+    print("Login Response:", login_response.text)
 
-participant_test()
+    if login_response.status_code != 200:
+        print("Login failed, cannot continue tests.")
+        return
+
+    token = login_response.json().get("token")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    email = "jan.juskowiak@example.com"
+    update_payload = {
+        "name": "Updated Jan",
+    }
+
+    update_response = requests.patch(
+        f"http://localhost:3000/api/v1/users/{email}",
+        json=update_payload,
+        headers=headers
+    )
+
+    print("Update Response:", update_response.text)
+
+#participant_test()
 #db_test();
-expense_test()
+#expense_test()
+
+login()

@@ -1,8 +1,24 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { AuthRole, PrismaClient, Role } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  const password = "password";
+
+  const salt = 10;
+  const hashedPassword = await hash(password, salt);
+
+  const user = await prisma.user.create({
+    data: {
+      email: "jan.juskowiak@example.com",
+      name: "Jan Juskowiak",
+      password: hashedPassword,
+      role: AuthRole.ADMIN,
+      isEnabled: true,
+    },
+  });
+
   const trip = await prisma.trip.create({
     data: {
       name: "Test Trip",
@@ -14,6 +30,7 @@ async function main() {
 
   const participant = await prisma.participant.create({
     data: {
+      email: user.email,
       name: "Alice",
       role: Role.GUIDE,
       trips: {

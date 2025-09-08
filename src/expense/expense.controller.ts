@@ -24,11 +24,11 @@ import { ExpenseService } from "./expense.service";
 import { UpdateExpenseDto } from "./update-expense.dto";
 
 @ApiTags("Expense")
-@Controller("api/v1/expense")
+@Controller("api/v1/expenses")
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
-  @Get("all")
+  @Get()
   @ApiOperation({ summary: "Get all expenses" })
   @ApiResponse({ status: 200, description: "List of expenses" })
   async getAll() {
@@ -41,7 +41,9 @@ export class ExpenseController {
   @ApiResponse({ status: 200, description: "Expense found" })
   @ApiResponse({ status: 404, description: "Expense not found" })
   async getOne(@Param("id") id: string) {
-    return await this.expenseService.getOne(Number(id));
+    const expense = await this.expenseService.getOne(Number(id));
+
+    return expense;
   }
 
   @Post()
