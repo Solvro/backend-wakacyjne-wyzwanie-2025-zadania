@@ -5,6 +5,8 @@ import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { AppController } from "../src/app.controller";
+import { AppService } from "../src/app.service";
 import { AppModule } from "./../src/app.module";
 
 describe("AppController (e2e)", () => {
@@ -12,7 +14,8 @@ describe("AppController (e2e)", () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [AppController],
+      providers: [AppService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
