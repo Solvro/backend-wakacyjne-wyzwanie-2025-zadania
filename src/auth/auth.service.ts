@@ -1,26 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ConflictException, Injectable } from "@nestjs/common";
+import * as bcrypt from "bcrypt";
+import { DatabaseService } from "../database/database.service";
+import { RegisterDto } from "./dto/register.dto";
+import { UserStatus } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(private readonly db: DatabaseService) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async register(dto: RegisterDto): Promise<void> {
+    const existing = await this.db.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (existing) {
+      throw new ConflictException("Email already in use");
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    const password = await bcrypt.hash(dto.password, 12);
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    await this.db.user.create({
+      data: {
+        email: dto.email,
+        name: dto.name ?? null,
+        password,             
+        role: UserStatus.USER, 
+        isEnabled: true,       
+      },
+    });
   }
 }
