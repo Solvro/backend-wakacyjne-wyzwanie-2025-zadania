@@ -15,10 +15,12 @@ import { ResponseDto } from "./dto/response.dto";
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-  private static readonly EXPIRY_TIME_MS = Number.parseInt(
-    process.env.EXPIRY_TIME_MS ?? "3600000",
-  );
   private readonly tokenPrefix = "token_";
+
+  private get expiryTimeMs(): number {
+    return Number.parseInt(process.env.EXPIRY_TIME_MS ?? "3600000");
+  }
+
   private generateToken(email: string): string {
     const issuedAt = Date.now();
     return `${this.tokenPrefix}${email}_${issuedAt.toString()}`;
@@ -41,7 +43,7 @@ export class AuthService {
       throw new UnauthorizedException("Invalid token format");
     }
     const now = Date.now();
-    if (now - issuedAt > AuthService.EXPIRY_TIME_MS) {
+    if (now - issuedAt > this.expiryTimeMs) {
       throw new UnauthorizedException("Token has expired");
     }
     try {
@@ -81,7 +83,7 @@ export class AuthService {
     const existingUser = await this.userService.findOne(email);
     if (existingUser != null) {
       if (existingUser.isArchived) {
-        throw new ConflictException("User with this email is archived)");
+        throw new ConflictException("User with this email is archived");
       }
       throw new ConflictException("User with this email exists");
     }
