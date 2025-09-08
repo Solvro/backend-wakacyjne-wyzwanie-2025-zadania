@@ -30,7 +30,7 @@ export class ParticipantService {
         last_name: createDto.last_name,
         role: createDto.role,
         email: createDto.email,
-        trip: { connect: { trip_id: createDto.trip_id } },
+        trip_id: createDto.trip_id,
       },
       include: { trip: true },
     });
@@ -65,7 +65,9 @@ export class ParticipantService {
       first_name: updateDto.first_name,
       last_name: updateDto.last_name,
       role: updateDto.role,
-      email: updateDto.email,
+      ...(updateDto.email != null && {
+        User: { connect: { email: updateDto.email } },
+      }),
     };
 
     if (updateDto.trip_id != null) {

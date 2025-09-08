@@ -26,6 +26,11 @@ enum ExpenseType {
   OTHER
 }
 
+enum UserStatus{
+  ADMIN
+  USER
+}
+
 model Trip {
   trip_id     Int       @id @default(autoincrement())
   name        String    @db.VarChar(255)
@@ -42,6 +47,7 @@ model Participant {
   participant_id Int    @id @default(autoincrement())
   trip_id        Int
   trip           Trip   @relation(fields: [trip_id], references: [trip_id])
+  User        User     @relation(fields: [email], references: [email])
   first_name     String @db.VarChar(32)
   last_name      String @db.VarChar(32)
   role           Role
@@ -59,4 +65,13 @@ model Expense {
   cost         Decimal     @db.Decimal(10, 2)
   description  String?     @db.VarChar(255)
 
+}
+
+model User {
+  email       String        @id
+  password    String
+  role        UserStatus
+  isEnabled   Boolean
+  name        String?
+  Participant Participant[]
 }
