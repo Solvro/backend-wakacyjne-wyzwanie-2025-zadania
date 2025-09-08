@@ -1,7 +1,6 @@
-import { DatabaseService } from "src/database/database.service";
-
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 
@@ -13,7 +12,7 @@ export class ParticipantService {
     const trip = await this.database.trip.findUnique({
       where: { id: createParticipantDto.tripId },
     });
-    if (!trip) {
+    if (trip === null) {
       throw new NotFoundException("Trip not found");
     }
 
@@ -40,7 +39,7 @@ export class ParticipantService {
       include: { trip: true },
     });
 
-    if (!participant) {
+    if (participant === null) {
       throw new NotFoundException("Participant not found");
     }
 
@@ -52,7 +51,7 @@ export class ParticipantService {
       where: { id },
     });
 
-    if (!existingParticipant) {
+    if (existingParticipant === null) {
       throw new NotFoundException("Participant not found");
     }
 
@@ -60,7 +59,7 @@ export class ParticipantService {
       const trip = await this.database.trip.findUnique({
         where: { id: updateParticipantDto.tripId },
       });
-      if (!trip) {
+      if (trip === null) {
         throw new NotFoundException("Trip not found");
       }
     }
@@ -83,7 +82,7 @@ export class ParticipantService {
       where: { id },
     });
 
-    if (!existingParticipant) {
+    if (existingParticipant === null) {
       throw new NotFoundException("Participant not found");
     }
 

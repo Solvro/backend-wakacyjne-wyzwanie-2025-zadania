@@ -1,7 +1,6 @@
-import { DatabaseService } from "src/database/database.service";
-
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
@@ -10,15 +9,15 @@ export class ExpenseService {
   constructor(private database: DatabaseService) {}
 
   async create(createExpenseDto: CreateExpenseDto) {
-    const trip = this.database.trip.findUnique({
+    const trip = await this.database.trip.findUnique({
       where: { id: createExpenseDto.tripId },
     });
 
-    if (!trip) {
+    if (trip === null) {
       throw new NotFoundException("Trip not found");
     }
 
-    return this.database.expense.create({
+    return await this.database.expense.create({
       data: {
         amount: createExpenseDto.amount,
         category: createExpenseDto.category,
@@ -29,19 +28,19 @@ export class ExpenseService {
   }
 
   async findAll() {
-    return this.database.expense.findMany({
+    return await this.database.expense.findMany({
       include: { trip: true },
       orderBy: { createdAt: "desc" },
     });
   }
 
   async findOne(id: number) {
-    const expense = this.database.expense.findUnique({
+    const expense = await this.database.expense.findUnique({
       where: { id },
       include: { trip: true },
     });
 
-    if (!expense) {
+    if (expense === null) {
       throw new NotFoundException("Expense not found");
     }
 
@@ -49,25 +48,25 @@ export class ExpenseService {
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    const existingExpense = this.database.expense.findUnique({
+    const existingExpense = await this.database.expense.findUnique({
       where: { id },
     });
 
-    if (!existingExpense) {
+    if (existingExpense === null) {
       throw new NotFoundException("Expense not found");
     }
 
     if (updateExpenseDto.tripId !== undefined) {
-      const trip = this.database.trip.findUnique({
+      const trip = await this.database.trip.findUnique({
         where: { id: updateExpenseDto.tripId },
       });
 
-      if (!trip) {
+      if (trip === null) {
         throw new NotFoundException("Trip not found");
       }
     }
 
-    return this.database.expense.update({
+    return await this.database.expense.update({
       where: { id },
       data: {
         amount: updateExpenseDto.amount,
@@ -79,11 +78,11 @@ export class ExpenseService {
   }
 
   async remove(id: number) {
-    const expense = this.database.expense.findUnique({
+    const expense = await this.database.expense.findUnique({
       where: { id },
     });
 
-    if (!expense) {
+    if (expense === null) {
       throw new NotFoundException("Expense not found");
     }
 

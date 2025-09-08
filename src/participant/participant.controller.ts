@@ -3,18 +3,17 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
+@ApiTags("participant")
 @Controller("participant")
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
@@ -28,7 +27,7 @@ export class ParticipantController {
   })
   @ApiResponse({ status: 404, description: "Trip not found." })
   @ApiResponse({ status: 400, description: "Bad Request." })
-  create(@Body() createParticipantDto: CreateParticipantDto) {
+  async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
 
@@ -39,7 +38,7 @@ export class ParticipantController {
     description: "Participants retrieved successfully.",
     type: [CreateParticipantDto],
   })
-  findAll() {
+  async findAll() {
     return this.participantService.findAll();
   }
 
@@ -51,7 +50,7 @@ export class ParticipantController {
     type: CreateParticipantDto,
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
-  findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: string) {
     return this.participantService.findOne(+id);
   }
 
@@ -64,7 +63,7 @@ export class ParticipantController {
   })
   @ApiResponse({ status: 404, description: "Participant or Trip not found." })
   @ApiResponse({ status: 400, description: "Bad Request." })
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
@@ -78,7 +77,7 @@ export class ParticipantController {
     description: "Participant deleted successfully.",
   })
   @ApiResponse({ status: 404, description: "Participant not found." })
-  remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);
   }
 }
