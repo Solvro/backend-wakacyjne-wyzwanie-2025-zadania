@@ -1,9 +1,12 @@
+import { Request } from "express";
+
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
+
 import { AuthService } from "./auth.service";
 
 @Injectable()
@@ -11,24 +14,32 @@ export class AuthGuard implements CanActivate {
   constructor(private readonly authService: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers["authorization"];
+    const request = context.switchToHttp().getRequest<Request>();
+    const authHeader = request.headers.authorization;
 
-    if (!authHeader) {
-      throw new UnauthorizedException("Missing Authorization header");
+    if (authHeader === undefined || authHeader.length === 0) {
+      throw new UnauthorizedException("No token provided");
     }
 
-    const [type, token] = authHeader.split(" ");
-    if (type !== "Bearer" || !token) {
-      throw new UnauthorizedException("Invalid Authorization header format");
+    if (!authHeader.startsWith("Bearer ")) {
+      throw new UnauthorizedException("Invalid token format");
     }
 
-    const user = await this.authService.validateToken(token);
-    if (!user) {
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      throw new UnauthorizedException("Invalid token");
+    }
+
+    try {
+      const userMetadata = await this.authService.validateToken(token);
+      if (userMetadata === null) {
+        throw new UnauthorizedException("Invalid or expired token");
+      }
+
+      (request as Request & { user: unknown }).user = userMetadata;
+      return true;
+    } catch {
       throw new UnauthorizedException("Invalid or expired token");
     }
-
-    request.user = user;
-    return true;
   }
 }

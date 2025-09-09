@@ -9,7 +9,7 @@ async function main() {
         email: "jan.kowalski@example.com",
         name: "Jan Kowalski",
         password:
-          "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y", 
+          "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y",
         role: Role.ADMIN,
         isEnabled: true,
       },
@@ -33,7 +33,6 @@ async function main() {
     skipDuplicates: true,
   });
 
-
   const trip = await prisma.trip.create({
     data: {
       name: "Weekend w Krakowie",
@@ -44,17 +43,15 @@ async function main() {
     },
   });
 
-
   await prisma.participant.create({
     data: {
       first_name: "Jan",
       last_name: "Kowalski",
-      email: "jan.kowalski@example.com", 
+      email: "jan.kowalski@example.com",
       role: Role.ORGANIZER,
-      trip_id: trip.trip_id, 
+      trip_id: trip.trip_id,
     },
   });
-
 
   await prisma.expense.create({
     data: {
@@ -62,7 +59,7 @@ async function main() {
       expense_date: new Date("2025-09-01"),
       cost: 85.5,
       description: "Obiad w restauracji",
-      trip_id: trip.trip_id, 
+      trip_id: trip.trip_id,
     },
   });
 

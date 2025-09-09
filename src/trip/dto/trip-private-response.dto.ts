@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { ParticipantResponseDto } from "../../participant/dto/participant-response.dto";
 
+import { ParticipantResponseDto } from "../../participant/dto/participant-response.dto";
 
 export class TripPrivateResponseDto {
   @ApiProperty({ example: 1 })

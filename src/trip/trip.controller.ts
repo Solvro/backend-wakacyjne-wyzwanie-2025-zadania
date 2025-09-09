@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -10,27 +12,29 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { TripService } from "./trip.service";
-import { CreateTripDto } from "./dto/create-trip.dto";
-import { UpdateTripDto } from "./dto/update-trip.dto";
-import { TripResponseDto } from "./dto/trip-response.dto";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+
 import { AuthGuard } from "../auth/auth.guard";
-import { RoleGuard } from "../auth/roles/user-role.guard";
 import { Roles } from "../auth/roles/role.decorator";
-import { Role } from "@prisma/client";
+import { RoleGuard } from "../auth/roles/user-role.guard";
+import { IdParameterDto } from "../validators/id-parameter.dto";
+import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripPrivateResponseDto } from "./dto/trip-private-response.dto";
+import { TripResponseDto } from "./dto/trip-response.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
+import { TripService } from "./trip.service";
 
 @Controller("trip")
 @ApiTags("trips")
 export class TripController {
   constructor(private readonly tripService: TripService) {}
 
-  // PUBLIC
+  //PUBLIC
   @Get()
   @ApiOperation({
     summary: "Get all trips",
-    description: "Retrieve a list of all trips in the system with their participants and expenses",
+    description:
+      "Retrieve a list of all trips in the system with their participants and expenses",
   })
   @ApiResponse({
     status: 200,
@@ -44,40 +48,70 @@ export class TripController {
   @Get(":id")
   @ApiOperation({
     summary: "Get trip by ID",
-    description: "Retrieve detailed information about a specific trip including expenses and participants",
+    description:
+      "Retrieve detailed information about a specific trip including expenses and participants",
+  })
+  @ApiParam({
+    name: "id",
+    description: "Trip ID",
+    example: 1,
+    type: "integer",
   })
   @ApiResponse({
     status: 200,
     description: "Trip details retrieved successfully",
     type: TripResponseDto,
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: "Trip not found" 
+  @ApiResponse({
+    status: 400,
+    description: "Invalid trip ID format",
   })
-  async findOnePublic(@Param("id") id: string) {
-    return this.tripService.findOnePublic(+id);
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async findOnePublic(@Param() parameters: IdParameterDto) {
+    return this.tripService.findOnePublic(parameters.id);
   }
 
-  // PRIVATE: ADMIN lub ORGANIZER 
+  // PRIVATE
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.ORGANIZER)
   @Get("private/:id")
-  @ApiOperation({ 
+  @ApiOperation({
     summary: "Get trip by ID (private)",
-    description: "Retrieve detailed private information about a specific trip for authorized users"
+    description:
+      "Retrieve detailed private information about a specific trip for authorized users",
+  })
+  @ApiParam({
+    name: "id",
+    description: "Trip ID",
+    example: 1,
+    type: "integer",
   })
   @ApiResponse({
     status: 200,
     description: "Trip detail (private) retrieved successfully",
     type: TripPrivateResponseDto,
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: "Trip not found" 
+  @ApiResponse({
+    status: 400,
+    description: "Invalid trip ID format",
   })
-  async findOnePrivate(@Param("id") id: string) {
-    return this.tripService.findOnePrivate(+id);
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized - authentication required",
+  })
+  @ApiResponse({
+    status: 403,
+    description: "Forbidden - insufficient permissions",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async findOnePrivate(@Param() parameters: IdParameterDto) {
+    return this.tripService.findOnePrivate(parameters.id);
   }
 
   @UseGuards(AuthGuard, RoleGuard)
@@ -86,7 +120,8 @@ export class TripController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a new trip",
-    description: "Add a trip to which you can supply new expenses and participants",
+    description:
+      "Add a trip to which you can supply new expenses and participants",
   })
   @ApiResponse({
     status: 201,
@@ -95,7 +130,15 @@ export class TripController {
   })
   @ApiResponse({
     status: 400,
-    description: "Invalid input data",
+    description: "Invalid input data (validation errors)",
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized - authentication required",
+  })
+  @ApiResponse({
+    status: 403,
+    description: "Forbidden - insufficient permissions",
   })
   async create(@Body() dto: CreateTripDto) {
     return this.tripService.create(dto);
@@ -108,17 +151,38 @@ export class TripController {
     summary: "Update trip details",
     description: "Modify information for an existing trip",
   })
+  @ApiParam({
+    name: "id",
+    description: "Trip ID",
+    example: 1,
+    type: "integer",
+  })
   @ApiResponse({
     status: 200,
     description: "Trip updated successfully",
     type: TripResponseDto,
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: "Trip not found" 
+  @ApiResponse({
+    status: 400,
+    description: "Invalid input data or trip ID format",
   })
-  async update(@Param("id") id: string, @Body() dto: UpdateTripDto) {
-    return this.tripService.update(+id, dto);
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized - authentication required",
+  })
+  @ApiResponse({
+    status: 403,
+    description: "Forbidden - insufficient permissions",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async update(
+    @Param() parameters: IdParameterDto,
+    @Body() dto: UpdateTripDto,
+  ) {
+    return this.tripService.update(parameters.id, dto);
   }
 
   @UseGuards(AuthGuard, RoleGuard)
@@ -128,15 +192,33 @@ export class TripController {
     summary: "Delete a trip",
     description: "Remove a trip and all its associated data from the system",
   })
+  @ApiParam({
+    name: "id",
+    description: "Trip ID",
+    example: 1,
+    type: "integer",
+  })
   @ApiResponse({
     status: 200,
     description: "Trip deleted successfully",
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: "Trip not found" 
+  @ApiResponse({
+    status: 400,
+    description: "Invalid trip ID format",
   })
-  async remove(@Param("id") id: number): Promise<void> {
-    await this.tripService.remove(id);
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized - authentication required",
+  })
+  @ApiResponse({
+    status: 403,
+    description: "Forbidden - insufficient permissions",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  async remove(@Param() parameters: IdParameterDto): Promise<void> {
+    await this.tripService.remove(parameters.id);
   }
 }

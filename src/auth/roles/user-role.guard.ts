@@ -1,9 +1,16 @@
-import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from './role.decorator';
-import { Role } from '@prisma/client';
+import { Role } from "@prisma/client";
 
-type ReqUser = { email: string; role: Role } | undefined;
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+
+import { ROLES_KEY } from "./role.decorator";
+
+type RequestUser = { email: string; role: Role } | undefined;
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -13,15 +20,22 @@ export class RoleGuard implements CanActivate {
     const required = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]) ?? [];
+    ]);
 
-    if (required.length === 0) return true;
+    if (required.length === 0) {
+      return true;
+    }
 
-    const req = context.switchToHttp().getRequest<{ user?: ReqUser }>();
-    const user = req.user;
+    const request = context.switchToHttp().getRequest<{ user?: RequestUser }>();
+    const user = request.user;
 
-    if (!user) throw new ForbiddenException('Missing user');
-    if (!required.includes(user.role)) throw new ForbiddenException('Missing privileges');
+    if (user === undefined) {
+      throw new ForbiddenException("Missing user");
+    }
+
+    if (!required.includes(user.role)) {
+      throw new ForbiddenException("Missing privileges");
+    }
 
     return true;
   }

@@ -36,64 +36,63 @@ export class TripService {
   }
 
   async findAll() {
-  return this.database.trip.findMany({
-    select: {
-      trip_id: true,
-      name: true,
-      destination: true,
-      start_date: true,
-      end_date: true,
-    },
-    orderBy: { start_date: "desc" },
-  });
-  }
-
-
-async findOnePublic(id: number) {
-  const trip = await this.database.trip.findUnique({
-    where: { trip_id: id },
-    select: {
-      trip_id: true,
-      name: true,
-      destination: true,
-      start_date: true,
-      end_date: true,
-    },
-  });
-  if (!trip) {
-    throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
-  }
-  return trip;
-}
-
-async findOnePrivate(id: number) {
-  const trip = await this.database.trip.findUnique({
-    where: { trip_id: id },
-    select: {
-      trip_id: true,
-      name: true,
-      destination: true,
-      start_date: true,
-      end_date: true,
-      budget: true,
-      participants: {
-        select: {
-          participant_id: true,
-          first_name: true,
-          last_name: true,
-          email: true,
-          role: true,
-        },
-        orderBy: { last_name: "asc" },
+    return this.database.trip.findMany({
+      select: {
+        trip_id: true,
+        name: true,
+        destination: true,
+        start_date: true,
+        end_date: true,
       },
-    },
-  });
-
-  if (!trip) {
-    throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+      orderBy: { start_date: "desc" },
+    });
   }
-  return trip;
-}
+
+  async findOnePublic(id: number) {
+    const trip = await this.database.trip.findUnique({
+      where: { trip_id: id },
+      select: {
+        trip_id: true,
+        name: true,
+        destination: true,
+        start_date: true,
+        end_date: true,
+      },
+    });
+    if (trip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+    }
+    return trip;
+  }
+
+  async findOnePrivate(id: number) {
+    const trip = await this.database.trip.findUnique({
+      where: { trip_id: id },
+      select: {
+        trip_id: true,
+        name: true,
+        destination: true,
+        start_date: true,
+        end_date: true,
+        budget: true,
+        participants: {
+          select: {
+            participant_id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            role: true,
+          },
+          orderBy: { last_name: "asc" },
+        },
+      },
+    });
+
+    if (trip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+    }
+    return trip;
+  }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
     await this.getTripOrThrow(id);

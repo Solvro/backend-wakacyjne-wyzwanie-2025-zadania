@@ -1,34 +1,39 @@
-import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { Role } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { compare } from "bcrypt";
+
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
+
 import { DatabaseService } from "../database/database.service";
-import { RegisterDto } from "./dto/register.dto";
-import { Role } from "@prisma/client";
-import { UserService } from "../user/user.service";
 import { UserMetadata } from "../user/dto/user-metadata";
+import { UserService } from "../user/user.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Injectable()
 export class AuthService {
   private readonly tokenPrefix = "token_";
-  private readonly tokenSeparator = "_";
 
   constructor(
-    private readonly db: DatabaseService,
-    private readonly usersService: UserService
+    private readonly database: DatabaseService,
+    private readonly usersService: UserService,
   ) {}
 
   async register(dto: RegisterDto): Promise<void> {
-    const existing = await this.db.user.findUnique({
+    const existing = await this.database.user.findUnique({
       where: { email: dto.email },
     });
-    if (existing) {
+    if (existing !== null) {
       throw new ConflictException("Email already in use");
     }
 
     const password = await bcrypt.hash(dto.password, 12);
 
-    await this.db.user.create({
+    await this.database.user.create({
       data: {
         email: dto.email,
         name: dto.name ?? null,
@@ -39,32 +44,35 @@ export class AuthService {
     });
   }
 
-  async validateToken(token: string): Promise<UserMetadata> {
+  async validateToken(token: string): Promise<UserMetadata | null> {
+    if (!token || typeof token !== "string") {
+      return null;
+    }
+
     if (!token.startsWith(this.tokenPrefix)) {
-      throw new UnauthorizedException("Invalid token");
+      return null;
     }
 
-    const tokenBody = token.slice(this.tokenPrefix.length);
-    const parts = tokenBody.split(this.tokenSeparator);
-    
+    const parts = token.slice(this.tokenPrefix.length).split("_");
     if (parts.length !== 2) {
-      throw new UnauthorizedException("Invalid token format");
+      return null;
     }
 
-    const [timestampStr, email] = parts;
-    const timestamp = parseInt(timestampStr, 10);
+    const timestamp = Number.parseInt(parts[0], 10);
+    const email = parts[1];
 
-    if (isNaN(timestamp)) {
-      throw new UnauthorizedException("Invalid token timestamp");
+    if (Number.isNaN(timestamp) || !email) {
+      return null;
     }
 
+    const expiryTimeMs = Number.parseInt(
+      process.env.EXPIRY_TIME_MS ?? "10000",
+      10,
+    );
+    const now = Date.now();
 
-    const expiryTimeMs = parseInt(process.env.EXPIRY_TIME_MS ?? "10000", 10);  
-    const currentTime = Date.now();
-    const tokenAge = currentTime - timestamp;
-
-    if (tokenAge > expiryTimeMs) {
-      throw new UnauthorizedException("Token has expired");
+    if (now - timestamp > expiryTimeMs) {
+      return null;
     }
 
     return this.usersService.findMetadataOrFail(email);
@@ -72,7 +80,7 @@ export class AuthService {
 
   generateToken(email: string): string {
     const timestamp = Date.now();
-    return `${this.tokenPrefix}${timestamp}${this.tokenSeparator}${email}`;
+    return `${this.tokenPrefix}${timestamp.toString()}_${email}`;
   }
 
   async signIn(email: string, password: string): Promise<LoginResponseDto> {
@@ -87,3 +95,58 @@ export class AuthService {
     return { token: this.generateToken(user.email) };
   }
 }
+
+// @Injectable()
+// export class AuthService {
+//   private readonly tokenPrefix = "token_";
+
+//   constructor(
+//     private readonly db: DatabaseService,
+//     private readonly usersService: UserService
+//   ) {}
+
+//   async register(dto: RegisterDto): Promise<void> {
+//     const existing = await this.db.user.findUnique({
+//       where: { email: dto.email },
+//     });
+//     if (existing) {
+//       throw new ConflictException("Email already in use");
+//     }
+
+//     const password = await bcrypt.hash(dto.password, 12);
+
+//     await this.db.user.create({
+//       data: {
+//         email: dto.email,
+//         name: dto.name ?? null,
+//         password,
+//         role: Role.USER,
+//         isEnabled: true,
+//       },
+//     });
+//   }
+
+//   async validateToken(token: string): Promise<UserMetadata> {
+//     if (!token.startsWith(this.tokenPrefix)) {
+//       throw new UnauthorizedException("Invalid token");
+//     }
+//     const email = token.slice(this.tokenPrefix.length);
+//     return this.usersService.findMetadataOrFail(email);
+//   }
+
+//   generateToken(email: string): string {
+//     return `${this.tokenPrefix}${email}`;
+//   }
+
+//   async signIn(email: string, password: string): Promise<LoginResponseDto> {
+//     const user = await this.usersService.findOne(email);
+//     if (
+//       user === null ||
+//       !user.isEnabled ||
+//       !(await compare(password, user.password).catch(() => false))
+//     ) {
+//       throw new UnauthorizedException();
+//     }
+//     return { token: this.generateToken(user.email) };
+//   }
+// }

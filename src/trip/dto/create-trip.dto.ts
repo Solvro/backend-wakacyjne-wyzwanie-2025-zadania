@@ -1,45 +1,78 @@
-import { Type } from "class-transformer";
-import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import {
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { IsFutureDate } from "../../validators/future-date.validator";
 
 export class CreateTripDto {
   @ApiProperty({
     description: "Name of the trip",
-    example: "Summer Vacation 2024",
+    example: "Summer Vacation 2025",
+    minLength: 3,
+    maxLength: 100,
   })
-  @IsString()
+  @IsString({ message: "Trip name must be a string" })
+  @MinLength(3, { message: "Trip name must be at least 3 characters long" })
+  @MaxLength(100, { message: "Trip name cannot exceed 100 characters" })
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? value.trim() : value,
+  )
   name: string;
 
   @ApiProperty({
     description: "Destination of the trip",
     example: "Kraków",
+    minLength: 2,
+    maxLength: 100,
   })
-  @IsString()
+  @IsString({ message: "Destination must be a string" })
+  @MinLength(2, { message: "Destination must be at least 2 characters long" })
+  @MaxLength(100, { message: "Destination cannot exceed 100 characters" })
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? value.trim() : value,
+  )
   destination: string;
 
   @ApiProperty({
-    description: "Start date of the trip (YYYY-MM-DD)",
-    example: "2025-09-01",
+    description: "Start date of the trip (YYYY-MM-DD, must be today or future)",
+    example: "2025-09-15",
   })
-  @Type(() => Date)
-  @IsDate()
-  start_date: Date;
+  @IsDateString(
+    {},
+    { message: "Start date must be a valid date string (YYYY-MM-DD)" },
+  )
+  @IsFutureDate({ message: "Trip start date must be today or in the future" })
+  start_date: string;
 
   @ApiPropertyOptional({
-    description: "End date of the trip (YYYY-MM-DD)",
-    example: "2025-09-03",
+    description: "End date of the trip (YYYY-MM-DD, must be after start date)",
+    example: "2025-09-20",
   })
   @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  end_date?: Date;
+  @IsDateString(
+    {},
+    { message: "End date must be a valid date string (YYYY-MM-DD)" },
+  )
+  @IsFutureDate({ message: "Trip end date must be today or in the future" })
+  end_date?: string;
 
   @ApiPropertyOptional({
-    description: "Planned budget for the trip",
+    description: "Planned budget for the trip (must be positive)",
     example: 1200,
+    minimum: 0.01,
   })
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: "Budget must be a number" })
+  @IsPositive({ message: "Budget must be a positive number" })
+  @Type(() => Number)
   budget?: number;
 }
