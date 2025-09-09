@@ -1,5 +1,5 @@
 //import { PrismaClient } from '../generated/prisma';
-import { Gender, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ async function main() {
       second_name: "K",
       last_name: "Kowalski",
       email: "emao",
-      gender: Gender.MALE,
+      gender: "MALE",
     },
   });
 
