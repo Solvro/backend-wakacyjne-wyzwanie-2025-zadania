@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 import { compare } from "bcrypt";
 import { DatabaseService } from "../database/database.service";
 import { RegisterDto } from "./dto/register.dto";
-import { UserStatus } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { UserService } from "../user/user.service";
 import { UserMetadata } from "../user/dto/user-metadata";
 import { LoginResponseDto } from "./dto/login-response.dto";
@@ -32,7 +32,7 @@ export class AuthService {
         email: dto.email,
         name: dto.name ?? null,
         password, 
-        role: UserStatus.USER,
+        role: Role.USER,
         isEnabled: true,
       },
     });

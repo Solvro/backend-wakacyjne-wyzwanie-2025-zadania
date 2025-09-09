@@ -1,3 +1,4 @@
+// src/trip/trip.controller.ts
 import {
   Body,
   Controller,
@@ -8,44 +9,29 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-
-import { CreateTripDto } from "./dto/create-trip.dto";
-import { TripResponseDto } from "./dto/trip-response.dto";
-import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
+import { CreateTripDto } from "./dto/create-trip.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
+import { TripResponseDto } from "./dto/trip-response.dto";
+import { AuthGuard } from "../auth/auth.guard";
+import { RoleGuard } from "../auth/roles/user-role.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { Role } from "@prisma/client";
+import { TripPrivateResponseDto } from "./dto/trip-private-response.dto";
 
 @Controller("trip")
 @ApiTags("trips")
 export class TripController {
   constructor(private readonly tripService: TripService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({
-    summary: "Create a new trip",
-    description:
-      "Add a trip to which you can supply new expenses and participants",
-  })
-  @ApiResponse({
-    status: 201,
-    description: "Trip created successfully",
-    type: TripResponseDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description: "Invalid input data",
-  })
-  async create(@Body() createTripDto: CreateTripDto) {
-    return this.tripService.create(createTripDto);
-  }
-
+  // PUBLIC
   @Get()
   @ApiOperation({
     summary: "Get all trips",
-    description:
-      "Retrieve a list of all trips in the system with their participants and expenses",
+    description: "Retrieve a list of all trips in the system with their participants and expenses",
   })
   @ApiResponse({
     status: 200,
@@ -59,22 +45,65 @@ export class TripController {
   @Get(":id")
   @ApiOperation({
     summary: "Get trip by ID",
-    description:
-      "Retrieve detailed information about a specific trip including expenses and participants",
+    description: "Retrieve detailed information about a specific trip including expenses and participants",
   })
   @ApiResponse({
     status: 200,
     description: "Trip details retrieved successfully",
     type: TripResponseDto,
   })
-  @ApiResponse({
-    status: 404,
-    description: "Trip not found",
+  @ApiResponse({ 
+    status: 404, 
+    description: "Trip not found" 
   })
-  async findOne(@Param("id") id: string) {
-    return this.tripService.findOne(+id);
+  async findOnePublic(@Param("id") id: string) {
+    return this.tripService.findOnePublic(+id);
   }
 
+  // PRIVATE: ADMIN lub ORGANIZER - ta metoda pozostaje unikalna
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.ORGANIZER)
+  @Get("private/:id")
+  @ApiOperation({ 
+    summary: "Get trip by ID (private)",
+    description: "Retrieve detailed private information about a specific trip for authorized users"
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Trip detail (private) retrieved successfully",
+    type: TripPrivateResponseDto,
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: "Trip not found" 
+  })
+  async findOnePrivate(@Param("id") id: string) {
+    return this.tripService.findOnePrivate(+id);
+  }
+
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.ORGANIZER)
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: "Create a new trip",
+    description: "Add a trip to which you can supply new expenses and participants",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Trip created successfully",
+    type: TripResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid input data",
+  })
+  async create(@Body() dto: CreateTripDto) {
+    return this.tripService.create(dto);
+  }
+
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.ORGANIZER)
   @Patch(":id")
   @ApiOperation({
     summary: "Update trip details",
@@ -85,14 +114,16 @@ export class TripController {
     description: "Trip updated successfully",
     type: TripResponseDto,
   })
-  @ApiResponse({
-    status: 404,
-    description: "Trip not found",
+  @ApiResponse({ 
+    status: 404, 
+    description: "Trip not found" 
   })
-  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripService.update(+id, updateTripDto);
+  async update(@Param("id") id: string, @Body() dto: UpdateTripDto) {
+    return this.tripService.update(+id, dto);
   }
 
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.ORGANIZER)
   @Delete(":id")
   @ApiOperation({
     summary: "Delete a trip",
@@ -102,9 +133,9 @@ export class TripController {
     status: 200,
     description: "Trip deleted successfully",
   })
-  @ApiResponse({
-    status: 404,
-    description: "Trip not found",
+  @ApiResponse({ 
+    status: 404, 
+    description: "Trip not found" 
   })
   async remove(@Param("id") id: number): Promise<void> {
     await this.tripService.remove(id);

@@ -1,4 +1,4 @@
-import { ExpenseType, PrismaClient, UserStatus, Role } from "@prisma/client";
+import { ExpenseType, PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -9,8 +9,8 @@ async function main() {
         email: "jan.kowalski@example.com",
         name: "Jan Kowalski",
         password:
-          "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y", // "password"
-        role: UserStatus.ADMIN,
+          "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y", 
+        role: Role.ADMIN,
         isEnabled: true,
       },
       {
@@ -18,7 +18,7 @@ async function main() {
         name: "Edyta Kowalska",
         password:
           "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y",
-        role: UserStatus.USER,
+        role: Role.USER,
         isEnabled: true,
       },
       {
@@ -26,7 +26,7 @@ async function main() {
         name: "Marek Kowalski",
         password:
           "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y",
-        role: UserStatus.USER,
+        role: Role.USER,
         isEnabled: false,
       },
     ],
