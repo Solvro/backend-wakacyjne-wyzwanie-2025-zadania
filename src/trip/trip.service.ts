@@ -1,23 +1,50 @@
-import { Prisma, Trip } from "@prisma/client";
 import { DatabaseService } from "src/database/database.service";
+import { PaginationDto } from "src/pagination/pagination.dto";
+import { DEFAULT_PAGE_SIZE } from "src/pagination/utils/constants";
 
 import { Injectable } from "@nestjs/common";
 
+import { CreateTripDto } from "./dto/create-trip.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
+
 @Injectable()
 export class TripService {
-  constructor(private prisma: DatabaseService) {}
-
-  async all(): Promise<Trip[]> {
-    return this.prisma.trip.findMany();
+  constructor(private database: DatabaseService) {}
+  async create(createTripDto: CreateTripDto) {
+    return this.database.trip.create({
+      data: {
+        name: createTripDto.name,
+        date_start: createTripDto.date_start,
+        date_end: createTripDto.date_end,
+        description: createTripDto.description,
+      },
+    });
   }
 
-  async trip(
-    tripWhereUniqueInput: Prisma.TripWhereUniqueInput,
-  ): Promise<Trip | null> {
-    return this.prisma.trip.findUnique({ where: tripWhereUniqueInput });
+  async findAll(paginationDto: PaginationDto) {
+    return this.database.trip.findMany({
+      skip: paginationDto.skip,
+      take: paginationDto.limit ?? DEFAULT_PAGE_SIZE,
+    });
   }
 
-  async createTrip(data: Prisma.TripCreateInput): Promise<Trip> {
-    return this.prisma.trip.create({ data });
+  async findOne(trip_id: number) {
+    return this.database.trip.findUnique({ where: { trip_id } });
+  }
+
+  async update(trip_id: number, updateTripDto: UpdateTripDto) {
+    return this.database.trip.update({
+      where: { trip_id },
+      data: {
+        name: updateTripDto.name,
+        date_start: updateTripDto.date_start,
+        date_end: updateTripDto.date_end,
+        description: updateTripDto.description,
+      },
+    });
+  }
+
+  async remove(trip_id: number) {
+    return this.database.trip.delete({ where: { trip_id } });
   }
 }

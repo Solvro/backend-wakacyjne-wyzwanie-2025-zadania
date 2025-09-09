@@ -51,6 +51,6 @@ jobs:
       #   run: npm run test:e2e
       #   if: always()
 
-      # - name: Build
-      #   run: npm run build
-      #   if: always()
+      - name: Build
+        run: npm run build
+        if: always()
