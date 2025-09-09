@@ -15,12 +15,12 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "test": " cross-env DATABASE_URL=\"postgresql://postgres:MikKam2005@localhost:5432/TestBudzetownik?schema=public\" jest",
-    "test:cov": "cross-env DATABASE_URL=\"postgresql://postgres:MikKam2005@localhost:5432/TestBudzetownik?schema=public\" jest --coverage",
-    "test:debug": "cross-env DATABASE_URL=\"postgresql://postgres:MikKam2005@localhost:5432/TestBudzetownik?schema=public\" node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env DATABASE_URL=\"postgresql://postgres:MikKam2005@localhost:5432/TestBudzetownik?schema=public\" jest --runInBand --config ./test/jest-e2e.json",
-    "test:prepare": "cross-env DATABASE_URL=\"postgresql://postgres:MikKam2005@localhost:5432/TestBudzetownik?schema=public\" npx prisma db push",
-    "test:watch": "cross-env DATABASE_URL=\"postgresql://postgres:MikKam2005@localhost:5432/TestBudzetownik?schema=public\"jest --watch",
+    "test": "jest",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --runInBand --config ./test/jest-e2e.json",
+    "test:prepare": "npx prisma db push",
+    "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
