@@ -46,20 +46,16 @@ describe("ExpenseService", () => {
         }
         return null;
       }),
-      create: jest
-        .fn()
-        .mockImplementation(({ data }) => ({
-          id: 3,
-          ...mockExpenseBase,
-          ...data,
-        })),
-      update: jest
-        .fn()
-        .mockImplementation(({ where, data }) => ({
-          ...mockExpense1,
-          ...data,
-          id: where.id,
-        })),
+      create: jest.fn().mockImplementation(({ data }) => ({
+        id: 3,
+        ...mockExpenseBase,
+        ...data,
+      })),
+      update: jest.fn().mockImplementation(({ where, data }) => ({
+        ...mockExpense1,
+        ...data,
+        id: where.id,
+      })),
       delete: jest.fn().mockResolvedValue(mockExpense1),
     },
   };

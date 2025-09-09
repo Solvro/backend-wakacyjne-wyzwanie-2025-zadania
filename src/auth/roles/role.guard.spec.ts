@@ -15,11 +15,12 @@ describe("RoleGuard", () => {
     reflector = new Reflector();
     guard = new RoleGuard(reflector);
   });
-  // eslint-disable-next-line unicorn/consistent-function-scoping
+
   const createMockContext = (
     request: any,
     handler: any = {},
     classRef: any = {},
+    // eslint-disable-next-line unicorn/consistent-function-scoping
   ) => {
     return {
       switchToHttp: () => ({ getRequest: () => request }),

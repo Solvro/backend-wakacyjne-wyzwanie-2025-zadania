@@ -42,20 +42,16 @@ describe("TripService", () => {
         }
         return null;
       }),
-      create: jest
-        .fn()
-        .mockImplementation(({ data }) => ({
-          id: 3,
-          ...mockTripBase,
-          ...data,
-        })),
-      update: jest
-        .fn()
-        .mockImplementation(({ where, data }) => ({
-          ...mockTrip1,
-          ...data,
-          id: where.id,
-        })),
+      create: jest.fn().mockImplementation(({ data }) => ({
+        id: 3,
+        ...mockTripBase,
+        ...data,
+      })),
+      update: jest.fn().mockImplementation(({ where, data }) => ({
+        ...mockTrip1,
+        ...data,
+        id: where.id,
+      })),
       delete: jest.fn().mockResolvedValue(mockTrip1),
     },
   };

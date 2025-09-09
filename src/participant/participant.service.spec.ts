@@ -60,20 +60,16 @@ describe("ParticipantService", () => {
         }
         return null;
       }),
-      create: jest
-        .fn()
-        .mockImplementation(({ data }) => ({
-          id: 3,
-          ...mockParticipantBase,
-          ...data,
-        })),
-      update: jest
-        .fn()
-        .mockImplementation(({ where, data }) => ({
-          ...mockParticipant1,
-          ...data,
-          id: where.id,
-        })),
+      create: jest.fn().mockImplementation(({ data }) => ({
+        id: 3,
+        ...mockParticipantBase,
+        ...data,
+      })),
+      update: jest.fn().mockImplementation(({ where, data }) => ({
+        ...mockParticipant1,
+        ...data,
+        id: where.id,
+      })),
       delete: jest.fn().mockResolvedValue(mockParticipant1),
     },
     user: {
