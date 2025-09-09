@@ -190,4 +190,32 @@ export const testDataFactory = {
     updatedAt: new Date(),
     ...overrides,
   }),
+
+  createExpenseDto: (overrides = {}) => ({
+    title: "Hotel accommodation",
+    description: "3 nights at Grand Hotel",
+    amount: 25_000,
+    category: "ACCOMMODATION" as const,
+    date: "2025-07-05",
+    participantId: 1,
+    ...overrides,
+  }),
+
+  createParticipantDto: (overrides = {}) => ({
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "+48123456789",
+    isOrganizer: false,
+    ...overrides,
+  }),
+
+  createTripDto: (overrides = {}) => ({
+    name: "Summer Vacation 2025",
+    description: "A wonderful summer vacation to the mountains",
+    status: "PLANNED" as const,
+    startDate: "2025-07-01",
+    endDate: "2025-07-15",
+    budget: 150_000,
+    ...overrides,
+  }),
 };

@@ -39,6 +39,19 @@ describe("RoleGuard", () => {
   let guard: RoleGuard;
   let reflector: jest.Mocked<Reflector>;
 
+  // Helper function to set up test with user and required roles
+  const setupTest = (
+    user?: MockUser,
+    requiredRoles: (typeof Role)[keyof typeof Role][] = [],
+  ) => {
+    const context = createMockExecutionContext(user);
+    const getAllAndOverrideSpy = jest
+      .spyOn(reflector, "getAllAndOverride")
+      .mockReturnValue(requiredRoles);
+
+    return { context, getAllAndOverrideSpy };
+  };
+
   beforeEach(async () => {
     const mockReflector = {
       getAllAndOverride: jest.fn(),
@@ -64,10 +77,7 @@ describe("RoleGuard", () => {
 
   describe("canActivate", () => {
     it("should allow access when no roles are required", () => {
-      const context = createMockExecutionContext();
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([]);
+      const { context, getAllAndOverrideSpy } = setupTest();
 
       const result = guard.canActivate(context);
 
@@ -84,10 +94,7 @@ describe("RoleGuard", () => {
         email: "admin@example.com",
         roles: "10000", // ADMIN role (position 0)
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.ADMIN]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [Role.ADMIN]);
 
       const result = guard.canActivate(context);
 
@@ -104,10 +111,10 @@ describe("RoleGuard", () => {
         email: "moderator@example.com",
         roles: "01000", // MODERATOR role (position 1)
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.ADMIN, Role.MODERATOR]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [
+        Role.ADMIN,
+        Role.MODERATOR,
+      ]);
 
       const result = guard.canActivate(context);
 
@@ -124,10 +131,7 @@ describe("RoleGuard", () => {
         email: "superuser@example.com",
         roles: "11100", // ADMIN, MODERATOR, and USER roles
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.USER]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [Role.USER]);
 
       const result = guard.canActivate(context);
 
@@ -139,10 +143,9 @@ describe("RoleGuard", () => {
     });
 
     it("should deny access when user is undefined", () => {
-      const context = createMockExecutionContext();
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.USER]);
+      const { context, getAllAndOverrideSpy } = setupTest(undefined, [
+        Role.USER,
+      ]);
 
       const result = guard.canActivate(context);
 
@@ -159,10 +162,9 @@ describe("RoleGuard", () => {
         email: "user@example.com",
         roles: null as unknown as string,
       };
-      const context = createMockExecutionContext(userWithNullRoles);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.USER]);
+      const { context, getAllAndOverrideSpy } = setupTest(userWithNullRoles, [
+        Role.USER,
+      ]);
 
       const result = guard.canActivate(context);
 
@@ -179,10 +181,7 @@ describe("RoleGuard", () => {
         email: "user@example.com",
         roles: "",
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.USER]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [Role.USER]);
 
       const result = guard.canActivate(context);
 
@@ -199,10 +198,7 @@ describe("RoleGuard", () => {
         email: "guest@example.com",
         roles: "00010", // GUEST role (position 3)
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.ADMIN]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [Role.ADMIN]);
 
       const result = guard.canActivate(context);
 
@@ -219,10 +215,11 @@ describe("RoleGuard", () => {
         email: "guest@example.com",
         roles: "00010", // GUEST role (position 3)
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.ADMIN, Role.MODERATOR, Role.TRIP_COORDINATOR]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [
+        Role.ADMIN,
+        Role.MODERATOR,
+        Role.TRIP_COORDINATOR,
+      ]);
 
       const result = guard.canActivate(context);
 
@@ -239,10 +236,7 @@ describe("RoleGuard", () => {
         email: "user@example.com",
         roles: "1", // Only one character, should work for ADMIN role
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.ADMIN]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [Role.ADMIN]);
 
       const result = guard.canActivate(context);
 
@@ -259,10 +253,7 @@ describe("RoleGuard", () => {
         email: "user@example.com",
         roles: "00000", // No roles assigned
       };
-      const context = createMockExecutionContext(user);
-      const getAllAndOverrideSpy = jest
-        .spyOn(reflector, "getAllAndOverride")
-        .mockReturnValue([Role.USER]);
+      const { context, getAllAndOverrideSpy } = setupTest(user, [Role.USER]);
 
       const result = guard.canActivate(context);
 

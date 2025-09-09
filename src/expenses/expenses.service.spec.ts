@@ -3,8 +3,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { PrismaService } from "../prisma/prisma.service";
-import { createMockPrismaService } from "../test/test-utils";
-import type { ExpenseDto } from "./dto/expense.dto";
+import { createMockPrismaService, testDataFactory } from "../test/test-utils";
 import { ExpensesService } from "./expenses.service";
 
 describe("ExpensesService", () => {
@@ -34,14 +33,7 @@ describe("ExpensesService", () => {
   describe("addExpenseToTrip", () => {
     it("should add an expense to an existing trip with valid participant", async () => {
       const tripId = 1;
-      const expenseDto: ExpenseDto = {
-        title: "Hotel accommodation",
-        description: "3 nights at Grand Hotel",
-        amount: 25_000,
-        category: "ACCOMMODATION",
-        date: "2025-07-05",
-        participantId: 1,
-      };
+      const expenseDto = testDataFactory.createExpenseDto();
 
       const existingTrip = { id: tripId, name: "Test Trip" };
       const existingParticipant = {
@@ -106,14 +98,7 @@ describe("ExpensesService", () => {
 
     it("should throw NotFoundException when trip does not exist", async () => {
       const tripId = 999;
-      const expenseDto: ExpenseDto = {
-        title: "Hotel accommodation",
-        description: "3 nights at Grand Hotel",
-        amount: 25_000,
-        category: "ACCOMMODATION",
-        date: "2025-07-05",
-        participantId: 1,
-      };
+      const expenseDto = testDataFactory.createExpenseDto();
 
       mockPrismaService.trip.findUnique.mockResolvedValue(null);
 
@@ -127,14 +112,9 @@ describe("ExpensesService", () => {
 
     it("should throw NotFoundException when participant does not belong to trip", async () => {
       const tripId = 1;
-      const expenseDto: ExpenseDto = {
-        title: "Hotel accommodation",
-        description: "3 nights at Grand Hotel",
-        amount: 25_000,
-        category: "ACCOMMODATION",
-        date: "2025-07-05",
+      const expenseDto = testDataFactory.createExpenseDto({
         participantId: 999,
-      };
+      });
 
       const existingTrip = { id: tripId, name: "Test Trip" };
 
@@ -153,14 +133,12 @@ describe("ExpensesService", () => {
   describe("updateExpense", () => {
     it("should update an existing expense", async () => {
       const expenseId = 1;
-      const updateExpenseDto: ExpenseDto = {
+      const updateExpenseDto = testDataFactory.createExpenseDto({
         title: "Updated Hotel",
         description: "Updated description",
         amount: 30_000,
-        category: "ACCOMMODATION",
         date: "2025-07-06",
-        participantId: 1,
-      };
+      });
 
       const existingExpense = {
         id: expenseId,
@@ -201,14 +179,12 @@ describe("ExpensesService", () => {
 
     it("should throw NotFoundException when expense does not exist", async () => {
       const expenseId = 999;
-      const updateExpenseDto: ExpenseDto = {
+      const updateExpenseDto = testDataFactory.createExpenseDto({
         title: "Updated Hotel",
         description: "Updated description",
         amount: 30_000,
-        category: "ACCOMMODATION",
         date: "2025-07-06",
-        participantId: 1,
-      };
+      });
 
       mockPrismaService.expense.findUnique.mockResolvedValue(null);
 

@@ -6,9 +6,9 @@ import { RoleGuard } from "../auth/roles/role.guard";
 import {
   createMockParticipantsService,
   createMockTripsService,
+  testDataFactory,
 } from "../test/test-utils";
 import { TripsService } from "../trips/trips.service";
-import type { ParticipantDto } from "./dto/participant.dto";
 import { ParticipantsController } from "./participants.controller";
 import { ParticipantsService } from "./participants.service";
 
@@ -57,12 +57,7 @@ describe("ParticipantsController", () => {
   describe("addParticipant", () => {
     it("should delegate to ParticipantsService.addParticipantToTrip", async () => {
       const tripId = 1;
-      const participantDto: ParticipantDto = {
-        name: "John Doe",
-        email: "john@example.com",
-        phone: "+48123456789",
-        isOrganizer: false,
-      };
+      const participantDto = testDataFactory.createParticipantDto();
 
       await controller.addParticipant(tripId, participantDto);
       expect(mockParticipantsService.addParticipantToTrip).toHaveBeenCalledWith(
@@ -75,12 +70,12 @@ describe("ParticipantsController", () => {
   describe("updateParticipant", () => {
     it("should delegate to ParticipantsService.updateParticipant", async () => {
       const participantId = 1;
-      const updateParticipantDto: ParticipantDto = {
+      const updateParticipantDto = testDataFactory.createParticipantDto({
         name: "Updated Name",
         email: "updated@example.com",
         phone: "+48987654321",
         isOrganizer: true,
-      };
+      });
 
       await controller.updateParticipant(participantId, updateParticipantDto);
       expect(mockParticipantsService.updateParticipant).toHaveBeenCalledWith(

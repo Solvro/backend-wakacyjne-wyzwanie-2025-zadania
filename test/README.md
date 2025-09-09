@@ -15,7 +15,9 @@ This directory contains end-to-end test utilities and test files for the Budżet
 - **`database.e2e-spec.ts`** - Database connection and basic functionality tests
 - **`trips.e2e-spec.ts`** - Trip CRUD operations and business logic tests
 - **`participants.e2e-spec.ts`** - Participant management tests
-- **`expenses.e2e-spec.ts`** - Expense operations tests
+- **`expenses-crud.e2e-spec.ts`** - Expense CRUD operations (GET, POST, PUT, DELETE)
+- **`expenses-business-logic.e2e-spec.ts`** - Expense business logic and relationship tests
+- **`expenses.e2e-spec.ts`** - ⚠️ DEPRECATED: Original expense tests (to be removed)
 
 ## Usage
 
@@ -119,6 +121,20 @@ const trip = await dataHelper.createTrip({
 
 ## Test Organization
 
+### File Structure Improvements
+
+The expense tests have been split into multiple files for better maintainability and readability:
+
+- **`expenses-crud.e2e-spec.ts`**: Contains all basic CRUD operation tests for expenses (GET, POST, PUT, DELETE endpoints)
+- **`expenses-business-logic.e2e-spec.ts`**: Contains business logic tests such as category handling, participant-expense relationships, and trip isolation
+
+This separation improves:
+
+- **Readability**: Each file has a clear, focused purpose
+- **Maintainability**: Changes to specific functionality are easier to locate and modify
+- **Test Organization**: Related tests are grouped together logically
+- **Development Speed**: Developers can run specific test suites when working on particular features
+
 ### Redundancy Prevention
 
 The test suite has been optimized to remove redundant tests:
@@ -131,7 +147,8 @@ The test suite has been optimized to remove redundant tests:
 
 - **trips.e2e-spec.ts**: Trip CRUD, status management, and cascade behaviors
 - **participants.e2e-spec.ts**: Participant management and validation
-- **expenses.e2e-spec.ts**: Expense operations and category handling
+- **expenses-crud.e2e-spec.ts**: Expense CRUD operations (create, read, update, delete)
+- **expenses-business-logic.e2e-spec.ts**: Expense categories, relationships, and business logic
 - **database.e2e-spec.ts**: Infrastructure and connection testing
 
 ## Troubleshooting

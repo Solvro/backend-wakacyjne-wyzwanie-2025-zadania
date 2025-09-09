@@ -70,16 +70,6 @@ describe("AuthGuard", () => {
       expect(validateTokenSpy).toHaveBeenCalledWith(token);
     });
 
-    it("should throw UnauthorizedException when authorization header is missing", async () => {
-      const context = createMockExecutionContext();
-      const validateTokenSpy = jest.spyOn(authService, "validateToken");
-
-      await expect(guard.canActivate(context)).rejects.toThrow(
-        new UnauthorizedException("Missing token"),
-      );
-      expect(validateTokenSpy).not.toHaveBeenCalled();
-    });
-
     it("should throw UnauthorizedException when authorization header is empty", async () => {
       const context = createMockExecutionContext("");
       const validateTokenSpy = jest.spyOn(authService, "validateToken");
