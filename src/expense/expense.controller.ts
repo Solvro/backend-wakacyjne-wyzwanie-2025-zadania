@@ -9,13 +9,20 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { ResponseExpenseDto } from "./dto/response-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
 
 @Controller("expense")
+@ApiTags("Expenses")
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
@@ -23,53 +30,85 @@ export class ExpenseController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Created a new expense",
-    description: "Added a expense",
+  })
+  @ApiCreatedResponse({
+    description: "Created a new expense",
   })
   @ApiResponse({
     status: 201,
-    description: "Participant expense",
+    description: "Created a new expense",
+    type: CreateExpenseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid expense data",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
 
   @Get()
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Returning all expenses",
-    description: "Returned all expenses!",
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: "Expenses returned",
+    type: [ResponseExpenseDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Expenses not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async findAll() {
     return this.expenseService.findAll();
   }
 
   @Get(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Found an expense with given id",
-    description: "Found an expense with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Expense found!",
+    status: 200,
+    description: "Expense found",
+    type: ResponseExpenseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Expense not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async findOne(@Param("id") id: string) {
-    return this.expenseService.findOne(+id);
+    return await this.expenseService.findOne(+id);
   }
 
   @Patch(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Updated an expense with given id",
-    description: "Updated an expense with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Expense updated!",
+    status: 200,
+    description: "Expense updated",
+    type: UpdateExpenseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Expenses not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async update(
     @Param("id") id: string,
@@ -79,14 +118,20 @@ export class ExpenseController {
   }
 
   @Delete(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Deleted an expense with given id",
-    description: "Deleted an expense with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Expense deleted!",
+    status: 200,
+    description: "Expense deleted",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Expenses not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async remove(@Param("id") id: string) {
     return this.expenseService.remove(+id);

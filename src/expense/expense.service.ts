@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { DatabaseService } from "src/database/database.service";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
@@ -23,21 +23,42 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    return this.database.expense.findUnique({ where: { id } });
+    const expense: unknown = this.database.expense.findUnique({
+      where: { id },
+    });
+    if (expense == null) {
+      throw new NotFoundException("Expense not found");
+    } else {
+      return expense;
+    }
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return this.database.expense.update({
+    const expense: unknown = this.database.expense.findUnique({
       where: { id },
-      data: {
-        dailyPrice: updateExpenseDto.dailyPrice,
-        tripId: updateExpenseDto.tripId,
-        discount: updateExpenseDto.discount,
-      },
     });
+    if (expense == null) {
+      throw new NotFoundException("Expense not found");
+    } else {
+      return this.database.expense.update({
+        where: { id },
+        data: {
+          dailyPrice: updateExpenseDto.dailyPrice,
+          tripId: updateExpenseDto.tripId,
+          discount: updateExpenseDto.discount,
+        },
+      });
+    }
   }
 
   async remove(id: number) {
-    return this.database.expense.delete({ where: { id } });
+    const expense: unknown = this.database.expense.findUnique({
+      where: { id },
+    });
+    if (expense == null) {
+      throw new NotFoundException("Expense not found");
+    } else {
+      return this.database.expense.delete({ where: { id } });
+    }
   }
 }

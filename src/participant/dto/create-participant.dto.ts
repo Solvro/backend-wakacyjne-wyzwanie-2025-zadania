@@ -14,6 +14,10 @@ export class CreateParticipantDto {
   @ApiProperty()
   tripId: number;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    enum: Gender,
+    description: "Gender of participant",
+    enumName: "Gender",
+  })
   gender?: Gender;
 }

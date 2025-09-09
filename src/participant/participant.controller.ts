@@ -9,9 +9,10 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOperation, ApiResponse } from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
+import { ResponseParticipantDto } from "./dto/response-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
@@ -23,53 +24,85 @@ export class ParticipantController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Created a new participant",
-    description: "Added a participant",
+  })
+  @ApiCreatedResponse({
+    description: "Created a new participant",
   })
   @ApiResponse({
     status: 201,
-    description: "Participant created",
+    description: "Created a new participant",
+    type: CreateParticipantDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid participant data",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
 
   @Get()
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Returning all participants",
-    description: "Returned all participants!",
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: "Participants returned",
+    type: [ResponseParticipantDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Expenses not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async findAll() {
     return this.participantService.findAll();
   }
 
   @Get(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: "Returned a participant with given id",
-    description: "Returned a participant with given id",
+    summary: "Found a participant with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Participants returned!",
+    status: 200,
+    description: "Participant found",
+    type: ResponseParticipantDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Participant not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async findOne(@Param("id") id: string) {
     return this.participantService.findOne(+id);
   }
 
   @Patch(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Updated a participant with given id",
-    description: "Updated a participant with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Participant updated!",
+    status: 200,
+    description: "Participant updated",
+    type: UpdateParticipantDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Participant not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async update(
     @Param("id") id: string,
@@ -79,14 +112,20 @@ export class ParticipantController {
   }
 
   @Delete(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Deleted a participant with given id",
-    description: "Deleted a participant with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Participant deleted!",
+    status: 200,
+    description: "Participant deleted",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Participant not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);

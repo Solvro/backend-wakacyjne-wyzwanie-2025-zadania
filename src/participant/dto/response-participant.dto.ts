@@ -1,21 +1,18 @@
-import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Gender } from "@prisma/client";
 
-import { CreateParticipantDto } from "./create-participant.dto";
-
-export class UpdateParticipantDto extends PartialType(CreateParticipantDto) {
+export class ResponseParticipantDto {
   @ApiProperty()
-  name?: string;
+  name: string;
 
   @ApiProperty()
-  surname?: string;
+  surname: string;
 
   @ApiProperty()
-  age?: number;
+  age: number;
 
   @ApiProperty()
-  tripId?: number;
+  tripId: number;
 
   @ApiPropertyOptional({
     enum: Gender,

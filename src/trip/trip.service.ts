@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
@@ -23,21 +23,36 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    return this.database.trip.findUnique({ where: { id } });
+    const trip: unknown = this.database.trip.findUnique({ where: { id } });
+    if (trip == null) {
+      throw new NotFoundException("Trip not found");
+    } else {
+      return trip;
+    }
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    return this.database.trip.update({
-      where: { id },
-      data: {
-        startDate: updateTripDto.startDate,
-        endDate: updateTripDto.endDate,
-        location: updateTripDto.location,
-      },
-    });
+    const trip: unknown = this.database.trip.findUnique({ where: { id } });
+    if (trip == null) {
+      throw new NotFoundException("Trip not found");
+    } else {
+      return this.database.trip.update({
+        where: { id },
+        data: {
+          startDate: updateTripDto.startDate,
+          endDate: updateTripDto.endDate,
+          location: updateTripDto.location,
+        },
+      });
+    }
   }
 
   async remove(id: number) {
-    return this.database.trip.delete({ where: { id } });
+    const trip: unknown = this.database.trip.findUnique({ where: { id } });
+    if (trip == null) {
+      throw new NotFoundException("Trip not found");
+    } else {
+      return this.database.trip.delete({ where: { id } });
+    }
   }
 }

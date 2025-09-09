@@ -9,9 +9,10 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOperation, ApiResponse } from "@nestjs/swagger";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
+import { ResponseTripDto } from "./dto/response-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
 
@@ -23,68 +24,105 @@ export class TripController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Created a new trip",
-    description:
-      "Added a trip to which you can supply new expenses and participants",
+  })
+  @ApiCreatedResponse({
+    description: "Created a new trip",
   })
   @ApiResponse({
     status: 201,
-    description: "Trip created",
+    description: "Created a new trip",
+    type: CreateTripDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid trip data",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
 
   @Get()
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Returning all trips",
-    description: "Returned all trips!",
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: "Trips returned",
+    type: [ResponseTripDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trips not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async findAll() {
     return this.tripService.findAll();
   }
 
   @Get(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Found a trip with given id",
-    description: "Found a trip with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Trip found!",
+    status: 200,
+    description: "Trip found",
+    type: UpdateTripDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async findOne(@Param("id") id: string) {
     return this.tripService.findOne(+id);
   }
 
   @Patch(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Updated a trip with given id",
-    description: "Updated a trip with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Trip updated!",
+    status: 200,
+    description: "Trip updated",
+    type: UpdateTripDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
 
   @Delete(":id")
-  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Deleted a trip with given id",
-    description: "Deleted a trip with given id",
   })
   @ApiResponse({
-    status: 201,
-    description: "Trip deleted!",
+    status: 200,
+    description: "Trip deleted",
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Trip not found",
+  })
+  @ApiResponse({
+    status: 500,
+    description: "Server error",
   })
   async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);
