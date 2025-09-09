@@ -1,7 +1,6 @@
-import { Controller, Get } from "@nestjs/common";
-import { HttpCode } from "@nestjs/common";
+import { Controller, Get, HttpCode } from "@nestjs/common";
 
-import type { ResponseIntrf } from "./app.service";
+import type { HelloResponse } from "./app.service";
 import { AppService } from "./app.service";
 
 @Controller("wakacyjne")
@@ -10,7 +9,7 @@ export class AppController {
 
   @Get("backend")
   @HttpCode(418)
-  getHello(): ResponseIntrf {
+  getHello(): HelloResponse {
     return this.appService.getHello();
   }
 }
