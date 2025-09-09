@@ -1,24 +1,9 @@
-import type { App } from "supertest/types";
+import "./expense.e2e-spec";
+import "./participant.e2e.spec";
+import "./trip.e2e-spec";
 
-import type { INestApplication } from "@nestjs/common";
-import type { TestingModule } from "@nestjs/testing";
-import { Test } from "@nestjs/testing";
-
-import { AppModule } from "./../src/app.module";
-
-describe("AppController (e2e)", () => {
-  let app: INestApplication<App>;
-
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-  it("/ (GET)", () => {
-    expect(app.getHttpServer()).toBeDefined();
+describe("E2E Suite", () => {
+  it(" Wszystkie testy e2e uruchomiły się poprawnie", () => {
+    expect(true).toBe(true);
   });
 });

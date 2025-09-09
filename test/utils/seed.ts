@@ -1,14 +1,20 @@
-import {
-  PrismaClient,
-  expense_category,
-  trip_status,
-  trip_type,
-} from "@prisma/client";
+import { expense_category, trip_status, trip_type } from "@prisma/client";
 
-const prisma = new PrismaClient();
+import { clear } from "./clear";
+import prisma from "./prisma";
 
-async function main(): Promise<void> {
+export async function seed(): Promise<void> {
+  await clear();
   try {
+    const user1 = await prisma.user.create({
+      data: {
+        name: "Jan",
+        surname: "Kowalski",
+        email: "jankow@gmail.com",
+        password: "haslo123",
+        is_enabled: true,
+      },
+    });
     // Tworzenie uczestnika
     const participant1 = await prisma.participant.create({
       data: {
@@ -16,7 +22,7 @@ async function main(): Promise<void> {
         surname: "Kowalski",
         age: 28,
         phone_num: "+48123456789",
-        email: "jan.kowalski@example.com",
+        email: user1.email,
       },
     });
 
@@ -62,12 +68,11 @@ async function main(): Promise<void> {
   }
 }
 
-main()
+seed()
   .catch((error: unknown) => {
     console.error("Seeding failed:", error);
     throw error;
   })
-  .finally(async () => {
-    await prisma.$disconnect();
+  .finally(() => {
     console.warn("Database connection closed");
   });

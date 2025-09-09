@@ -1,9 +1,10 @@
 import { trip_type } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
-import { IsAfterStartDate } from "src/validators/is-after-start-date.validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { IsAfterStartDate } from "../../validators/is-after-start-date.validator";
 
 export class CreateTripDto {
   @ApiProperty()
