@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { UserMetadata, userToMetadata } from "./dto/user-metadata";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -26,5 +27,14 @@ export class UserService {
       throw new NotFoundException("User not found");
     }
     return found;
+  }
+
+  async update(email: string, updateUserDto: UpdateUserDto): Promise<User> {
+    await this.findByIdOrFail(email);
+    
+    return this.databaseService.user.update({
+      where: { email },
+      data: updateUserDto,
+    });
   }
 }

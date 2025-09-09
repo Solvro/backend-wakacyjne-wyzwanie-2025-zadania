@@ -1,4 +1,3 @@
-// src/trip/trip.controller.ts
 import {
   Body,
   Controller,
@@ -60,7 +59,7 @@ export class TripController {
     return this.tripService.findOnePublic(+id);
   }
 
-  // PRIVATE: ADMIN lub ORGANIZER - ta metoda pozostaje unikalna
+  // PRIVATE: ADMIN lub ORGANIZER 
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.ORGANIZER)
   @Get("private/:id")
