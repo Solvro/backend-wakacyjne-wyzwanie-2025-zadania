@@ -5,6 +5,6 @@ import { Injectable, OnModuleInit } from "@nestjs/common";
 @Injectable()
 export class DatabaseService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
-    await this.$connect();
+    await this.$connect(); // eslint-disable-line @typescript-eslint/no-unsafe-call
   }
 }
