@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -21,6 +22,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Role } from "@/lib/roles";
+
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import {
   CreateTripDto,
   UpdateTripDto,
@@ -86,6 +92,8 @@ export class TripsController {
 
   // POST /trips - Create new trip
   @Post()
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create new trip",
@@ -128,6 +136,8 @@ export class TripsController {
 
   // PUT /trips/:id - Update entire trip
   @Put(":id")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR, Role.MODERATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiOperation({
     summary: "Update trip",
     description: "Update a trip with new details",
@@ -160,6 +170,8 @@ export class TripsController {
 
   // PATCH /trips/:id/status - Update only trip status
   @Patch(":id/status")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR, Role.MODERATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiOperation({
     summary: "Update trip status",
     description: "Update only the status of a trip",
@@ -193,6 +205,8 @@ export class TripsController {
 
   // DELETE /trips/:id - Delete trip
   @Delete(":id")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete trip",

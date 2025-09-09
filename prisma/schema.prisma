@@ -78,3 +78,12 @@ model Expense {
 
   @@map("expenses")
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  roles     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

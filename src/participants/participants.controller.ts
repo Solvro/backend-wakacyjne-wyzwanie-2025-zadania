@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -19,6 +20,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Role } from "@/lib/roles";
+
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import { TripsService } from "../trips/trips.service";
 import { ParticipantDto } from "./dto/participant.dto";
 import { ParticipantsService } from "./participants.service";
@@ -59,6 +65,8 @@ export class ParticipantsController {
 
   // POST /trips/:tripId/participants - Add participant to trip
   @Post()
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Add participant to trip",
@@ -112,6 +120,8 @@ export class ParticipantsController {
   }
 
   @Put(":id")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR, Role.MODERATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiOperation({
     summary: "Update participant",
     description: "Update an existing participant",
@@ -136,6 +146,8 @@ export class ParticipantsController {
   }
 
   @Delete(":id")
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   @ApiOperation({
     summary: "Delete participant",
     description: "Delete an existing participant",
