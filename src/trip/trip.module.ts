@@ -1,7 +1,6 @@
-import { AuthModule } from "src/auth/auth.module";
-
 import { Module } from "@nestjs/common";
 
+import { AuthModule } from "../auth/auth.module";
 import { DatabaseModule } from "../database/database.module";
 import { TripController } from "./trip.controller";
 import { TripService } from "./trip.service";

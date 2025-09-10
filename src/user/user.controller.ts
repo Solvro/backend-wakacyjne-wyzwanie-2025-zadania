@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client";
-import { AuthGuard } from "src/auth/auth.guard";
 
 import {
   Body,
@@ -22,6 +21,7 @@ import {
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { UserUpdateResponseDto } from "./dto/update-user-response.dto";
 import { UserUpdateDto } from "./dto/update-user.dto";
 import { UserMetadata } from "./dto/user-metadata";

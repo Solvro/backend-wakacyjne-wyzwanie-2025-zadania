@@ -1,6 +1,5 @@
 import { User } from "@prisma/client";
 import { hash } from "bcrypt";
-import { DatabaseService } from "src/database/database.service";
 
 import {
   ConflictException,
@@ -8,6 +7,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateUserDto } from "./dto/create-dto.user";
 import { UserUpdateResponseDto } from "./dto/update-user-response.dto";
 import { UserMetadata, userToMetaData } from "./dto/user-metadata";

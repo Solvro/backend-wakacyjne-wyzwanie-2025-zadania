@@ -1,7 +1,4 @@
 import { compare } from "bcrypt";
-import { CreateUserDto } from "src/user/dto/create-dto.user";
-import { UserMetadata } from "src/user/dto/user-metadata";
-import { UserService } from "src/user/user.service";
 
 import {
   ForbiddenException,
@@ -9,6 +6,9 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
+import { CreateUserDto } from "../user/dto/create-dto.user";
+import { UserMetadata } from "../user/dto/user-metadata";
+import { UserService } from "../user/user.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
 
 @Injectable()
