@@ -1,6 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { DatabaseModule } from "../../src/database/database.module";
 import { ParticipantController } from "./participant.controller";
 import { ParticipantService } from "./participant.service";
 
@@ -11,6 +12,7 @@ describe("ParticipantController", () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ParticipantController],
       providers: [ParticipantService],
+      imports: [DatabaseModule],
     }).compile();
 
     controller = module.get<ParticipantController>(ParticipantController);
