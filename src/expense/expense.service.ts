@@ -13,9 +13,9 @@ export class ExpenseService {
     	  return this.database.expense.create({
     	  	 data:
 			{
-	  		trip_id: CreateExpenseDto.trip_id,
-  	  		desc:	   CreateExpenseDto.desc,
-	 		price:   CreateExpenseDto.price,
+	  		trip_id: createExpenseDto.trip_id,
+  	  		desc:	   createExpenseDto.desc,
+	 		price:   createExpenseDto.price,
 			}
 	 });
    }
@@ -48,9 +48,9 @@ async update(id: number, updateExpenseDto: UpdateExpenseDto) {
       return this.database.expense.update({
         where: { id },
         data: {
-	      trip_id: CreateExpenseDto.trip_id,
-              desc:    CreateExpenseDto.desc,
-              price:   CreateExpenseDto.price,
+	      trip_id: updateExpenseDto.trip_id,
+              desc:    updateExpenseDto.desc,
+              price:   updateExpenseDto.price,
 	      }
       });
     }
