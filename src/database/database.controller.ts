@@ -1,19 +1,25 @@
 import { Trip as TripModel } from "@prisma/client";
 
 import { Controller, Get, Post } from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { DatabaseService } from "./database.service";
 
-@Controller("trips")
+@Controller("database/trips")
+@ApiTags("databaseTrips")
 export class DatabaseController {
   constructor(private prisma: DatabaseService) {}
 
-  @Get("/")
+  @Get()
+  @ApiOperation({ summary: "Get all test trips" })
+  @ApiResponse({ status: 200, description: "List of all test trips" })
   async testRead(): Promise<TripModel[]> {
-    return await this.prisma.trip.findMany();
+    return this.prisma.trip.findMany();
   }
 
-  @Post("/")
+  @Post()
+  @ApiOperation({ summary: "Create a test trip" })
+  @ApiResponse({ status: 201, description: "Test trip created" })
   async testCreate(): Promise<void> {
     await this.prisma.trip.create({
       data: {
