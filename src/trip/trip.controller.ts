@@ -17,6 +17,8 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "../auth/auth.guard";
 import { Roles } from "../auth/roles/role.decorator";
 import { RoleGuard } from "../auth/roles/user-role.guard";
+import { TripRoles } from "../auth/roles/trip-role.decorator";
+import { TripRoleGuard } from "../auth/roles/trip-role.guard";
 import { IdParameterDto } from "../validators/id-parameter.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripPrivateResponseDto } from "./dto/trip-private-response.dto";
@@ -75,8 +77,9 @@ export class TripController {
   }
 
   // PRIVATE
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
+  @UseGuards(AuthGuard, RoleGuard, TripRoleGuard)
+  @Roles(UserRole.ADMIN)
+  @TripRoles(TripRole.ORGANIZER)
   @Get("private/:id")
   @ApiOperation({
     summary: "Get trip by ID (private)",
@@ -114,8 +117,9 @@ export class TripController {
     return this.tripService.findOnePrivate(parameters.id);
   }
 
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
+  @UseGuards(AuthGuard, RoleGuard, TripRoleGuard)
+  @Roles(UserRole.ADMIN)
+  @TripRoles(TripRole.ORGANIZER)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -144,8 +148,9 @@ export class TripController {
     return this.tripService.create(dto);
   }
 
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
+  @UseGuards(AuthGuard, RoleGuard, TripRoleGuard)
+  @Roles(UserRole.ADMIN)
+  @TripRoles(TripRole.ORGANIZER)
   @Patch(":id")
   @ApiOperation({
     summary: "Update trip details",
@@ -185,8 +190,9 @@ export class TripController {
     return this.tripService.update(parameters.id, dto);
   }
 
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
+  @UseGuards(AuthGuard, RoleGuard, TripRoleGuard)
+  @Roles(UserRole.ADMIN)
+  @TripRoles(TripRole.ORGANIZER)
   @Delete(":id")
   @ApiOperation({
     summary: "Delete a trip",

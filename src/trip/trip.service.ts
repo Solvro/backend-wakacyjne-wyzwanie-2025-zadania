@@ -81,7 +81,7 @@ export class TripService {
             first_name: true,
             last_name: true,
             email: true,
-            role: true,
+            TripRole: true,
           },
           orderBy: { last_name: "asc" },
         },

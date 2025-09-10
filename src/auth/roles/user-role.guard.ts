@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 
 import {
   CanActivate,
@@ -10,17 +10,21 @@ import { Reflector } from "@nestjs/core";
 
 import { ROLES_KEY } from "./role.decorator";
 
-type RequestUser = { email: string; role: Role } | undefined;
+interface RequestUser { email: string; role: UserRole }
 
 @Injectable()
 export class RoleGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const required = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+    const required = this.reflector.getAllAndOverride<UserRole[] | undefined>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
+
+    if (required === undefined) {
+      return true;
+    }
 
     if (required.length === 0) {
       return true;
