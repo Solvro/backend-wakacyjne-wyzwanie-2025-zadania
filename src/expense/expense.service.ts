@@ -33,12 +33,14 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    return this.database.expense.findUnique({
+    const expense = await this.database.expense.findUnique({
       where: { expenseId: id },
-      include: {
-        trip: true,
-      },
     });
+
+    if (expense === null) {
+      throw new NotFoundException("Expense was not found");
+    }
+    return expense;
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
