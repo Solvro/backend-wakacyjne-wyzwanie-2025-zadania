@@ -17,7 +17,17 @@ export class ParticipantService {
     }
   }
 
+  tripIdCheck(id: number) {
+    const expense: unknown = this.database.trip.findUnique({
+      where: { id },
+    });
+    if (expense == null) {
+      throw new NotFoundException("TripId not found");
+    }
+  }
+
   async create(createParticipantDto: CreateParticipantDto) {
+    this.tripIdCheck(createParticipantDto.tripId);
     return this.database.participant.create({
       data: {
         name: createParticipantDto.name,
@@ -43,6 +53,9 @@ export class ParticipantService {
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
     this.findOneOrFail(id);
+    if (typeof updateParticipantDto.tripId != "undefined") {
+      this.tripIdCheck(updateParticipantDto.tripId);
+    }
     return this.database.participant.update({
       where: { id },
       data: {
