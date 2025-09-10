@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { TripRole, UserRole } from "@prisma/client";
 
 import {
   Body,
@@ -76,7 +76,7 @@ export class TripController {
 
   // PRIVATE
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.ORGANIZER)
+  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
   @Get("private/:id")
   @ApiOperation({
     summary: "Get trip by ID (private)",
@@ -115,7 +115,7 @@ export class TripController {
   }
 
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.ORGANIZER)
+  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -145,7 +145,7 @@ export class TripController {
   }
 
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.ORGANIZER)
+  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
   @Patch(":id")
   @ApiOperation({
     summary: "Update trip details",
@@ -186,7 +186,7 @@ export class TripController {
   }
 
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.ORGANIZER)
+  @Roles(UserRole.ADMIN, TripRole.ORGANIZER)
   @Delete(":id")
   @ApiOperation({
     summary: "Delete a trip",

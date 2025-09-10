@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import {
   IsBoolean,
   IsEmail,
@@ -48,10 +48,10 @@ export class UpdateUserDto {
   isEnabled?: boolean;
 
   @ApiPropertyOptional({
-    enum: Role,
+    enum: UserRole,
     description: "User role",
   })
   @IsOptional()
-  @IsEnum(Role, { message: "Role must be a valid enum value" })
-  role?: Role;
+  @IsEnum(UserRole, { message: "Role must be a valid enum value" })
+  role?: UserRole;
 }

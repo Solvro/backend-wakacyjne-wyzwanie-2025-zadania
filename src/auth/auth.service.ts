@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { compare } from "bcrypt";
 
@@ -44,7 +44,7 @@ export class AuthService {
         email: dto.email,
         name: dto.name ?? null,
         password,
-        role: Role.USER,
+        UserRole: UserRole.USER,
         isEnabled: true,
       },
     });
@@ -96,58 +96,3 @@ export class AuthService {
     return { token: this.generateToken(user.email) };
   }
 }
-
-// @Injectable()
-// export class AuthService {
-//   private readonly tokenPrefix = "token_";
-
-//   constructor(
-//     private readonly db: DatabaseService,
-//     private readonly usersService: UserService
-//   ) {}
-
-//   async register(dto: RegisterDto): Promise<void> {
-//     const existing = await this.db.user.findUnique({
-//       where: { email: dto.email },
-//     });
-//     if (existing) {
-//       throw new ConflictException("Email already in use");
-//     }
-
-//     const password = await bcrypt.hash(dto.password, 12);
-
-//     await this.db.user.create({
-//       data: {
-//         email: dto.email,
-//         name: dto.name ?? null,
-//         password,
-//         role: Role.USER,
-//         isEnabled: true,
-//       },
-//     });
-//   }
-
-//   async validateToken(token: string): Promise<UserMetadata> {
-//     if (!token.startsWith(this.tokenPrefix)) {
-//       throw new UnauthorizedException("Invalid token");
-//     }
-//     const email = token.slice(this.tokenPrefix.length);
-//     return this.usersService.findMetadataOrFail(email);
-//   }
-
-//   generateToken(email: string): string {
-//     return `${this.tokenPrefix}${email}`;
-//   }
-
-//   async signIn(email: string, password: string): Promise<LoginResponseDto> {
-//     const user = await this.usersService.findOne(email);
-//     if (
-//       user === null ||
-//       !user.isEnabled ||
-//       !(await compare(password, user.password).catch(() => false))
-//     ) {
-//       throw new UnauthorizedException();
-//     }
-//     return { token: this.generateToken(user.email) };
-//   }
-// }

@@ -1,4 +1,4 @@
-import { Role, User } from "@prisma/client";
+import { User, UserRole } from "@prisma/client";
 import { Request as ExpressRequest } from "express";
 
 import {
@@ -23,7 +23,7 @@ import { UserService } from "./user.service";
 interface AuthenticatedRequest extends ExpressRequest {
   user: {
     email: string;
-    role: Role;
+    UserRole: UserRole;
     name?: string | null;
     isEnabled: boolean;
   };
@@ -35,11 +35,11 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   private checkUserAccess(
-    currentUser: { email: string; role: Role },
+    currentUser: { email: string; UserRole: UserRole },
     targetEmail: string,
   ): void {
     const isOwnData = currentUser.email === targetEmail;
-    const isAdmin = currentUser.role === Role.ADMIN;
+    const isAdmin = currentUser.UserRole === UserRole.ADMIN;
 
     if (!isOwnData && !isAdmin) {
       throw new ForbiddenException("You can only access your own data");
@@ -98,7 +98,7 @@ export class UserController {
     @Param() parameters: EmailParameterDto,
     @Request() request: AuthenticatedRequest,
   ): Promise<User> {
-    if (request.user.role !== Role.ADMIN) {
+    if (request.user.UserRole !== UserRole.ADMIN) {
       throw new ForbiddenException(
         "Only administrators can access user data by email",
       );
@@ -131,7 +131,7 @@ export class UserController {
     @Param() parameters: EmailParameterDto,
     @Request() request: AuthenticatedRequest,
   ): Promise<UserMetadata> {
-    if (request.user.role !== Role.ADMIN) {
+    if (request.user.UserRole !== UserRole.ADMIN) {
       throw new ForbiddenException(
         "Only administrators can access user metadata by email",
       );
@@ -168,7 +168,10 @@ export class UserController {
 
     this.checkUserAccess(currentUser, parameters.email);
 
-    if (updateUserDto.role !== undefined && currentUser.role !== Role.ADMIN) {
+    if (
+      updateUserDto.role !== undefined &&
+      currentUser.UserRole !== UserRole.ADMIN
+    ) {
       throw new ForbiddenException("Only administrators can modify user roles");
     }
 

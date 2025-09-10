@@ -8,18 +8,19 @@ import type {
 @ValidatorConstraint({ async: false })
 export class IsFutureDateConstraint implements ValidatorConstraintInterface {
   validate(date: unknown, _arguments: ValidationArguments): boolean {
-    if (typeof date !== "string" && !(date instanceof Date)) {
+    if (typeof date !== "string") {
       return false;
     }
+    const then = new Date(date);
 
-    if (Number.isNaN(Date.parse(date as string))) {
+    if (Number.isNaN(then.valueOf())) {
       return false;
     }
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    then.setHours(0, 0, 0, 0);
 
-    const inputDay = new Date(date).toISOString().split("T")[0];
-    const todayDay = new Date().toISOString().split("T")[0];
-
-    return inputDay >= todayDay;
+    return then.valueOf() >= now.valueOf();
   }
 
   defaultMessage(_arguments: ValidationArguments): string {

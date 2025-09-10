@@ -13,9 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
+enum UserRole {
   ADMIN
+  USER
+}
+
+enum TripRole {
   MEMBER
   ORGANIZER
 }
@@ -27,7 +30,6 @@ enum ExpenseType {
   TRANSPORT
   OTHER
 }
-
 
 model Trip {
   trip_id     Int       @id @default(autoincrement())
@@ -42,16 +44,14 @@ model Trip {
 }
 
 model Participant {
-  participant_id Int    @id @default(autoincrement())
+  participant_id Int      @id @default(autoincrement())
   trip_id        Int
-  trip           Trip   @relation(fields: [trip_id], references: [trip_id])
-  User        User     @relation(fields: [email], references: [email])
-  first_name     String @db.VarChar(32)
-  last_name      String @db.VarChar(32)
-  role           Role
-  email          String @db.VarChar(64)
-
-
+  trip           Trip     @relation(fields: [trip_id], references: [trip_id])
+  User           User     @relation(fields: [email], references: [email])
+  first_name     String   @db.VarChar(32)
+  last_name      String   @db.VarChar(32)
+  TripRole       TripRole
+  email          String   @db.VarChar(64)
 }
 
 model Expense {
@@ -62,13 +62,12 @@ model Expense {
   expense_date DateTime    @default(now())
   cost         Decimal     @db.Decimal(10, 2)
   description  String?     @db.VarChar(255)
-
 }
 
 model User {
   email       String        @id
   password    String
-  role        Role
+  UserRole    UserRole
   isEnabled   Boolean
   name        String?
   Participant Participant[]

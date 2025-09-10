@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { TripRole } from "@prisma/client";
 import { Type } from "class-transformer";
 import {
   IsEmail,
@@ -37,11 +37,11 @@ export class CreateParticipantDto {
 
   @ApiProperty({
     description: "Role of the participant in the trip",
-    enum: Role,
-    example: Role.ORGANIZER,
+    enum: TripRole,
+    example: TripRole.ORGANIZER,
   })
-  @IsEnum(Role, { message: "Role must be a valid enum value" })
-  role: Role;
+  @IsEnum(TripRole, { message: "Role must be a valid enum value" })
+  TripRole: TripRole;
 
   @ApiProperty({
     description: "Email address of the participant",

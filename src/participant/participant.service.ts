@@ -48,7 +48,7 @@ export class ParticipantService {
       data: {
         first_name: createDto.first_name,
         last_name: createDto.last_name,
-        role: createDto.role,
+        TripRole: createDto.TripRole,
         email: createDto.email,
         trip_id: createDto.trip_id,
       },
@@ -84,7 +84,7 @@ export class ParticipantService {
     const data: Prisma.ParticipantUpdateInput = {
       first_name: updateDto.first_name,
       last_name: updateDto.last_name,
-      role: updateDto.role,
+      TripRole: updateDto.TripRole,
     };
 
     if (updateDto.email != null) {

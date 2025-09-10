@@ -1,4 +1,4 @@
-import { ExpenseType, PrismaClient, Role } from "@prisma/client";
+import { ExpenseType, PrismaClient, TripRole, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -10,7 +10,7 @@ async function main() {
         name: "Jan Kowalski",
         password:
           "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y",
-        role: Role.ADMIN,
+        UserRole: UserRole.ADMIN,
         isEnabled: true,
       },
       {
@@ -18,7 +18,7 @@ async function main() {
         name: "Edyta Kowalska",
         password:
           "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y",
-        role: Role.USER,
+        UserRole: UserRole.USER,
         isEnabled: true,
       },
       {
@@ -26,7 +26,7 @@ async function main() {
         name: "Marek Kowalski",
         password:
           "$2b$12$va3nsup7yqWJP9Ae9adYE.CJ4GqSxa8Lr3T0Dx93tSgPp7g1R.R7y",
-        role: Role.USER,
+        UserRole: UserRole.USER,
         isEnabled: false,
       },
     ],
@@ -48,7 +48,7 @@ async function main() {
       first_name: "Jan",
       last_name: "Kowalski",
       email: "jan.kowalski@example.com",
-      role: Role.ORGANIZER,
+      TripRole: TripRole.ORGANIZER,
       trip_id: trip.trip_id,
     },
   });
