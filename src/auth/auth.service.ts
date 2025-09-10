@@ -1,7 +1,14 @@
-import { compare } from "bcrypt";
+import { AuthRole } from "@prisma/client";
+import { compare, hash } from "bcrypt";
 
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from "@nestjs/common";
 
+import { CreateUserDto } from "../user/create-user.dto";
 import { UserMetadata } from "../user/metadata-user";
 import { UserService } from "../user/user.service";
 import { LoginResponseDto } from "./login-response.dto";
@@ -43,5 +50,36 @@ export class AuthService {
     const currentTime = Date.now().toString();
 
     return { token: `${this.tokenPrefix}__${email}__${currentTime}` };
+  }
+
+  async register(createUserDto: CreateUserDto): Promise<void> {
+    const { email, password } = createUserDto;
+
+    let userExists = false;
+    try {
+      await this.usersService.getOne(email);
+      userExists = true;
+    } catch {
+      userExists = false;
+    }
+
+    if (userExists) {
+      throw new ConflictException("User already exists");
+    }
+
+    const salt = 10;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const hashedPassword: string = await hash(password, salt);
+
+    try {
+      await this.usersService.create({
+        email,
+        password: hashedPassword,
+        role: AuthRole.USER,
+        isEnabled: true,
+      });
+    } catch {
+      throw new InternalServerErrorException("User could not be created");
+    }
   }
 }
