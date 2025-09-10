@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client";
-import { Transform } from "class-transformer";
 import {
   IsBoolean,
   IsEmail,
@@ -23,17 +22,11 @@ export class UpdateUserDto {
   @IsString({ message: "Name must be a string" })
   @MinLength(2, { message: "Name must be at least 2 characters long" })
   @MaxLength(100, { message: "Name cannot exceed 100 characters" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
-  )
   name?: string;
 
   @ApiPropertyOptional({ description: "User email address" })
   @IsOptional()
   @IsEmail({}, { message: "Please provide a valid email address" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.toLowerCase().trim() : value,
-  )
   email?: string;
 
   @ApiPropertyOptional({

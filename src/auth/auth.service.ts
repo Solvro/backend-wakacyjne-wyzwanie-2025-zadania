@@ -23,7 +23,10 @@ export class AuthService {
     private readonly database: DatabaseService,
     private readonly usersService: UserService,
   ) {
-    this.expiryTimeMs = Number.parseInt(process.env.EXPIRY_TIME_MS ?? "10000", 10);
+    this.expiryTimeMs = Number.parseInt(
+      process.env.EXPIRY_TIME_MS ?? "10000",
+      10,
+    );
   }
 
   async register(dto: RegisterDto): Promise<void> {
@@ -48,34 +51,33 @@ export class AuthService {
   }
 
   async validateToken(token: string): Promise<UserMetadata | null> {
-  if (!token.startsWith(this.tokenPrefix)) {
-    return null;
+    if (!token.startsWith(this.tokenPrefix)) {
+      return null;
+    }
+
+    const parts = token.slice(this.tokenPrefix.length).split("_");
+    if (parts.length !== 2) {
+      return null;
+    }
+
+    const timestamp = Number.parseInt(parts[0], 10);
+    const email = parts[1];
+
+    if (
+      Number.isNaN(timestamp) ||
+      typeof email !== "string" ||
+      email.trim().length === 0
+    ) {
+      return null;
+    }
+
+    const now = Date.now();
+    if (now - timestamp > this.expiryTimeMs) {
+      return null;
+    }
+
+    return this.usersService.findMetadataOrFail(email);
   }
-
-  const parts = token.slice(this.tokenPrefix.length).split("_");
-  if (parts.length !== 2) {
-    return null;
-  }
-
-  const timestamp = Number.parseInt(parts[0], 10);
-  const email = parts[1];
-
-  if (
-    Number.isNaN(timestamp) ||
-    typeof email !== "string" ||
-    email.trim().length === 0
-  ) {
-    return null;
-  }
-
-  const now = Date.now();
-  if (now - timestamp > this.expiryTimeMs) {
-    return null;
-  }
-
-  return this.usersService.findMetadataOrFail(email);
-}
-
 
   generateToken(email: string): string {
     const timestamp = Date.now();
@@ -94,7 +96,6 @@ export class AuthService {
     return { token: this.generateToken(user.email) };
   }
 }
-
 
 // @Injectable()
 // export class AuthService {

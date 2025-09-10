@@ -46,96 +46,98 @@ export class UserController {
     }
   }
 
-@UseGuards(AuthGuard)
-@Get("profile") 
-@ApiOperation({
-  summary: "Get current user profile",
-  description: "Get authenticated user's own profile data."
-})
-@ApiResponse({ status: 200, description: "User profile found" })
-@ApiResponse({ status: 401, description: "Unauthorized" })
-@ApiResponse({ status: 404, description: "User not found" })
-async getProfile(
-  @Request() request: AuthenticatedRequest,
-): Promise<User> {
-  const user = await this.userService.findOne(request.user.email);
-  if (user === null) {
-    throw new NotFoundException("User not found");
-  }
-  return user;
-}
-
-@UseGuards(AuthGuard)
-@Get("profile/metadata") 
-@ApiOperation({
-  summary: "Get current user metadata",
-  description: "Get authenticated user's own metadata."
-})
-@ApiResponse({ status: 200, description: "User metadata found" })
-@ApiResponse({ status: 401, description: "Unauthorized" })
-@ApiResponse({ status: 404, description: "User not found" })
-async getProfileMetadata(
-  @Request() request: AuthenticatedRequest,
-): Promise<UserMetadata> {
-  return this.userService.findMetadataOrFail(request.user.email);
-}
-
-@UseGuards(AuthGuard)
-@Get(":email")
-@ApiOperation({
-  summary: "Find user by email (Admin only)",
-  description: "Administrators can view any user's data."
-})
-@ApiParam({
-  name: "email",
-  description: "User email address",
-  example: "user@example.com",
-})
-@ApiResponse({ status: 200, description: "User found" })
-@ApiResponse({ status: 400, description: "Invalid email format" })
-@ApiResponse({ status: 401, description: "Unauthorized" })
-@ApiResponse({ status: 403, description: "Forbidden - Admin only" })
-@ApiResponse({ status: 404, description: "User not found" })
-async findOne(
-  @Param() parameters: EmailParameterDto,
-  @Request() request: AuthenticatedRequest,
-): Promise<User> {
-  if (request.user.role !== Role.ADMIN) {
-    throw new ForbiddenException("Only administrators can access user data by email");
+  @UseGuards(AuthGuard)
+  @Get("profile")
+  @ApiOperation({
+    summary: "Get current user profile",
+    description: "Get authenticated user's own profile data.",
+  })
+  @ApiResponse({ status: 200, description: "User profile found" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
+  @ApiResponse({ status: 404, description: "User not found" })
+  async getProfile(@Request() request: AuthenticatedRequest): Promise<User> {
+    const user = await this.userService.findOne(request.user.email);
+    if (user === null) {
+      throw new NotFoundException("User not found");
+    }
+    return user;
   }
 
-  const user = await this.userService.findOne(parameters.email);
-  if (user === null) {
-    throw new NotFoundException("User not found");
+  @UseGuards(AuthGuard)
+  @Get("profile/metadata")
+  @ApiOperation({
+    summary: "Get current user metadata",
+    description: "Get authenticated user's own metadata.",
+  })
+  @ApiResponse({ status: 200, description: "User metadata found" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
+  @ApiResponse({ status: 404, description: "User not found" })
+  async getProfileMetadata(
+    @Request() request: AuthenticatedRequest,
+  ): Promise<UserMetadata> {
+    return this.userService.findMetadataOrFail(request.user.email);
   }
-  return user;
-}
 
-@UseGuards(AuthGuard)
-@Get(":email/metadata")
-@ApiOperation({
-  summary: "Find user metadata by email (Admin only)",
-  description: "Administrators can view any user's metadata."
-})
-@ApiParam({
-  name: "email",
-  description: "User email address",
-  example: "user@example.com",
-})
-@ApiResponse({ status: 200, description: "User metadata found" })
-@ApiResponse({ status: 400, description: "Invalid email format" })
-@ApiResponse({ status: 401, description: "Unauthorized" })
-@ApiResponse({ status: 403, description: "Forbidden - Admin only" })
-@ApiResponse({ status: 404, description: "User not found" })
-async findMetadata(
-  @Param() parameters: EmailParameterDto,
-  @Request() request: AuthenticatedRequest,
-): Promise<UserMetadata> {
-  if (request.user.role !== Role.ADMIN) {
-    throw new ForbiddenException("Only administrators can access user metadata by email");
+  @UseGuards(AuthGuard)
+  @Get(":email")
+  @ApiOperation({
+    summary: "Find user by email (Admin only)",
+    description: "Administrators can view any user's data.",
+  })
+  @ApiParam({
+    name: "email",
+    description: "User email address",
+    example: "user@example.com",
+  })
+  @ApiResponse({ status: 200, description: "User found" })
+  @ApiResponse({ status: 400, description: "Invalid email format" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
+  @ApiResponse({ status: 403, description: "Forbidden - Admin only" })
+  @ApiResponse({ status: 404, description: "User not found" })
+  async findOne(
+    @Param() parameters: EmailParameterDto,
+    @Request() request: AuthenticatedRequest,
+  ): Promise<User> {
+    if (request.user.role !== Role.ADMIN) {
+      throw new ForbiddenException(
+        "Only administrators can access user data by email",
+      );
+    }
+
+    const user = await this.userService.findOne(parameters.email);
+    if (user === null) {
+      throw new NotFoundException("User not found");
+    }
+    return user;
   }
-  return this.userService.findMetadataOrFail(parameters.email);
-}
+
+  @UseGuards(AuthGuard)
+  @Get(":email/metadata")
+  @ApiOperation({
+    summary: "Find user metadata by email (Admin only)",
+    description: "Administrators can view any user's metadata.",
+  })
+  @ApiParam({
+    name: "email",
+    description: "User email address",
+    example: "user@example.com",
+  })
+  @ApiResponse({ status: 200, description: "User metadata found" })
+  @ApiResponse({ status: 400, description: "Invalid email format" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
+  @ApiResponse({ status: 403, description: "Forbidden - Admin only" })
+  @ApiResponse({ status: 404, description: "User not found" })
+  async findMetadata(
+    @Param() parameters: EmailParameterDto,
+    @Request() request: AuthenticatedRequest,
+  ): Promise<UserMetadata> {
+    if (request.user.role !== Role.ADMIN) {
+      throw new ForbiddenException(
+        "Only administrators can access user metadata by email",
+      );
+    }
+    return this.userService.findMetadataOrFail(parameters.email);
+  }
 
   @UseGuards(AuthGuard)
   @Patch(":email")

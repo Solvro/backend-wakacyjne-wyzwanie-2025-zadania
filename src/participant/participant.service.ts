@@ -78,7 +78,7 @@ export class ParticipantService {
     return participant;
   }
 
-async update(id: number, updateDto: UpdateParticipantDto) {
+  async update(id: number, updateDto: UpdateParticipantDto) {
     await this.getParticipantOrThrow(id);
 
     const data: Prisma.ParticipantUpdateInput = {
@@ -103,7 +103,6 @@ async update(id: number, updateDto: UpdateParticipantDto) {
       include: { trip: true },
     });
   }
-
 
   async remove(id: number): Promise<void> {
     await this.getParticipantOrThrow(id);

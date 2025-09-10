@@ -23,9 +23,6 @@ export class CreateTripDto {
   @IsString({ message: "Trip name must be a string" })
   @MinLength(3, { message: "Trip name must be at least 3 characters long" })
   @MaxLength(100, { message: "Trip name cannot exceed 100 characters" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
-  )
   name: string;
 
   @ApiProperty({
@@ -37,9 +34,6 @@ export class CreateTripDto {
   @IsString({ message: "Destination must be a string" })
   @MinLength(2, { message: "Destination must be at least 2 characters long" })
   @MaxLength(100, { message: "Destination cannot exceed 100 characters" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
-  )
   destination: string;
 
   @ApiProperty({

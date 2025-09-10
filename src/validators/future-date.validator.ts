@@ -12,9 +12,7 @@ export class IsFutureDateConstraint implements ValidatorConstraintInterface {
       return false;
     }
 
-    const inputDate = new Date(date);
-
-    if (isNaN(Date.parse(date as string))) {
+    if (Number.isNaN(Date.parse(date as string))) {
       return false;
     }
 
@@ -22,7 +20,6 @@ export class IsFutureDateConstraint implements ValidatorConstraintInterface {
     const todayDay = new Date().toISOString().split("T")[0];
 
     return inputDay >= todayDay;
-    
   }
 
   defaultMessage(_arguments: ValidationArguments): string {

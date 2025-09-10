@@ -7,7 +7,6 @@ export class LoginDto {
     description: "User email address",
     example: "user@example.com",
   })
-
   @IsEmail({}, { message: "Please provide a valid email address" })
   email: string;
 
