@@ -4,16 +4,16 @@ function eloZelo(ilosc: number): void {
   const content = "elo żelo\n".repeat(ilosc);
 
   for (let i: number = 0; i < ilosc; i++) {
-    fs.writeFile("elo-żelo.txt", content, (err: any) => {
-      if (err) {
+    fs.writeFile("elo-żelo.txt", content, (err: unknown) => {
+      if (err instanceof Error) {
         console.error(err);
       } else {
-        console.log("File written succesfully!");
+        console.warn("File written successfully!");
       }
     });
   }
 }
 
 const now = new Date();
-let minutes = now.getMinutes();
+const minutes: number = now.getMinutes();
 eloZelo(minutes);
