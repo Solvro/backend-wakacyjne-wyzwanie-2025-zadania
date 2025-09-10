@@ -1,3 +1,4 @@
+import { NotFoundException } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
@@ -10,7 +11,7 @@ describe("TripService", () => {
   let tripCounter = 1;
 
   let tripsInMemory: {
-    id: number;
+    tripId: number;
     destination: string;
     participant: { connect: { participantId: number } };
     startDate: Date;
@@ -19,14 +20,14 @@ describe("TripService", () => {
 
   const initialTrips = [
     {
-      id: 1,
+      tripId: 1,
       destination: "A",
       participant: { connect: { participantId: 1 } },
       startDate: new Date(),
       endDate: new Date(),
     },
     {
-      id: 2,
+      tripId: 2,
       destination: "B",
       participant: { connect: { participantId: 1 } },
       startDate: new Date(),
@@ -50,7 +51,7 @@ describe("TripService", () => {
       findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(({ data }: Trip) => {
-        const newTrip = { id: tripCounter++, ...data };
+        const newTrip = { tripId: tripCounter++, ...data };
         tripsInMemory.push(newTrip);
         return newTrip;
       }),
@@ -99,7 +100,7 @@ describe("TripService", () => {
     };
     const result = await service.create(dto);
 
-    expect(result).toHaveProperty("id");
+    expect(result).toHaveProperty("tripId");
 
     expect(result.destination).toBe("Testing Area");
 
@@ -113,8 +114,8 @@ describe("TripService", () => {
     });
 
     expect(result).toEqual({
-      // new trip id == 3
-      id: 3,
+      // new triptripId == 3
+      tripId: 3,
       participant: {
         connect: {
           participantId: 1,
@@ -137,7 +138,7 @@ describe("TripService", () => {
 
   it("should return one trip", async () => {
     const tripMock = {
-      id: 1,
+      tripId: 1,
       destination: "A",
       participant: { connect: { participantId: 1 } },
       startDate: new Date(),
@@ -158,10 +159,10 @@ describe("TripService", () => {
       startDate: new Date("2025-07-01T00:00:00.000Z"),
       endDate: new Date("2025-08-01T00:00:00.000Z"),
     };
-    const tripMock = await service.create(dto); // id == 3
+    const tripMock = await service.create(dto); //tripId == 3
 
     const tripUpdated = {
-      id: tripMock.tripId,
+      tripId: tripMock.tripId,
       participantId: 1,
       destination: "C",
       startDate: new Date("2025-07-01T00:00:00.000Z"),
@@ -186,7 +187,7 @@ describe("TripService", () => {
 
   it("should delete a trip", async () => {
     const tripMock = {
-      id: 1,
+      tripId: 1,
       destination: "A",
       participant: { connect: { participantId: 1 } },
       startDate: new Date(),
@@ -202,5 +203,11 @@ describe("TripService", () => {
     expect(mockDatabaseService.trip.delete).toHaveBeenCalledWith({
       where: { tripId: 1 },
     });
+  });
+
+  it("should throw NotFoundException when trip not found", async () => {
+    mockDatabaseService.trip.findUnique.mockResolvedValue(null);
+
+    await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
   });
 });

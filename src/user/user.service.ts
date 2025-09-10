@@ -45,7 +45,7 @@ export class UserService {
   }
 
   async findOne(email: string) {
-    return this.database.user.findUnique({
+    const user = await this.database.user.findUnique({
       where: { email },
       select: {
         email: true,
@@ -54,6 +54,11 @@ export class UserService {
         role: true,
       },
     });
+    if (user === null) {
+      throw new NotFoundException("User not found");
+    }
+
+    return user;
   }
 
   async update(email: string, updateUserDto: UpdateUserDto) {

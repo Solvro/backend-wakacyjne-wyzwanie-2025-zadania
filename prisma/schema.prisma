@@ -21,8 +21,8 @@ model Participant {
   lastName      String  @db.VarChar(255)
   address       String  @db.VarChar(255)
   phoneNumber   String? @db.VarChar(20)
-  email         String
-  User          User     @relation(fields: [email], references: [email])
+  email         String  @db.VarChar(255)
+  user          User    @relation(fields: [email], references: [email])
   sex           Sex?
   trips         Trip[]
 }
