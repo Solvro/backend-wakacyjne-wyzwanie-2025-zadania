@@ -37,27 +37,60 @@ export class TripService {
 
   async findAll() {
     return this.database.trip.findMany({
-      include: {
-        expenses: { orderBy: { expense_date: "desc" } },
-        participants: { orderBy: { last_name: "asc" } },
+      select: {
+        trip_id: true,
+        name: true,
+        destination: true,
+        start_date: true,
+        end_date: true,
       },
       orderBy: { start_date: "desc" },
     });
   }
 
-  async findOne(id: number) {
+  async findOnePublic(id: number) {
     const trip = await this.database.trip.findUnique({
       where: { trip_id: id },
-      include: {
-        expenses: { orderBy: { expense_date: "desc" } },
-        participants: { orderBy: { last_name: "asc" } },
+      select: {
+        trip_id: true,
+        name: true,
+        destination: true,
+        start_date: true,
+        end_date: true,
+      },
+    });
+    if (trip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+    }
+    return trip;
+  }
+
+  async findOnePrivate(id: number) {
+    const trip = await this.database.trip.findUnique({
+      where: { trip_id: id },
+      select: {
+        trip_id: true,
+        name: true,
+        destination: true,
+        start_date: true,
+        end_date: true,
+        budget: true,
+        participants: {
+          select: {
+            participant_id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            TripRole: true,
+          },
+          orderBy: { last_name: "asc" },
+        },
       },
     });
 
-    if (trip == null) {
+    if (trip === null) {
       throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
-
     return trip;
   }
 

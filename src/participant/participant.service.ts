@@ -23,14 +23,34 @@ export class ParticipantService {
     return participant;
   }
 
+  private async getUserOrThrow(email: string) {
+    const user = await this.database.user.findUnique({
+      where: { email },
+    });
+    if (user == null) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+    return user;
+  }
+
+  private async getTripOrThrow(id: number) {
+    const trip = await this.database.trip.findUnique({
+      where: { trip_id: id },
+    });
+    if (trip == null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+    }
+    return trip;
+  }
+
   async create(createDto: CreateParticipantDto) {
     return this.database.participant.create({
       data: {
         first_name: createDto.first_name,
         last_name: createDto.last_name,
-        role: createDto.role,
+        TripRole: createDto.TripRole,
         email: createDto.email,
-        trip: { connect: { trip_id: createDto.trip_id } },
+        trip_id: createDto.trip_id,
       },
       include: { trip: true },
     });
@@ -64,11 +84,16 @@ export class ParticipantService {
     const data: Prisma.ParticipantUpdateInput = {
       first_name: updateDto.first_name,
       last_name: updateDto.last_name,
-      role: updateDto.role,
-      email: updateDto.email,
+      TripRole: updateDto.TripRole,
     };
 
+    if (updateDto.email != null) {
+      await this.getUserOrThrow(updateDto.email);
+      data.User = { connect: { email: updateDto.email } };
+    }
+
     if (updateDto.trip_id != null) {
+      await this.getTripOrThrow(updateDto.trip_id);
       data.trip = { connect: { trip_id: updateDto.trip_id } };
     }
 
