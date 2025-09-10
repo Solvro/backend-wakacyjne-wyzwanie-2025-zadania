@@ -9,14 +9,24 @@ export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
+    const user = await this.database.user.findUnique({
+      where: { email: createParticipantDto.email },
+    });
+
+    if (user == null) {
+      throw new NotFoundException("User not found");
+    }
+
     return this.database.participant.create({
       data: {
         firstName: createParticipantDto.firstName,
         lastName: createParticipantDto.lastName,
         address: createParticipantDto.address,
         phoneNumber: createParticipantDto.phoneNumber,
-        email: createParticipantDto.email,
         sex: createParticipantDto.sex,
+        user: {
+          connect: { email: createParticipantDto.email },
+        },
       },
     });
   }
