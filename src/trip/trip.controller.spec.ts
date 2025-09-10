@@ -81,7 +81,7 @@ describe("TripController", () => {
     expect(controller).toBeDefined();
   });
 
-  it("should create a user", async () => {
+  it("should create a trip", async () => {
     const dto = {
       participantId: 1,
       destination: "Testing Area",
