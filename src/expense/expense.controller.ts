@@ -43,10 +43,6 @@ export class ExpenseController {
     status: 400,
     description: "Invalid expense data",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
@@ -63,10 +59,6 @@ export class ExpenseController {
   @ApiResponse({
     status: 404,
     description: "Expenses not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async findAll() {
     return this.expenseService.findAll();
@@ -85,10 +77,6 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async findOne(@Param("id") id: string) {
     return await this.expenseService.findOne(+id);
   }
@@ -105,10 +93,6 @@ export class ExpenseController {
   @ApiResponse({
     status: 404,
     description: "Expenses not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async update(
     @Param("id") id: string,
@@ -128,10 +112,6 @@ export class ExpenseController {
   @ApiResponse({
     status: 404,
     description: "Expenses not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async remove(@Param("id") id: string) {
     return this.expenseService.remove(+id);

@@ -8,6 +8,15 @@ import { UpdateParticipantDto } from "./dto/update-participant.dto";
 export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
+  findOneOrFail(id: number) {
+    const participant: unknown = this.database.participant.findUnique({
+      where: { id },
+    });
+    if (participant == null) {
+      throw new NotFoundException("Participant not found");
+    }
+  }
+
   async create(createParticipantDto: CreateParticipantDto) {
     return this.database.participant.create({
       data: {
@@ -25,44 +34,29 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    const participant: unknown = this.database.participant.findUnique({
+    this.findOneOrFail(id);
+
+    return this.database.participant.findUnique({
       where: { id },
     });
-    if (participant == null) {
-      throw new NotFoundException("Participant not found");
-    } else {
-      return participant;
-    }
   }
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    const participant: unknown = this.database.participant.findUnique({
+    this.findOneOrFail(id);
+    return this.database.participant.update({
       where: { id },
+      data: {
+        name: updateParticipantDto.name,
+        surname: updateParticipantDto.surname,
+        age: updateParticipantDto.age,
+        tripId: updateParticipantDto.tripId,
+        gender: updateParticipantDto.gender,
+      },
     });
-    if (participant == null) {
-      throw new NotFoundException("Participant not found");
-    } else {
-      return this.database.participant.update({
-        where: { id },
-        data: {
-          name: updateParticipantDto.name,
-          surname: updateParticipantDto.surname,
-          age: updateParticipantDto.age,
-          tripId: updateParticipantDto.tripId,
-          gender: updateParticipantDto.gender,
-        },
-      });
-    }
   }
 
   async remove(id: number) {
-    const participant: unknown = this.database.participant.findUnique({
-      where: { id },
-    });
-    if (participant == null) {
-      throw new NotFoundException("Participant not found");
-    } else {
-      return this.database.participant.delete({ where: { id } });
-    }
+    this.findOneOrFail(id);
+    return this.database.participant.delete({ where: { id } });
   }
 }

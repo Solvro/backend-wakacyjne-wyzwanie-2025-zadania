@@ -7,6 +7,23 @@ import { UpdateExpenseDto } from "./dto/update-expense.dto";
 @Injectable()
 export class ExpenseService {
   constructor(private database: DatabaseService) {}
+  findOneOrFail(id: number) {
+    const expense: unknown = this.database.expense.findUnique({
+      where: { id },
+    });
+    if (expense == null) {
+      throw new NotFoundException("Expense not found");
+    }
+  }
+
+  tripIdCheck(id: number | undefined) {
+    const expense: unknown = this.database.trip.findUnique({
+      where: { id },
+    });
+    if (expense == null) {
+      throw new NotFoundException("TripId not found");
+    }
+  }
 
   async create(createExpenseDto: CreateExpenseDto) {
     return this.database.expense.create({
@@ -23,42 +40,30 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    const expense: unknown = this.database.expense.findUnique({
+    this.findOneOrFail(id);
+    return this.database.expense.findUnique({
       where: { id },
     });
-    if (expense == null) {
-      throw new NotFoundException("Expense not found");
-    } else {
-      return expense;
-    }
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    const expense: unknown = this.database.expense.findUnique({
-      where: { id },
-    });
-    if (expense == null) {
-      throw new NotFoundException("Expense not found");
-    } else {
-      return this.database.expense.update({
-        where: { id },
-        data: {
-          dailyPrice: updateExpenseDto.dailyPrice,
-          tripId: updateExpenseDto.tripId,
-          discount: updateExpenseDto.discount,
-        },
-      });
+    this.findOneOrFail(id);
+    if (typeof updateExpenseDto.tripId != "undefined") {
+      this.tripIdCheck(updateExpenseDto.tripId);
     }
+
+    return this.database.expense.update({
+      where: { id },
+      data: {
+        dailyPrice: updateExpenseDto.dailyPrice,
+        tripId: updateExpenseDto.tripId,
+        discount: updateExpenseDto.discount,
+      },
+    });
   }
 
   async remove(id: number) {
-    const expense: unknown = this.database.expense.findUnique({
-      where: { id },
-    });
-    if (expense == null) {
-      throw new NotFoundException("Expense not found");
-    } else {
-      return this.database.expense.delete({ where: { id } });
-    }
+    this.findOneOrFail(id);
+    return this.database.expense.delete({ where: { id } });
   }
 }

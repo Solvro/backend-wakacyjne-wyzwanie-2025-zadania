@@ -37,10 +37,6 @@ export class ParticipantController {
     status: 400,
     description: "Invalid participant data",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
@@ -57,10 +53,6 @@ export class ParticipantController {
   @ApiResponse({
     status: 404,
     description: "Expenses not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async findAll() {
     return this.participantService.findAll();
@@ -79,10 +71,6 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async findOne(@Param("id") id: string) {
     return this.participantService.findOne(+id);
   }
@@ -99,10 +87,6 @@ export class ParticipantController {
   @ApiResponse({
     status: 404,
     description: "Participant not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async update(
     @Param("id") id: string,
@@ -122,10 +106,6 @@ export class ParticipantController {
   @ApiResponse({
     status: 404,
     description: "Participant not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);
