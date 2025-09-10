@@ -21,6 +21,6 @@ export class TripPrivateResponseDto {
   @ApiPropertyOptional({ example: 1200 })
   budget?: number;
 
-  @ApiProperty({ type: [ParticipantResponseDto] })
+  @ApiProperty({ type: [ParticipantResponseDto], isArray: true })
   participants: ParticipantResponseDto[];
 }

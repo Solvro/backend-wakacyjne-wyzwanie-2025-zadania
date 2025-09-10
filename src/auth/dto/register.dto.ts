@@ -15,10 +15,9 @@ export class RegisterDto {
     description: "User email address",
     example: "user@example.com",
   })
-  @IsEmail({}, { message: "Please provide a valid email address" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.toLowerCase().trim() : value,
-  )
+  @IsEmail()
+  @MaxLength(54)
+  @Transform(({ value }: { value: string }) => value.toLowerCase().trim())
   email: string;
 
   @ApiProperty({
@@ -26,8 +25,9 @@ export class RegisterDto {
       "User password (min 8 chars, must contain uppercase, lowercase and number)",
     example: "Password123",
   })
-  @IsString({ message: "Password must be a string" })
-  @MinLength(8, { message: "Password must be at least 8 characters long" })
+  @IsString()
+  @MinLength(8)
+  @MaxLength(64)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
     message:
       "Password must contain at least one uppercase letter, one lowercase letter, and one number",
@@ -39,11 +39,8 @@ export class RegisterDto {
     example: "John Doe",
   })
   @IsOptional()
-  @IsString({ message: "Name must be a string" })
-  @MinLength(2, { message: "Name must be at least 2 characters long" })
-  @MaxLength(100, { message: "Name cannot exceed 100 characters" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
-  )
-  name?: string | null;
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  name?: string;
 }

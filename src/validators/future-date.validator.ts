@@ -14,15 +14,15 @@ export class IsFutureDateConstraint implements ValidatorConstraintInterface {
 
     const inputDate = new Date(date);
 
-    if (Number.isNaN(inputDate.getTime())) {
+    if (isNaN(Date.parse(date as string))) {
       return false;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    inputDate.setHours(0, 0, 0, 0);
+    const inputDay = new Date(date).toISOString().split("T")[0];
+    const todayDay = new Date().toISOString().split("T")[0];
 
-    return inputDate >= today;
+    return inputDay >= todayDay;
+    
   }
 
   defaultMessage(_arguments: ValidationArguments): string {

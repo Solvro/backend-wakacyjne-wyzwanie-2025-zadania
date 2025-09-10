@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { Transform, Type } from "class-transformer";
+import { Type } from "class-transformer";
 import {
   IsEmail,
   IsEnum,
@@ -22,9 +22,6 @@ export class CreateParticipantDto {
   @IsString({ message: "First name must be a string" })
   @MinLength(2, { message: "First name must be at least 2 characters long" })
   @MaxLength(50, { message: "First name cannot exceed 50 characters" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
-  )
   first_name: string;
 
   @ApiProperty({
@@ -36,9 +33,6 @@ export class CreateParticipantDto {
   @IsString({ message: "Last name must be a string" })
   @MinLength(2, { message: "Last name must be at least 2 characters long" })
   @MaxLength(50, { message: "Last name cannot exceed 50 characters" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim() : value,
-  )
   last_name: string;
 
   @ApiProperty({
@@ -54,9 +48,6 @@ export class CreateParticipantDto {
     example: "jan.kowalski@example.com",
   })
   @IsEmail({}, { message: "Please provide a valid email address" })
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.toLowerCase().trim() : value,
-  )
   email: string;
 
   @ApiProperty({
