@@ -37,10 +37,6 @@ export class TripController {
     status: 400,
     description: "Invalid trip data",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
@@ -57,10 +53,6 @@ export class TripController {
   @ApiResponse({
     status: 404,
     description: "Trips not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async findAll() {
     return this.tripService.findAll();
@@ -79,10 +71,6 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async findOne(@Param("id") id: string) {
     return this.tripService.findOne(+id);
   }
@@ -100,10 +88,6 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
-  })
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
@@ -119,10 +103,6 @@ export class TripController {
   @ApiResponse({
     status: 404,
     description: "Trip not found",
-  })
-  @ApiResponse({
-    status: 500,
-    description: "Server error",
   })
   async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);

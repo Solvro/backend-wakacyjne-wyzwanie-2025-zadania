@@ -8,6 +8,15 @@ import { UpdateTripDto } from "./dto/update-trip.dto";
 export class TripService {
   constructor(private database: DatabaseService) {}
 
+  findOneOrFail(id: number) {
+    const trip: unknown = this.database.trip.findUnique({
+      where: { id },
+    });
+    if (trip == null) {
+      throw new NotFoundException("Participant not found");
+    }
+  }
+
   async create(createTripDto: CreateTripDto) {
     return this.database.trip.create({
       data: {
@@ -23,36 +32,26 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    const trip: unknown = this.database.trip.findUnique({ where: { id } });
-    if (trip == null) {
-      throw new NotFoundException("Trip not found");
-    } else {
-      return trip;
-    }
+    this.findOneOrFail(id);
+    return this.database.trip.findUnique({
+      where: { id },
+    });
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    const trip: unknown = this.database.trip.findUnique({ where: { id } });
-    if (trip == null) {
-      throw new NotFoundException("Trip not found");
-    } else {
-      return this.database.trip.update({
-        where: { id },
-        data: {
-          startDate: updateTripDto.startDate,
-          endDate: updateTripDto.endDate,
-          location: updateTripDto.location,
-        },
-      });
-    }
+    this.findOneOrFail(id);
+    return this.database.trip.update({
+      where: { id },
+      data: {
+        startDate: updateTripDto.startDate,
+        endDate: updateTripDto.endDate,
+        location: updateTripDto.location,
+      },
+    });
   }
 
   async remove(id: number) {
-    const trip: unknown = this.database.trip.findUnique({ where: { id } });
-    if (trip == null) {
-      throw new NotFoundException("Trip not found");
-    } else {
-      return this.database.trip.delete({ where: { id } });
-    }
+    this.findOneOrFail(id);
+    return this.database.trip.delete({ where: { id } });
   }
 }
