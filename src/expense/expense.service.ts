@@ -16,7 +16,7 @@ export class ExpenseService {
     }
   }
 
-  tripIdCheck(id: number | undefined) {
+  tripIdCheck(id: number) {
     const expense: unknown = this.database.trip.findUnique({
       where: { id },
     });
@@ -26,6 +26,7 @@ export class ExpenseService {
   }
 
   async create(createExpenseDto: CreateExpenseDto) {
+    this.tripIdCheck(createExpenseDto.tripId);
     return this.database.expense.create({
       data: {
         dailyPrice: createExpenseDto.dailyPrice,
