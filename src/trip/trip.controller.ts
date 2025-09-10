@@ -16,9 +16,9 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { Roles } from "../auth/roles/role.decorator";
-import { RoleGuard } from "../auth/roles/user-role.guard";
 import { TripRoles } from "../auth/roles/trip-role.decorator";
 import { TripRoleGuard } from "../auth/roles/trip-role.guard";
+import { RoleGuard } from "../auth/roles/user-role.guard";
 import { IdParameterDto } from "../validators/id-parameter.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripPrivateResponseDto } from "./dto/trip-private-response.dto";
