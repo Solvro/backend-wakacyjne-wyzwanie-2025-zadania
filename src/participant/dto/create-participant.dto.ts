@@ -6,25 +6,22 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class CreateParticipantDto {
   @ApiProperty({ example: "Marek" })
   @IsString()
-  name!: string;
+  name: string;
 
   @ApiProperty({ example: "Nowak" })
   @IsString()
-  lastname!: string;
+  lastname: string;
 
-  @ApiProperty({ required: false, example: "mark@example.com" })
+  @ApiPropertyOptional({ example: "mark@example.com" })
   @IsOptional()
-  @ApiPropertyOptional()
   @IsEmail()
   email?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     enum: ParticipantRole,
     enumName: "ParticipantRole",
-    required: false,
   })
   @IsOptional()
-  @ApiPropertyOptional()
   @IsEnum(ParticipantRole)
   role?: ParticipantRole;
 
@@ -33,5 +30,5 @@ export class CreateParticipantDto {
     description: "Trip ID this participant belongs to",
   })
   @IsInt()
-  tripId!: number;
+  tripId: number;
 }

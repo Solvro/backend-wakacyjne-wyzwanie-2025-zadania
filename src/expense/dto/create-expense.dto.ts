@@ -14,26 +14,24 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class CreateExpenseDto {
   @ApiProperty({ example: 1, description: "Participant who paid the expense" })
   @IsInt()
-  participantId!: number;
+  participantId: number;
 
   @ApiProperty({ example: 132.12 })
   @IsNumber()
   @IsPositive()
-  amount!: number;
+  amount: number;
 
   @ApiProperty({ enum: ExpenseCategory, enumName: "ExpenseCategory" })
   @IsEnum(ExpenseCategory)
-  category!: ExpenseCategory;
+  category: ExpenseCategory;
 
-  @ApiProperty({ required: false, example: "Train tickets" })
+  @ApiPropertyOptional({example: "Train tickets" })
   @IsOptional()
-  @ApiPropertyOptional()
   @IsString()
   note?: string;
 
-  @ApiProperty({ required: false, example: "2025-08-24T09:00:00.000Z" })
+  @ApiPropertyOptional({example: "2025-08-24T09:00:00.000Z" })
   @IsOptional()
-  @ApiPropertyOptional()
   @IsDateString()
   paidAt?: string | null;
 }
