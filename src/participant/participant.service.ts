@@ -38,6 +38,9 @@ export class ParticipantService {
   async findOne(id: number) {
     const participant = await this.database.participant.findUnique({
       where: { participantId: id },
+      include: {
+        user: true,
+      },
     });
 
     if (participant === null) {

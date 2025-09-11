@@ -35,6 +35,7 @@ export class ExpenseService {
   async findOne(id: number) {
     const expense = await this.database.expense.findUnique({
       where: { expenseId: id },
+      include: { trip: true },
     });
 
     if (expense === null) {

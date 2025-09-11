@@ -3,7 +3,7 @@ import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export async function seedDatabase() {
   await prisma.expense.deleteMany();
   await prisma.trip.deleteMany();
   await prisma.participant.deleteMany();
@@ -29,14 +29,8 @@ async function main() {
         role: Role.COORDINATOR,
         isEnabled: true,
       },
-      {
-        email: "marian@gmail.com",
-        name: "Jaś Melon",
-        password: hashedPassword,
-        role: Role.USER,
-        isEnabled: false,
-      },
     ],
+    skipDuplicates: true,
   });
 
   const [user1, user2] = await prisma.user.findMany();
@@ -56,13 +50,6 @@ async function main() {
         address: "Kremówkowa 2",
         email: user2.email,
         sex: Sex.MALE,
-      },
-      {
-        firstName: "Jaś",
-        lastName: "Melon",
-        address: "Zielona 3",
-        email: "marian@gmail.com",
-        phoneNumber: "3123",
       },
     ],
   });
@@ -103,7 +90,7 @@ async function main() {
   });
 }
 
-main()
+seedDatabase()
   .catch((error: unknown) => {
     console.error(error);
     throw new Error("Błąd w głównej funkcji");

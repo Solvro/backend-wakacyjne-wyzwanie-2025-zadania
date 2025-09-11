@@ -54,10 +54,6 @@ export class UserService {
         role: true,
       },
     });
-    if (user === null) {
-      throw new NotFoundException("User not found");
-    }
-
     return user;
   }
 
@@ -95,10 +91,6 @@ export class UserService {
       throw new NotFoundException("User not found");
     }
     return user;
-  }
-
-  async findUser(email: string) {
-    return this.database.user.findUnique({ where: { email } });
   }
 
   async updateUser(user: User): Promise<User> {

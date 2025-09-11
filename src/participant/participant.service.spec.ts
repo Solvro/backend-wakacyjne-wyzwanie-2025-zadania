@@ -16,7 +16,7 @@ describe("ParticipantService", () => {
     participantId: number;
     firstName: string;
     lastName: string;
-    email: string;
+    email: { connect: { email: string } };
   }[] = [];
 
   const initialParticipants = [
@@ -24,7 +24,7 @@ describe("ParticipantService", () => {
       participantId: 1,
       firstName: "A",
       lastName: "B",
-      email: "C",
+      email: { connect: { email: "C" } },
       address: "W",
       phoneNumber: "2137",
       sex: Sex.OTHER,
@@ -33,7 +33,7 @@ describe("ParticipantService", () => {
       participantId: 2,
       firstName: "D",
       lastName: "E",
-      email: "F",
+      email: { connect: { email: "G" } },
       address: "F",
       phoneNumber: "123123",
       sex: Sex.FEMALE,
@@ -44,7 +44,7 @@ describe("ParticipantService", () => {
     data: {
       firstName: string;
       lastName: string;
-      email: string;
+      email: { connect: { email: string } };
       address: string;
       phoneNumber: string;
       sex: Sex;
@@ -63,6 +63,9 @@ describe("ParticipantService", () => {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    user: {
+      findUnique: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -75,6 +78,11 @@ describe("ParticipantService", () => {
 
     participantsInMemory = [...initialParticipants];
     participantCounter = initialParticipants.length + 1;
+
+    mockDatabaseService.user.findUnique.mockResolvedValue({
+      email: "Z",
+      name: "zaq",
+    });
 
     service = module.get<ParticipantService>(ParticipantService);
   });
@@ -99,23 +107,26 @@ describe("ParticipantService", () => {
     const result = await service.create(dto);
 
     expect(result).toHaveProperty("participantId");
-
     expect(result.address).toBe("F");
-
     expect(mockDatabaseService.participant.create).toHaveBeenCalledWith({
       data: {
         firstName: dto.firstName,
         lastName: dto.lastName,
-        email: dto.email,
         address: dto.address,
         phoneNumber: dto.phoneNumber,
         sex: dto.sex,
+        user: { connect: { email: dto.email } },
       },
     });
 
     expect(result).toEqual({
       participantId: 3,
-      ...dto,
+      user: { connect: { email: dto.email } },
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      address: dto.address,
+      phoneNumber: dto.phoneNumber,
+      sex: dto.sex,
     });
   });
 

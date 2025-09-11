@@ -177,6 +177,10 @@ export class UserController {
     status: HttpStatus.NOT_FOUND,
     description: "User not found",
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: "You need an admin role for that",
+  })
   async remove(@Param("email") email: string) {
     return this.userService.remove(email);
   }

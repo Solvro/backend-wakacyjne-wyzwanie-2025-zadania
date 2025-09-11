@@ -5,42 +5,34 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  Min,
+  Length,
   Validate,
 } from "class-validator";
-
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 import { NoSpaces } from "../validation/no-spaces.validator";
 
 export class CreateUserDto {
-  @ApiProperty()
   @IsEmail()
   @IsString()
-  @Min(5)
+  @Length(5)
   email!: string;
 
-  @ApiPropertyOptional()
   @IsString()
-  @IsOptional()
-  aboutMe?: string;
-
-  @ApiProperty()
-  @IsString()
-  @Min(5)
+  @Length(5)
   password!: string;
 
-  @ApiProperty()
   @IsEnum(Role)
   role!: Role;
 
-  @ApiProperty()
   @IsBoolean()
   isEnabled!: boolean;
 
-  @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
   @Validate(NoSpaces)
   name?: string;
+
+  @IsOptional()
+  @IsString()
+  aboutMe?: string;
 }
