@@ -16,13 +16,13 @@ export class CreateTripDto {
   @ApiProperty({ example: "Summer Vacation 2025" })
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  name: string;
 
   @ApiProperty({ example: "2025-07-01T00:00:00.000Z" })
   @Type(() => Date)
   @IsDate()
   @IsFutureDate({ message: "Start date must be in the future" })
-  startDate!: Date;
+  startDate: Date;
 
   @ApiPropertyOptional({ example: "2025-07-15T00:00:00.000Z" })
   @Type(() => Date)

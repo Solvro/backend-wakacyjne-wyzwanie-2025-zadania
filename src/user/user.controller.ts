@@ -5,7 +5,14 @@ import {
   Param,
   Patch,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { UpdateUserDto } from "../auth/dto/update-user.dto";
 import { CurrentUser } from "../common/decorators/current-user.decorator";
@@ -18,7 +25,12 @@ export class UserController {
 
   @Patch(":email")
   @ApiOperation({ summary: "Edit a user" })
-  @ApiResponse({ description: "Edits a user", type: String })
+  @ApiOkResponse({ description: "User updated successfully" })
+  @ApiNotFoundResponse({ description: "User with given email not found" })
+  @ApiForbiddenResponse({
+    description: "You are not allowed to update this user",
+  })
+  @ApiBadRequestResponse({ description: "Validation failed" })
   async updateUser(
     @Param("email") email: string,
     @Body() dto: UpdateUserDto,

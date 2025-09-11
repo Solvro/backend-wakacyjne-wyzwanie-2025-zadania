@@ -5,14 +5,14 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class RegisterDto {
   @ApiProperty({ example: "Adam@example.com" })
   @IsEmail()
-  email!: string;
+  email: string;
 
   @ApiProperty({ minLength: 8 })
   @IsString()
   @MinLength(8)
-  password!: string;
+  password: string;
 
-  @ApiPropertyOptional({ required: false, example: "Joe" })
+  @ApiPropertyOptional({ example: "Joe" })
   @IsOptional()
   @IsString()
   name?: string;

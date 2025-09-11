@@ -9,7 +9,9 @@ import {
   Post,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -29,6 +31,7 @@ export class ExpenseController {
   @Get()
   @ApiOperation({ summary: "Get all expenses" })
   @ApiOkResponse({ description: "List all expenses" })
+  @ApiBadRequestResponse({ description: "Invalid query" })
   async findAll() {
     return this.service.findAll();
   }
@@ -37,6 +40,8 @@ export class ExpenseController {
   @Get(":id")
   @ApiOperation({ summary: "Get specific expense" })
   @ApiOkResponse({ description: "Get one expense" })
+  @ApiNotFoundResponse({ description: "Expense not found" })
+  @ApiBadRequestResponse({ description: "Invalid query" })
   async findOne(@Param("id", ParseIntPipe) id: number) {
     return this.service.findOne(id);
   }
@@ -44,13 +49,17 @@ export class ExpenseController {
   @Post()
   @ApiOperation({ summary: "Create a new expense" })
   @ApiCreatedResponse({ description: "Created expense" })
+  @ApiNotFoundResponse({ description: "Participant not found" })
+  @ApiBadRequestResponse({ description: "Invalid input data" })
   async create(@Body() dto: CreateExpenseDto) {
     return this.service.create(dto);
   }
 
   @Patch(":id")
-  @ApiOperation({ summary: "Change expense data" })
+  @ApiOperation({ summary: "Update expense" })
   @ApiOkResponse({ description: "Updated expense" })
+  @ApiNotFoundResponse({ description: "Expense or participant not found" })
+  @ApiBadRequestResponse({ description: "Invalid input data" })
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateExpenseDto,
@@ -61,6 +70,8 @@ export class ExpenseController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete expense" })
   @ApiOkResponse({ description: "Deleted expense" })
+  @ApiNotFoundResponse({ description: "Expense not found" })
+  @ApiBadRequestResponse({ description: "Invalid input data" })
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.service.remove(id);
   }

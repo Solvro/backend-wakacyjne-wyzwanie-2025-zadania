@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
+import { UpdateTripDto } from "./dto/update-trip.dto";
 
 @Injectable()
 export class TripService {
@@ -17,13 +18,13 @@ export class TripService {
     });
   }
 
-  async createTrip(data: { name: string; startDate: Date; budget?: number }) {
+  async createTrip(data: CreateTripDto) {
     return this.prisma.trip.create({
       data,
     });
   }
 
-  async updateTrip(id: number, data: Partial<CreateTripDto>) {
+  async updateTrip(id: number, data: UpdateTripDto) {
     const trip = await this.prisma.trip.findUnique({ where: { id } });
     if (trip === null) {
       throw new NotFoundException("Trip not found");

@@ -26,6 +26,15 @@ export class ParticipantService {
   }
 
   async create(dto: CreateParticipantDto) {
+    const trip = await this.prisma.trip.findUnique({
+      where: { id: dto.tripId },
+    });
+    if (trip === null) {
+      throw new NotFoundException(
+        `Trip with id ${String(dto.tripId)} not found`,
+      );
+    }
+
     return this.prisma.participant.create({
       data: {
         name: dto.name,
@@ -39,6 +48,18 @@ export class ParticipantService {
 
   async update(id: number, dto: UpdateParticipantDto) {
     await this.ensureExists(id);
+
+    if (dto.tripId !== undefined) {
+      const trip = await this.prisma.trip.findUnique({
+        where: { id: dto.tripId },
+      });
+      if (trip === null) {
+        throw new NotFoundException(
+          `trip with id ${String(dto.tripId)} not found`,
+        );
+      }
+    }
+
     const { name, lastname, email, role } = dto;
     return this.prisma.participant.update({
       where: { id },

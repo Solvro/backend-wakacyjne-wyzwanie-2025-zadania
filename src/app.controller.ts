@@ -1,5 +1,10 @@
 import { Controller, Get, HttpCode } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { AppService } from "./app.service";
 import { Public } from "./common/decorators/public.decorator";
@@ -14,6 +19,7 @@ export class AppController {
   @HttpCode(418)
   @ApiOperation({ summary: "Health check endpoint" })
   @ApiOkResponse({ description: "Returns a welcome message", type: String })
+  @ApiNotFoundResponse({ description: "Backend not found" })
   getBackend() {
     return this.appService.getHello();
   }

@@ -9,7 +9,9 @@ import {
   Post,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -29,6 +31,7 @@ export class ParticipantController {
   @Get()
   @ApiOperation({ summary: "Get all participants" })
   @ApiOkResponse({ description: "List all participants" })
+  @ApiBadRequestResponse({ description: "Invalid query" })
   async findAll() {
     return this.service.findAll();
   }
@@ -37,6 +40,8 @@ export class ParticipantController {
   @Get(":id")
   @ApiOperation({ summary: "Get specific participant" })
   @ApiOkResponse({ description: "Get one participant" })
+  @ApiNotFoundResponse({ description: "participant not found" })
+  @ApiBadRequestResponse({ description: "Invalid query" })
   async findOne(@Param("id", ParseIntPipe) id: number) {
     return this.service.findOne(id);
   }
@@ -44,6 +49,7 @@ export class ParticipantController {
   @Post()
   @ApiOperation({ summary: "Create a participant" })
   @ApiCreatedResponse({ description: "Created participant" })
+  @ApiBadRequestResponse({ description: "Invalid input data" })
   async create(@Body() dto: CreateParticipantDto) {
     return this.service.create(dto);
   }
@@ -51,6 +57,8 @@ export class ParticipantController {
   @Patch(":id")
   @ApiOperation({ summary: "Update participant" })
   @ApiOkResponse({ description: "Updated participant" })
+  @ApiNotFoundResponse({ description: "participant not found" })
+  @ApiBadRequestResponse({ description: "Invalid input data" })
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: UpdateParticipantDto,
@@ -61,6 +69,8 @@ export class ParticipantController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete participant" })
   @ApiOkResponse({ description: "Deleted participant" })
+  @ApiNotFoundResponse({ description: "participant not found" })
+  @ApiBadRequestResponse({ description: "Invalid input data" })
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.service.remove(id);
   }
