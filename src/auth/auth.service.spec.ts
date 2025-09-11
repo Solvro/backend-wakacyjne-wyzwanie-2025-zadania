@@ -25,7 +25,7 @@ describe("AuthService", () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn().mockReturnValue(86_400_000), // 24 hours in ms
+            get: jest.fn().mockReturnValue(86_400_000),
           },
         },
       ],

@@ -32,6 +32,10 @@ export class ExpenseService {
   }
 
   async remove(id: number) {
+    await this.prisma.expenseParticipant.deleteMany({
+      where: { expense_id: id },
+    });
+
     return this.prisma.expense.delete({
       where: { id },
     });

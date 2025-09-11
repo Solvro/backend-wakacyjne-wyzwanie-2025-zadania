@@ -37,6 +37,10 @@ export class ParticipantService {
   }
 
   async remove(id: number) {
+    await this.database.expenseParticipant.deleteMany({
+      where: { participant_id: id },
+    });
+
     return this.database.participant.delete({
       where: { id },
     });
