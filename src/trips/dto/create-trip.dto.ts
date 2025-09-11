@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
+import { IsAfter } from "src/common/validators/is-after-validator";
 
 enum TripStatus {
   PLANNED = "PLANNED",
@@ -35,6 +36,10 @@ export class CreateTripDto {
 
   @IsOptional()
   @IsDateString()
+  @IsAfter("startDate", {
+    allowEqual: true,
+    message: "endDate must be on/after startDate",
+  })
   endDate?: string;
 
   @IsOptional()
