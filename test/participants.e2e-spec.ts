@@ -44,10 +44,10 @@ describe("Participants E2E", () => {
       .send({ name: "Test User", trip_id: 1, email: "test.get@example.com" })
       .expect(201);
 
-    const participantId = createResponse.body.id;
+    const participantId = (createResponse.body as { id: number }).id;
 
     return request(app.getHttpServer())
-      .get(`/participant/${participantId}`)
+      .get(`/participant/${participantId.toString()}`)
       .expect(200);
   });
 
@@ -57,10 +57,10 @@ describe("Participants E2E", () => {
       .send({ name: "Test User", trip_id: 1, email: "test.update@example.com" })
       .expect(201);
 
-    const participantId = createResponse.body.id;
+    const participantId = (createResponse.body as { id: number }).id;
 
     return request(app.getHttpServer())
-      .patch(`/participant/${participantId}`)
+      .patch(`/participant/${participantId.toString()}`)
       .send({ name: "Alice Updated" })
       .expect(200);
   });
@@ -75,10 +75,10 @@ describe("Participants E2E", () => {
       })
       .expect(201);
 
-    const participantId = createResponse.body.id;
+    const participantId = (createResponse.body as { id: number }).id;
 
     return request(app.getHttpServer())
-      .delete(`/participant/${participantId}`)
+      .delete(`/participant/${participantId.toString()}`)
       .expect(204);
   });
 });

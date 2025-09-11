@@ -12,10 +12,7 @@ export class TripService {
 
   async create(createTripDto: CreateTripDto) {
     return this.prisma.trip.create({
-      data: {
-        ...createTripDto,
-        status: createTripDto.status as any,
-      },
+      data: createTripDto,
     });
   }
 
@@ -45,8 +42,8 @@ export class TripService {
       },
     });
 
-    if (!trip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+    if (trip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
 
     return trip;
@@ -57,16 +54,13 @@ export class TripService {
       where: { id },
     });
 
-    if (!existingTrip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+    if (existingTrip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
 
     return this.prisma.trip.update({
       where: { id },
-      data: {
-        ...updateTripDto,
-        status: updateTripDto.status as any,
-      },
+      data: updateTripDto,
     });
   }
 
@@ -75,8 +69,8 @@ export class TripService {
       where: { id },
     });
 
-    if (!existingTrip) {
-      throw new NotFoundException(`Trip with ID ${id} not found`);
+    if (existingTrip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
 
     await this.prisma.expenseParticipant.deleteMany({

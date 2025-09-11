@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import request from "supertest";
 import type { App } from "supertest/types";
 
@@ -48,10 +50,10 @@ describe("Expenses E2E", () => {
       .send({ description: "Test Get Expense", amount: 100, trip_id: 1 })
       .expect(201);
 
-    const expenseId = createResponse.body.id;
+    const expenseId: number = createResponse.body.id;
 
     return request(app.getHttpServer())
-      .get(`/expense/${expenseId}`)
+      .get(`/expense/${String(expenseId)}`)
       .expect(200);
   });
 
@@ -64,7 +66,7 @@ describe("Expenses E2E", () => {
     const expenseId = createResponse.body.id;
 
     return request(app.getHttpServer())
-      .patch(`/expense/${expenseId}`)
+      .patch(`/expense/${String(expenseId)}`)
       .send({ amount: 250 })
       .expect(200);
   });
@@ -78,7 +80,7 @@ describe("Expenses E2E", () => {
     const expenseId = createResponse.body.id;
 
     return request(app.getHttpServer())
-      .delete(`/expense/${expenseId}`)
+      .delete(`/expense/${String(expenseId)}`)
       .expect(204);
   });
 });

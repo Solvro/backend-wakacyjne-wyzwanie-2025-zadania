@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import request from "supertest";
 import type { App } from "supertest/types";
 
@@ -50,7 +52,9 @@ describe("Trips E2E", () => {
 
     const tripId = createResponse.body.id;
 
-    return request(app.getHttpServer()).get(`/trip/${tripId}`).expect(200);
+    return request(app.getHttpServer())
+      .get(`/trip/${String(tripId)}`)
+      .expect(200);
   });
 
   it("PATCH /trip/:id - powinno zaktualizować wycieczkę", async () => {
@@ -66,7 +70,7 @@ describe("Trips E2E", () => {
     const tripId = createResponse.body.id;
 
     return request(app.getHttpServer())
-      .patch(`/trip/${tripId}`)
+      .patch(`/trip/${String(tripId)}`)
       .send({ name: "Updated Trip Name" })
       .expect(200);
   });
@@ -83,6 +87,8 @@ describe("Trips E2E", () => {
 
     const tripId = createResponse.body.id;
 
-    return request(app.getHttpServer()).delete(`/trip/${tripId}`).expect(204);
+    return request(app.getHttpServer())
+      .delete(`/trip/${String(tripId)}`)
+      .expect(204);
   });
 });
