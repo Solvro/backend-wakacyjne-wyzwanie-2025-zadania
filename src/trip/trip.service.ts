@@ -11,8 +11,12 @@ export class TripService {
   constructor(private prisma: PrismaService) {}
 
   async create(createTripDto: CreateTripDto) {
+    const { status, ...rest } = createTripDto;
     return this.prisma.trip.create({
-      data: createTripDto,
+      data: {
+        ...rest,
+        status: status as TripStatus,
+      },
     });
   }
 
@@ -58,9 +62,13 @@ export class TripService {
       throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
 
+    const { status, ...rest } = updateTripDto;
     return this.prisma.trip.update({
       where: { id },
-      data: updateTripDto,
+      data: {
+        ...rest,
+        ...(status !== undefined && { status: status as TripStatus }),
+      },
     });
   }
 
