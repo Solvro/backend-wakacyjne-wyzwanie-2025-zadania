@@ -51,7 +51,13 @@ describe("ExpenseService", () => {
         description: "Hotel accommodation",
         date: new Date("2025-07-01T00:00:00.000Z"),
       };
-      const expectedExpense = { id: 1, ...createExpenseDto };
+      const expectedExpense = {
+        id: 1,
+        trip_id: createExpenseDto.trip_id,
+        amount: createExpenseDto.amount,
+        description: createExpenseDto.description,
+        date: createExpenseDto.date,
+      };
 
       mockPrismaService.expense.create.mockResolvedValue(expectedExpense);
 
@@ -69,7 +75,7 @@ describe("ExpenseService", () => {
         trip_id: 1,
         amount: 50,
       };
-      const expectedExpense = { id: 1, ...createExpenseDto };
+      const expectedExpense = { id: 1, trip_id: 1, amount: 50 };
 
       mockPrismaService.expense.create.mockResolvedValue(expectedExpense);
 
@@ -169,7 +175,14 @@ describe("ExpenseService", () => {
         description: "Hotel accommodation",
         date: new Date("2025-07-01T00:00:00.000Z"),
       };
-      const updatedExpense = { ...existingExpense, ...updateExpenseDto };
+      const updatedExpense = {
+        id: existingExpense.id,
+        trip_id: existingExpense.trip_id,
+        amount: updateExpenseDto.amount ?? existingExpense.amount,
+        description:
+          updateExpenseDto.description ?? existingExpense.description,
+        date: existingExpense.date,
+      };
 
       mockPrismaService.expense.update.mockResolvedValue(updatedExpense);
 
@@ -195,7 +208,14 @@ describe("ExpenseService", () => {
         description: "Hotel accommodation",
         date: new Date("2025-07-01T00:00:00.000Z"),
       };
-      const updatedExpense = { ...existingExpense, ...updateExpenseDto };
+      const updatedExpense = {
+        id: existingExpense.id,
+        trip_id: existingExpense.trip_id,
+        amount: updateExpenseDto.amount ?? existingExpense.amount,
+        description:
+          updateExpenseDto.description ?? existingExpense.description,
+        date: existingExpense.date,
+      };
 
       mockPrismaService.expense.update.mockResolvedValue(updatedExpense);
 

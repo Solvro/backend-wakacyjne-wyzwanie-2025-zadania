@@ -1,14 +1,13 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
-import { CreateExpenseDto } from "./dto/create-expense.dto";
-import { UpdateExpenseDto } from "./dto/update-expense.dto";
+import type { CreateExpenseDto } from "./dto/create-expense.dto";
+import type { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
 
 describe("ExpenseController", () => {
   let controller: ExpenseController;
-  let service: ExpenseService;
 
   const mockExpenseService = {
     create: jest.fn(),
@@ -30,7 +29,6 @@ describe("ExpenseController", () => {
     }).compile();
 
     controller = module.get<ExpenseController>(ExpenseController);
-    service = module.get<ExpenseService>(ExpenseService);
 
     jest.clearAllMocks();
   });
@@ -47,7 +45,13 @@ describe("ExpenseController", () => {
         description: "Hotel accommodation",
         date: new Date("2025-07-01T00:00:00.000Z"),
       };
-      const expectedExpense = { id: 1, ...createExpenseDto };
+      const expectedExpense = {
+        id: 1,
+        trip_id: createExpenseDto.trip_id,
+        amount: createExpenseDto.amount,
+        description: createExpenseDto.description,
+        date: createExpenseDto.date,
+      };
 
       mockExpenseService.create.mockResolvedValue(expectedExpense);
 
@@ -63,7 +67,11 @@ describe("ExpenseController", () => {
         trip_id: 1,
         amount: 50,
       };
-      const expectedExpense = { id: 1, ...createExpenseDto };
+      const expectedExpense = {
+        id: 1,
+        trip_id: createExpenseDto.trip_id,
+        amount: createExpenseDto.amount,
+      };
 
       mockExpenseService.create.mockResolvedValue(expectedExpense);
 
@@ -180,12 +188,12 @@ describe("ExpenseController", () => {
     it("should handle partial updates", async () => {
       const expenseId = "1";
       const updateExpenseDto: UpdateExpenseDto = {
-        amount: 150.0,
+        amount: 150,
       };
       const expectedExpense = {
         id: 1,
         trip_id: 1,
-        amount: 150.0,
+        amount: 150,
         description: "Hotel accommodation",
         date: new Date("2025-07-01T00:00:00.000Z"),
       };

@@ -1,6 +1,7 @@
-import { ExecutionContext } from "@nestjs/common";
+import type { ExecutionContext } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { RolesGuard } from "./roles.guard";
 
@@ -23,7 +24,7 @@ describe("RolesGuard", () => {
 
   describe("canActivate", () => {
     let mockExecutionContext: ExecutionContext;
-    let mockRequest: any;
+    let mockRequest: { user: { id: number; role: string } };
 
     beforeEach(() => {
       mockRequest = {
@@ -39,7 +40,7 @@ describe("RolesGuard", () => {
         }),
         getHandler: jest.fn(),
         getClass: jest.fn(),
-      } as any;
+      } as unknown as ExecutionContext;
     });
 
     it("should return true when user has required role", () => {
@@ -48,6 +49,7 @@ describe("RolesGuard", () => {
       const result = guard.canActivate(mockExecutionContext);
 
       expect(result).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(reflector.getAllAndOverride).toHaveBeenCalledWith("roles", [
         mockExecutionContext.getHandler(),
         mockExecutionContext.getClass(),
@@ -101,7 +103,7 @@ describe("RolesGuard", () => {
     });
 
     it("should handle undefined required roles", () => {
-      jest.spyOn(reflector, "getAllAndOverride").mockReturnValue(undefined);
+      jest.spyOn(reflector, "getAllAndOverride").mockReturnValue([]);
 
       const result = guard.canActivate(mockExecutionContext);
 

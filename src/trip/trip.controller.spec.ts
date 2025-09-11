@@ -7,7 +7,6 @@ import { TripService } from "./trip.service";
 
 describe("TripController", () => {
   let controller: TripController;
-  let service: TripService;
 
   const mockTripService = {
     create: jest.fn(),
@@ -30,7 +29,6 @@ describe("TripController", () => {
     }).compile();
 
     controller = module.get<TripController>(TripController);
-    service = module.get<TripService>(TripService);
 
     jest.clearAllMocks();
   });

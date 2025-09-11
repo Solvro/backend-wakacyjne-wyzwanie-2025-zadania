@@ -92,14 +92,14 @@ describe("IsNotPastDate", () => {
     });
 
     it("should pass validation for null value", async () => {
-      testDto.date = null as any;
+      testDto.date = null as unknown as Date;
 
       const errors = await validate(testDto);
       expect(errors).toHaveLength(0);
     });
 
     it("should pass validation for undefined value", async () => {
-      testDto.date = undefined as any;
+      testDto.date = undefined as unknown as Date;
 
       const errors = await validate(testDto);
       expect(errors).toHaveLength(0);
@@ -123,7 +123,7 @@ describe("IsNotPastDate", () => {
     });
 
     it("should fail validation for invalid type (object)", async () => {
-      testDto.date = {} as any;
+      testDto.date = {} as unknown as Date;
 
       const errors = await validate(testDto);
       expect(errors).toHaveLength(1);
@@ -133,7 +133,7 @@ describe("IsNotPastDate", () => {
     });
 
     it("should fail validation for invalid type (boolean)", async () => {
-      testDto.date = true as any;
+      testDto.date = true as unknown as Date;
 
       const errors = await validate(testDto);
       expect(errors).toHaveLength(1);

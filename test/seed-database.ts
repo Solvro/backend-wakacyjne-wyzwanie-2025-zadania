@@ -50,7 +50,7 @@ export async function seedDatabase() {
       },
     });
 
-    const participant1 = await prisma.participant.upsert({
+    await prisma.participant.upsert({
       where: { email: "anna.kowalska@example.com" },
       update: {},
       create: {
@@ -61,7 +61,7 @@ export async function seedDatabase() {
       },
     });
 
-    const participant2 = await prisma.participant.upsert({
+    await prisma.participant.upsert({
       where: { email: "jan.nowak@example.com" },
       update: {},
       create: {
@@ -72,7 +72,7 @@ export async function seedDatabase() {
       },
     });
 
-    const participant3 = await prisma.participant.upsert({
+    await prisma.participant.upsert({
       where: { email: "maria.wisniewska@example.com" },
       update: {},
       create: {
@@ -83,7 +83,7 @@ export async function seedDatabase() {
       },
     });
 
-    const expense1 = await prisma.expense.upsert({
+    await prisma.expense.upsert({
       where: { id: 1 },
       update: {},
       create: {
@@ -94,7 +94,7 @@ export async function seedDatabase() {
       },
     });
 
-    const expense2 = await prisma.expense.upsert({
+    await prisma.expense.upsert({
       where: { id: 2 },
       update: {},
       create: {
@@ -105,7 +105,7 @@ export async function seedDatabase() {
       },
     });
 
-    const expense3 = await prisma.expense.upsert({
+    await prisma.expense.upsert({
       where: { id: 3 },
       update: {},
       create: {

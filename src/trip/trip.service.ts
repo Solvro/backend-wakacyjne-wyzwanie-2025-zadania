@@ -1,3 +1,5 @@
+import { TripStatus } from "@prisma/client";
+
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
@@ -96,7 +98,7 @@ export class TripService {
 
   async findTripsByStatus(status: string) {
     return this.prisma.trip.findMany({
-      where: { status: status as any },
+      where: { status: status as TripStatus },
       include: {
         participants: true,
         expenses: true,

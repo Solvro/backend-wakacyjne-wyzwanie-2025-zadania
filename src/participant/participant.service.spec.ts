@@ -1,10 +1,9 @@
-import { NotFoundException } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateParticipantDto } from "./dto/create-participant.dto";
-import { UpdateParticipantDto } from "./dto/update-participant.dto";
+import type { CreateParticipantDto } from "./dto/create-participant.dto";
+import type { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
 
 describe("ParticipantService", () => {
@@ -12,14 +11,14 @@ describe("ParticipantService", () => {
 
   const mockPrismaService = {
     participant: {
-      create: jest.fn() as jest.Mock,
-      findMany: jest.fn() as jest.Mock,
-      findUnique: jest.fn() as jest.Mock,
-      update: jest.fn() as jest.Mock,
-      delete: jest.fn() as jest.Mock,
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
     },
     expenseParticipant: {
-      deleteMany: jest.fn() as jest.Mock,
+      deleteMany: jest.fn(),
     },
   };
 
@@ -51,7 +50,13 @@ describe("ParticipantService", () => {
         surname: "Doe",
         email: "john.doe@example.com",
       };
-      const expectedParticipant = { id: 1, ...createParticipantDto };
+      const expectedParticipant = {
+        id: 1,
+        trip_id: createParticipantDto.trip_id,
+        name: createParticipantDto.name,
+        surname: createParticipantDto.surname,
+        email: createParticipantDto.email,
+      };
 
       mockPrismaService.participant.create.mockResolvedValue(
         expectedParticipant,
@@ -76,7 +81,13 @@ describe("ParticipantService", () => {
         name: "Jane",
         email: "jane@example.com",
       };
-      const expectedParticipant = { id: 1, ...createParticipantDto };
+      const expectedParticipant = {
+        id: 1,
+        name: createParticipantDto.name,
+        email: createParticipantDto.email,
+        trip_id: createParticipantDto.trip_id,
+        surname: createParticipantDto.surname,
+      };
 
       mockPrismaService.participant.create.mockResolvedValue(
         expectedParticipant,
@@ -187,10 +198,11 @@ describe("ParticipantService", () => {
         surname: "Doe",
         email: "john.doe@example.com",
       };
-      const updatedParticipant = {
-        ...existingParticipant,
-        ...updateParticipantDto,
-      };
+      const updatedParticipant = Object.assign(
+        {},
+        existingParticipant,
+        updateParticipantDto,
+      );
 
       mockPrismaService.participant.update.mockResolvedValue(
         updatedParticipant,
@@ -218,10 +230,11 @@ describe("ParticipantService", () => {
         surname: "Doe",
         email: "john.doe@example.com",
       };
-      const updatedParticipant = {
-        ...existingParticipant,
-        ...updateParticipantDto,
-      };
+      const updatedParticipant = Object.assign(
+        {},
+        existingParticipant,
+        updateParticipantDto,
+      );
 
       mockPrismaService.participant.update.mockResolvedValue(
         updatedParticipant,

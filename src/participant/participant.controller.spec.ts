@@ -45,7 +45,13 @@ describe("ParticipantController", () => {
         surname: "Doe",
         email: "john.doe@example.com",
       };
-      const expectedParticipant = { id: 1, ...createParticipantDto };
+      const expectedParticipant = {
+        id: 1,
+        trip_id: createParticipantDto.trip_id,
+        name: createParticipantDto.name,
+        surname: createParticipantDto.surname,
+        email: createParticipantDto.email,
+      };
 
       mockParticipantService.create.mockResolvedValue(expectedParticipant);
 
@@ -63,7 +69,11 @@ describe("ParticipantController", () => {
         name: "Jane",
         email: "jane@example.com",
       };
-      const expectedParticipant = { id: 1, ...createParticipantDto };
+      const expectedParticipant = {
+        id: 1,
+        name: createParticipantDto.name,
+        email: createParticipantDto.email,
+      };
 
       mockParticipantService.create.mockResolvedValue(expectedParticipant);
 

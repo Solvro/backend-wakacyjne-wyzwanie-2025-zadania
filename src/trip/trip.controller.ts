@@ -59,7 +59,7 @@ export class TripController {
     type: [TripResponseDto],
   })
   async findAll(@Query("status") status?: string) {
-    if (status) {
+    if (status != null) {
       return this.tripService.findTripsByStatus(status);
     }
     return this.tripService.findAll();
