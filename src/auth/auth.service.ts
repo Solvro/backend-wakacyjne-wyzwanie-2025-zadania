@@ -1,3 +1,4 @@
+import { UserRole } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
 import {
@@ -5,39 +6,44 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { PrismaService } from "../../prisma/prisma.service";
 
+interface TokenPayload {
+  role: UserRole;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwt: JwtService,
-    private config: ConfigService,
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
   ) {}
 
-  async register(email: string, password: string) {
+  async register(
+    email: string,
+    password: string,
+  ): Promise<{ id: number; email: string; role: UserRole; createdAt: Date }> {
     const exists = await this.prisma.user.findUnique({ where: { email } });
     if (exists !== null) {
       throw new ConflictException("Konto o podanym adresie email już istnieje");
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
+
     const user = await this.prisma.user.create({
-      data: { email, passwordHash, role: "USER" },
+      data: { email, passwordHash, role: UserRole.USER },
+      select: { id: true, email: true, role: true, createdAt: true },
     });
 
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-    };
+    return user;
   }
 
-  async login(email: string, password: string) {
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ accessToken: string }> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (user === null) {
       throw new UnauthorizedException("Nieprawidłowe dane logowania");
@@ -48,22 +54,9 @@ export class AuthService {
       throw new UnauthorizedException("Nieprawidłowe dane logowania");
     }
 
-    const nowSec = Math.floor(Date.now() / 1000);
-    const expMs = Number(
-      this.config.get<string>("EXPIRY_TIME_MS") ?? 3_600_000,
-    );
-    const expSec = nowSec + Math.floor(expMs / 1000);
+    const payload: TokenPayload = { role: user.role };
+    const accessToken = this.jwt.sign(payload, { subject: String(user.id) });
 
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-      iat: nowSec,
-      exp: expSec,
-    };
-    const token = this.jwt.sign(payload, {
-      secret: this.config.get<string>("JWT_SECRET") ?? "",
-    });
-    return { accessToken: token };
+    return { accessToken };
   }
 }
