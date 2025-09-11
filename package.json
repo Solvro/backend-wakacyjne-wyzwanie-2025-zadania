@@ -51,7 +51,8 @@
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.14.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "swagger": "^0.7.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
