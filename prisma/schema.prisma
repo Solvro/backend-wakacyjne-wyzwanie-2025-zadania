@@ -76,4 +76,5 @@ enum Role {
 enum AuthRole {
   ADMIN
   USER
+  COORDINATOR
 }

@@ -1,15 +1,24 @@
 import { AuthRole, Prisma } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 
 import { DatabaseService } from "../database/database.service";
+import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: DatabaseService) {}
+  constructor(
+    private readonly prisma: DatabaseService,
+    private readonly jwt: JwtService,
+  ) {}
 
   private readonly saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS ?? 12);
 
@@ -44,5 +53,28 @@ export class AuthService {
       }
       throw error;
     }
+  }
+
+  async signIn(dto: LoginDto): Promise<{ token: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+    if (user == null) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    const valid = await bcrypt.compare(dto.password, user.password);
+    if (!valid) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    // payload do JWT
+    const payload = {
+      sub: user.email, // identyfikator użytkownika
+      role: user.role, // rola (USER, COORDINATOR, ADMIN)
+    };
+
+    const token = await this.jwt.signAsync(payload);
+    return { token };
   }
 }
