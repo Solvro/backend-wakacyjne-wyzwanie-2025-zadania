@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  Get,
   Param,
   Patch,
 } from "@nestjs/common";
@@ -15,6 +16,7 @@ import {
 } from "@nestjs/swagger";
 
 import { UpdateUserDto } from "../auth/dto/update-user.dto";
+import { UserResponseDto } from "../auth/dto/user-response.dto";
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 import { UserService } from "./user.service";
 
@@ -23,9 +25,22 @@ import { UserService } from "./user.service";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get()
+  @ApiOperation({ summary: "Get all users with roles" })
+  @ApiOkResponse({
+    description: "Gets all users with roles",
+    type: [UserResponseDto],
+  })
+  async getAllUsers() {
+    return this.userService.findAll();
+  }
+
   @Patch(":email")
   @ApiOperation({ summary: "Edit a user" })
-  @ApiOkResponse({ description: "User updated successfully" })
+  @ApiOkResponse({
+    description: "User updated successfully",
+    type: UserResponseDto,
+  })
   @ApiNotFoundResponse({ description: "User with given email not found" })
   @ApiForbiddenResponse({
     description: "You are not allowed to update this user",
@@ -44,7 +59,7 @@ export class UserController {
       throw new ForbiddenException("You can only modify your own data");
     }
 
-    if ("role" in dto && dto.role !== currentUser.role) {
+    if (dto.role !== undefined && dto.role !== currentUser.role) {
       throw new ForbiddenException("Cannot change your role");
     }
 

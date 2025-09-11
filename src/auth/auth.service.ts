@@ -45,11 +45,12 @@ export class AuthService {
 
   async signIn(email: string, password: string): Promise<LoginResponseDto> {
     const user = await this.userService.findByEmailOrFail(email);
-    if (
-      !user.isEnabled ||
-      !(await compare(password, user.password).catch(() => false))
-    ) {
-      throw new UnauthorizedException();
+    if (!user.isEnabled) {
+      throw new UnauthorizedException("User is disabled");
+    }
+    const valid = await compare(password, user.password).catch(() => false);
+    if (!valid) {
+      throw new UnauthorizedException("Incorrect password");
     }
     return { token: this.generateToken(user.email) };
   }

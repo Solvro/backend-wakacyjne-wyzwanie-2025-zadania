@@ -47,6 +47,16 @@ export class UserService {
     return u;
   }
 
+  async findAll() {
+    return this.prisma.user.findMany({
+      select: {
+        email: true,
+        name: true,
+        role: true,
+      },
+    });
+  }
+
   async updateUser(
     email: string,
     dto: Partial<{
