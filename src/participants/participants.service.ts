@@ -1,4 +1,3 @@
-// src/participants/participants.service.ts
 import { Participant } from "@prisma/client";
 
 import { Injectable, NotFoundException } from "@nestjs/common";

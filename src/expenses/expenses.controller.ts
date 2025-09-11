@@ -8,8 +8,10 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
@@ -18,19 +20,25 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { ExpenseResponseDto } from "./dto/expense-response.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
-import { ExpenseEntity } from "./entities/expense.entity";
 import { ExpensesService } from "./expenses.service";
 
 @ApiTags("expenses")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller("expenses")
 export class ExpensesController {
   constructor(private readonly expensesService: ExpensesService) {}
 
   @Post()
   @ApiOperation({ summary: "Dodaj nowy wydatek" })
-  @ApiCreatedResponse({ description: "Utworzono wydatek", type: ExpenseEntity })
+  @ApiCreatedResponse({
+    description: "Utworzono wydatek",
+    type: ExpenseResponseDto,
+  })
   @ApiResponse({ status: 400, description: "Błędne dane wejściowe" })
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expensesService.create(createExpenseDto);
@@ -40,7 +48,7 @@ export class ExpensesController {
   @ApiOperation({ summary: "Pobierz wszystkie wydatki" })
   @ApiOkResponse({
     description: "Zwraca listę wydatków",
-    type: [ExpenseEntity],
+    type: [ExpenseResponseDto],
   })
   async findAll() {
     return this.expensesService.findAll();
@@ -48,7 +56,7 @@ export class ExpensesController {
 
   @Get(":id")
   @ApiOperation({ summary: "Pobierz wydatek" })
-  @ApiOkResponse({ description: "Zwraca wydatek", type: ExpenseEntity })
+  @ApiOkResponse({ description: "Zwraca wydatek", type: ExpenseResponseDto })
   @ApiResponse({
     status: 404,
     description: "Nie znaleziono wydatku",
@@ -59,7 +67,10 @@ export class ExpensesController {
 
   @Patch(":id")
   @ApiOperation({ summary: "Aktualizuj wydatek" })
-  @ApiOkResponse({ description: "Zaktualizowano wydatek", type: ExpenseEntity })
+  @ApiOkResponse({
+    description: "Zaktualizowano wydatek",
+    type: ExpenseResponseDto,
+  })
   @ApiResponse({ status: 404, description: "Nie znaleziono wydatku" })
   @ApiResponse({ status: 400, description: "Błędne dane wejściowe" })
   async update(
