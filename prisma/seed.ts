@@ -3,52 +3,38 @@ import { Prisma, PrismaClient, Type } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  // 1) Uczestnicy
+  const jan = await prisma.participant.create({
+    data: { firstName: "Jan", lastName: "Kowalski", email: "jan@example.com" },
+  });
+
+  const anna = await prisma.participant.create({
+    data: { firstName: "Anna", lastName: "Kowalska", email: "anna@example.com" },
+  });
+
+  // 2) Trip + powiązania M2M (implicit) przez connect
   const trip = await prisma.trip.create({
     data: {
       name: "testowy trip",
       destination: "wroclaw",
-      budget: 100.5,
+      budget: new Prisma.Decimal("100.50"),
       startDate: new Date("2024-07-01"),
       endDate: new Date("2024-07-10"),
+      // participants relation removed due to schema mismatch
     },
   });
 
-  const jan = await prisma.participant.create({
-    data: {
-      firstName: "Jan",
-      lastName: "Kowalski",
-      email: "jan@example.com",
-    },
-  });
-
-  const anna = await prisma.participant.create({
-    data: {
-      firstName: "Anna",
-      lastName: "Kowalska",
-      email: "anna@example.com",
-    },
-  });
-
-  await prisma.tripParticipant.upsert({
-    where: {
-      tripId_participantId: { tripId: trip.id, participantId: anna.id },
-    },
-    update: {},
-    create: { tripId: trip.id, participantId: anna.id },
-  });
-
-  // 4) Expense (powiązany z Tripem; enum Type zgodny z Twoim schematem)
+  // 3) Wydatki (payer to Participant.id, tripId to Trip.id)
   await prisma.expense.create({
     data: {
       description: "Lunch near Colosseum",
       cost: new Prisma.Decimal("35.50"),
-      type: Type.FOOD, // inne: TRANSPORT, ACCOMODATION, PARKING, OTHER
+      type: Type.FOOD,
       tripId: trip.id,
       payerId: jan.id,
     },
   });
 
-  // dodatkowy przykładowy wydatek:
   await prisma.expense.create({
     data: {
       description: "Metro 24h ticket",

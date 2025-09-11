@@ -55,4 +55,7 @@ export class CreateTripDto {
   @IsOptional()
   @IsDateString()
   endDate?: string | Date;
+
+  @IsOptional()
+  participantIds?: number[];
 }

@@ -11,23 +11,27 @@ export class TripService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async create(dto: CreateTripDto) {
-    return this.prisma.trip.create({
-      data: {
-        name: dto.name,
-        destination: dto.destination ?? null,
-        budget:
-          dto.budget === undefined ? null : new Prisma.Decimal(dto.budget),
-        startDate: new Date(dto.startDate),
-        endDate: dto.endDate === undefined ? null : new Date(dto.endDate),
-      },
-    });
-  }
+  return this.prisma.trip.create({
+    data: {
+      name: dto.name,
+      destination: dto.destination ?? null,
+      budget: dto.budget == null ? null : new Prisma.Decimal(dto.budget),
+      startDate: new Date(dto.startDate),
+      endDate: dto.endDate == null ? null : new Date(dto.endDate),
+      ...(Array.isArray(dto.participantIds) && dto.participantIds.length > 0
+        ? { participants: { connect: dto.participantIds.map((id) => ({ id })) } }
+        : {}),
+    },
+    include: { participants: true, expenses: true },
+  });
+}
+
 
   async findAll() {
     return this.prisma.trip.findMany({
       include: {
         expenses: true,
-        members: { include: { participant: true } },
+        participants: true,
       },
       orderBy: { id: "asc" },
     });
@@ -38,7 +42,7 @@ export class TripService {
       where: { id },
       include: {
         expenses: true,
-        members: { include: { participant: true } },
+        participants: true,
       },
     });
     if (trip == null) {
@@ -63,6 +67,9 @@ export class TripService {
         startDate:
           dto.startDate === undefined ? undefined : new Date(dto.startDate),
         ...endDateField,
+        participants: {
+          set: (dto.participantIds ?? []).map((pid) => ({ id: pid })),
+        }
       },
     });
   }
