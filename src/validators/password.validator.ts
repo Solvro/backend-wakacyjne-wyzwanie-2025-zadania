@@ -10,6 +10,7 @@ export class Password implements ValidatorConstraintInterface {
     if (password.length < 6) {
       return false;
     }
+
     if (!/[A-Z]/.test(password)) {
       return false;
     }
@@ -22,6 +23,6 @@ export class Password implements ValidatorConstraintInterface {
     return true;
   }
   defaultMessage(_: ValidationArguments) {
-    return "Password has to be between 6-30 characters long and contain at least one uppercase letter, one special character and one digit.";
+    return "Password has to be at least 6 characters long and contain at least one uppercase letter, one special character and one digit.";
   }
 }

@@ -29,7 +29,7 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
-  @HttpCode(HttpStatus.ACCEPTED)
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Created a new expense",
     description: "Add and expense to a specific trip and a participant",

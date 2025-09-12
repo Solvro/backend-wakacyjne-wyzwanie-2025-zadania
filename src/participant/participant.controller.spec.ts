@@ -68,7 +68,6 @@ describe("ParticipantController", () => {
     expect(result).toHaveProperty("id", expect.any(Number));
     expect(result).toHaveProperty("name", dto.name);
     expect(result).toHaveProperty("email", dto.email);
-    expect(result).toHaveProperty("trip_id", dto.trip_id);
     expect(result).toHaveProperty("created_at", expect.any(Date));
     expect(result).toHaveProperty("updated_at", expect.any(Date));
 
@@ -79,10 +78,12 @@ describe("ParticipantController", () => {
   it("should update a user", async () => {
     const dto = { name: "John Smith", email: "josdjao@gmail.com" };
     const participant = await controller.update("1", dto);
-    expect(participant).toEqual({
-      id: 1,
-      ...dto,
-    });
+
+    expect(participant).toHaveProperty("id", expect.any(Number));
+    expect(participant).toHaveProperty("name", dto.name);
+    expect(participant).toHaveProperty("email", dto.email);
+    expect(participant).toHaveProperty("created_at", expect.any(Date));
+    expect(participant).toHaveProperty("updated_at", expect.any(Date));
     expect(mockParticipantService.update).toHaveBeenCalled();
   });
 

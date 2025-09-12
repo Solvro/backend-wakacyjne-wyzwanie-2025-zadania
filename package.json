@@ -18,7 +18,7 @@
     "test": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" jest",
     "test:cov": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" jest --coverage",
     "test:debug": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" jest --config ./test/jest-e2e.json",
+    "test:e2e": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" jest --config ./test/jest-e2e.json ",
     "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" jest --config ./test/jest-e2e.json --watch",
     "test:prepare": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" npx prisma db push",
     "test:watch": "cross-env DATABASE_URL=\"postgresql://test:1234@localhost:5432/postgrestest?schema=public\" jest --watch",
