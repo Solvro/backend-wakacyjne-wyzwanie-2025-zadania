@@ -5,8 +5,6 @@ import {
   IsOptional,
   IsString,
   Length,
-  Max,
-  Min,
   Validate,
 } from "class-validator";
 
