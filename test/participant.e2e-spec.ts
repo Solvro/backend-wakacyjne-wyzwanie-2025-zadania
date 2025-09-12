@@ -126,18 +126,6 @@ describe("ParticipantController (e2e)", () => {
   it("/participant (POST)", async () => {
     // creating participant with authorization
 
-    const response = request(app.getHttpServer())
-      .post("/participant")
-      .set("Authorization", `Bearer ${adminToken}`)
-      .send({
-        firstName: "Test",
-        lastName: "Participant",
-        address: "Future",
-        phoneNumber: "1234",
-        email: "ala.makota@example.com",
-        sex: Sex.OTHER,
-      });
-
     return request(app.getHttpServer())
       .post("/participant")
       .set("Authorization", `Bearer ${adminToken}`)
