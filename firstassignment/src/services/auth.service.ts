@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { LoginResponseDto } from "src/Dto/login-response.dto";
-import { UserMetadata } from "src/Dto/user-metadata";
+import { LoginResponseDto } from "../Dto/login-response.dto";
+import { UserMetadata } from "../Dto/user-metadata";
 import { compare } from "bcrypt"
 
 @Injectable()

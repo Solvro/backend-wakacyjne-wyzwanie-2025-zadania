@@ -1,11 +1,11 @@
 import { HttpException, Injectable, NotFoundException} from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 import { Role, User } from "../../generated/prisma";
-import { CreateUserDto } from "src/Dto/create-user-dto";
-import { UserMetadata, userToMetadata } from "src/Dto/user-metadata";
+import { CreateUserDto } from "../Dto/create-user-dto";
+import { UserMetadata, userToMetadata } from "../Dto/user-metadata";
 import { hash } from "bcrypt"
-import { CreateUserResponseDto } from "src/Dto/create-user-response.dto";
-import { UpdateUserDto } from "src/Dto/update-user.dto";
+import { CreateUserResponseDto } from "../Dto/create-user-response.dto";
+import { UpdateUserDto } from "../Dto/update-user.dto";
 
 @Injectable()
 export class UserService{
@@ -49,7 +49,7 @@ export class UserService{
             return {username: data.username, email: data.email} 
         }
         else{
-            throw new HttpException(`Account with ${data.email} already exists`, 409);
+            throw new HttpException(`Account with ${emailUser.email} already exists`, 409);
         }
         
     }

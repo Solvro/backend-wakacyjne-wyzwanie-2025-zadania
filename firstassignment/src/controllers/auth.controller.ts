@@ -1,8 +1,8 @@
 import {Body, Controller, HttpCode, Post} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import { LoginResponseDto } from 'src/Dto/login-response.dto';
-import { LoginDto } from 'src/Dto/login.dto';
-import { AuthService } from 'src/services/auth.service';
+import { LoginResponseDto } from '../Dto/login-response.dto';
+import { LoginDto } from '../Dto/login.dto';
+import { AuthService } from '../services/auth.service';
 
 @ApiTags("Autoryzacja")
 @Controller('budzetownik')
