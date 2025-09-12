@@ -30,7 +30,9 @@ export class ExpenseService {
       where: { id: dto.participantId },
     });
     if (participant === null) {
-      throw new NotFoundException(`Participant with id ${String(dto.participantId)} not found`)
+      throw new NotFoundException(
+        `Participant with id ${String(dto.participantId)} not found`,
+      );
     }
 
     return this.prisma.expense.create({
@@ -51,7 +53,7 @@ export class ExpenseService {
 
   async update(id: number, dto: UpdateExpenseDto) {
     await this.ensureExists(id);
-    
+
     if (dto.participantId !== undefined) {
       const participant = await this.prisma.participant.findUnique({
         where: { id: dto.participantId },
@@ -62,7 +64,7 @@ export class ExpenseService {
         );
       }
     }
-    
+
     return this.prisma.expense.update({
       where: { id },
       data: {

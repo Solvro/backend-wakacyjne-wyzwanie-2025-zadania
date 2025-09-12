@@ -25,12 +25,12 @@ export class CreateExpenseDto {
   @IsEnum(ExpenseCategory)
   category: ExpenseCategory;
 
-  @ApiPropertyOptional({example: "Train tickets" })
+  @ApiPropertyOptional({ example: "Train tickets" })
   @IsOptional()
   @IsString()
   note?: string;
 
-  @ApiPropertyOptional({example: "2025-08-24T09:00:00.000Z" })
+  @ApiPropertyOptional({ example: "2025-08-24T09:00:00.000Z" })
   @IsOptional()
   @IsDateString()
   paidAt?: string | null;

@@ -9,12 +9,12 @@ import {
   Post,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiNotFoundResponse,
-  ApiBadRequestResponse,
 } from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
