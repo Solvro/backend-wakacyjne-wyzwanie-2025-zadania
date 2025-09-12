@@ -12,7 +12,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { ParticipantModule } from "../src/participant/participant.module";
-import { cleanDatabase } from "./clean-database";
+import { cleanDatabases } from "./clean-database";
 import { seedDatabase } from "./seed-database";
 
 const prisma = new PrismaClient();
@@ -25,6 +25,7 @@ class MockAuthGuard extends AuthGuard {
   }
 }
 
+@Injectable()
 class MockRoleGuard extends RoleGuard {
   canActivate(_context: ExecutionContext): boolean {
     return true;
@@ -35,7 +36,7 @@ describe("ParticipantController (e2e)", () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
-    await cleanDatabase();
+    await cleanDatabases();
     await seedDatabase();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -44,7 +45,7 @@ describe("ParticipantController (e2e)", () => {
       .overrideGuard(RoleGuard)
       .useClass(MockRoleGuard)
       .overrideGuard(AuthGuard)
-      .useValue(MockAuthGuard)
+      .useClass(MockAuthGuard)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -92,6 +93,24 @@ describe("ParticipantController (e2e)", () => {
     });
   });
 
+  it("/participants (PATCH)", async () => {
+    const response = await request(app.getHttpServer())
+      .patch("/participants/1")
+      .send({
+        name: "janek 123",
+      })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      participant_id: 1,
+      name: "janek 123",
+      email: "janusz@example.com",
+      password: "Sigma admin 123",
+      role: Role.Admin,
+      isEnabled: true,
+    });
+  });
+
   it("/participants/:id (DELETE)", async () => {
     const id = await prisma.participant.findFirst({
       where: { email: "janusz@example.com" },
@@ -112,8 +131,8 @@ describe("ParticipantController (e2e)", () => {
       isEnabled: true,
     });
 
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     await request(app.getHttpServer())
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       .get(`/participants/${id?.participant_id}`)
       .expect(404);
   });

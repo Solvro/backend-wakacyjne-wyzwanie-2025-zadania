@@ -2,9 +2,16 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function cleanDatabase() {
-  await prisma.tripParticipant.deleteMany();
-  await prisma.expense.deleteMany();
-  await prisma.trip.deleteMany();
-  await prisma.participant.deleteMany();
+export async function cleanDatabases() {
+  const tablenames = await prisma.$queryRaw<
+    { tablename: string }[]
+  >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+  for (const { tablename } of tablenames) {
+    if (tablename !== "_prisma_migrations") {
+      await prisma.$executeRawUnsafe(
+        `TRUNCATE TABLE "${tablename}" RESTART IDENTITY CASCADE;`,
+      );
+    }
+  }
 }

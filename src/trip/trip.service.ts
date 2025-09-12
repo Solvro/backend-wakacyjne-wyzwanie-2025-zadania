@@ -14,7 +14,6 @@ export class TripService {
   async create(createTripDto: CreateTripDto): Promise<Trip> {
     return this.database.trip.create({
       data: {
-        trip_id: 1,
         name: createTripDto.name,
         date_start: createTripDto.date_start,
         date_end: createTripDto.date_end,

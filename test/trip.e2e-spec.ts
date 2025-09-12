@@ -10,7 +10,7 @@ import { App } from "supertest/types";
 import { ExecutionContext, INestApplication, Injectable } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { cleanDatabase } from "./clean-database";
+import { cleanDatabases } from "./clean-database";
 import { seedDatabase } from "./seed-database";
 
 const prisma = new PrismaClient();
@@ -23,6 +23,7 @@ class MockAuthGuard extends AuthGuard {
   }
 }
 
+@Injectable()
 class MockRoleGuard extends RoleGuard {
   canActivate(_context: ExecutionContext): boolean {
     return true;
@@ -33,7 +34,7 @@ describe("TripController (e2e)", () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
-    await cleanDatabase();
+    await cleanDatabases();
     await seedDatabase();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -71,8 +72,8 @@ describe("TripController (e2e)", () => {
       .post("/trips")
       .send({
         name: "Wycieczka 1",
-        date_start: "2025-09-09T00:00:00Z",
-        date_end: "2025-09-10T00:00:00Z",
+        date_start: "2025-09-09T00:00:00.000Z",
+        date_end: "2025-09-10T00:00:00.000Z",
         description: "Super fajowa wycieczka 1",
       })
       .expect(201);
@@ -87,12 +88,30 @@ describe("TripController (e2e)", () => {
     });
   });
 
+  it("trips (PATCH)", async () => {
+    const response = await request(app.getHttpServer())
+      .patch("/trips/1")
+      .send({
+        name: "Wycieczka do Wrocławia updejt",
+      })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      trip_id: 1,
+      name: "Wycieczka do Wrocławia updejt",
+      date_start: "2025-08-13T00:00:00.000Z",
+      date_end: "2025-08-14T00:00:00.000Z",
+      description: "wycieczka na politechnike",
+    });
+  });
+
   it("/trips/:id (DELETE)", async () => {
     const id = await prisma.trip.findFirst({
       where: { name: "Wycieczka do Wrocławia" },
     });
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
     const response = await request(app.getHttpServer())
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       .delete(`/trips/${id?.trip_id}`)
       .expect(200);
 

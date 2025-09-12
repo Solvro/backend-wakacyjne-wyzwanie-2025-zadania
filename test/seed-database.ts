@@ -11,10 +11,8 @@ export async function seedDatabase() {
       description: "wycieczka na politechnike",
     },
   });
-  const janusz = await prisma.participant.upsert({
-    where: { email: "janusz@example.com" },
-    update: {},
-    create: {
+  const janusz = await prisma.participant.create({
+    data: {
       name: "Janusz",
       email: "janusz@example.com",
       password: "Sigma admin 123",
@@ -22,7 +20,6 @@ export async function seedDatabase() {
       isEnabled: true,
     },
   });
-
   await prisma.expense.create({
     data: {
       title: "Bilet PKP",

@@ -2,7 +2,7 @@ import { DatabaseService } from "src/database/database.service";
 import { PaginationDto } from "src/pagination/pagination.dto";
 import { DEFAULT_PAGE_SIZE } from "src/pagination/utils/constants";
 
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -12,6 +12,9 @@ export class ExpenseService {
   constructor(private database: DatabaseService) {}
 
   async create(createExpenseDto: CreateExpenseDto, id: number) {
+    if (createExpenseDto.title === "" || createExpenseDto.date === "") {
+      throw new BadRequestException("Missing arguments");
+    }
     return this.database.expense.create({
       data: {
         title: createExpenseDto.title,
