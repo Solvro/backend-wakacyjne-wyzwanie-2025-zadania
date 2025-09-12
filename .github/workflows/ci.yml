@@ -43,12 +43,16 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Setup database
+        run: npx prisma generate && npm run test:prepare
+        if: always()
+
       - name: Run tests
         run: npm test
         if: always()
 
       - name: Run e2e tests
-        run: npm run test:e2e -- --runInBand
+        run: npm run test:e2e
         if: always()
 
       - name: Build
