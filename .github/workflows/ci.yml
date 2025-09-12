@@ -43,15 +43,13 @@ jobs:
         run: npm run typecheck
         if: always()
 
-      # Turned them off so i don't have to delete the tests
+      - name: Run tests
+        run: npm test
+        if: always()
 
-      # - name: Run tests
-      #   run: npm test
-      #   if: always()
-
-      #      - name: Run e2e tests
-      #        run: npm run test:e2e
-      #        if: always()
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
 
       - name: Build
         run: npm run build
