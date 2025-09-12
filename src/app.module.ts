@@ -4,6 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { DatabaseModule } from "./database/database.module";
 import { DatabaseService } from "./database/database.service";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
@@ -17,6 +18,7 @@ import { TripService } from "./trip/trip.service";
     ExpenseModule,
     TripModule,
     AuthModule,
+    DatabaseModule,
     ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [AppController, TripController],

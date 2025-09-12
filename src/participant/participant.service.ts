@@ -1,10 +1,14 @@
-import { Participant } from "@prisma/client";
-import { DatabaseService } from "src/database/database.service";
-import { PaginationDto } from "src/pagination/pagination.dto";
-import { DEFAULT_PAGE_SIZE } from "src/pagination/utils/constants";
+import { Participant, Role } from "@prisma/client";
 
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
+import { PaginationDto } from "../pagination/pagination.dto";
+import { DEFAULT_PAGE_SIZE } from "../pagination/utils/constants";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import {
   ParticipantMetadata,
@@ -18,12 +22,19 @@ export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
+    if (
+      !createParticipantDto.email ||
+      !createParticipantDto.name ||
+      !createParticipantDto.password
+    ) {
+      throw new BadRequestException("Brak wymaganych danych");
+    }
     return this.database.participant.create({
       data: {
         name: createParticipantDto.name,
         email: createParticipantDto.email,
         password: createParticipantDto.password,
-        role: "Participant",
+        role: Role.Participant,
       },
     });
   }
@@ -36,6 +47,12 @@ export class ParticipantService {
   }
 
   async findOne(participant_id: number) {
+    const record = await this.database.participant.findUnique({
+      where: { participant_id },
+    });
+    if (record == null) {
+      throw new NotFoundException();
+    }
     return this.database.participant.findUnique({ where: { participant_id } });
   }
 
@@ -57,6 +74,10 @@ export class ParticipantService {
   }
 
   async remove(participant_id: number) {
+    await this.database.tripParticipant.deleteMany({
+      where: { participant_id },
+    });
+    await this.database.expense.deleteMany({ where: { participant_id } });
     return this.database.participant.delete({ where: { participant_id } });
   }
 

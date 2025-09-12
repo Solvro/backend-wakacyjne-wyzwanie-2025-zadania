@@ -1,8 +1,6 @@
 import { Role } from "@prisma/client";
 import { compare } from "bcrypt";
 import * as bcrypt from "bcrypt";
-import { ParticipantMetadata } from "src/participant/dto/participant-metadata.dto";
-import { ParticipantService } from "src/participant/participant.service";
 
 import {
   BadRequestException,
@@ -11,6 +9,8 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
+import { ParticipantMetadata } from "../participant/dto/participant-metadata.dto";
+import { ParticipantService } from "../participant/participant.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { RegisterDto } from "./dto/register.dto";
 

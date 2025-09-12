@@ -1,8 +1,4 @@
 import { Role } from "@prisma/client";
-import { AuthGuard } from "src/auth/auth.guard";
-import { Roles } from "src/auth/roles/roles.decorator";
-import { RoleGuard } from "src/auth/roles/roles.guard";
-import { PaginationDto } from "src/pagination/pagination.dto";
 
 import {
   Body,
@@ -21,6 +17,10 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
+import { PaginationDto } from "../pagination/pagination.dto";
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { ParticipantMetadata } from "./dto/participant-metadata.dto";
