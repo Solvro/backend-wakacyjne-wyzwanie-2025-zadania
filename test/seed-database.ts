@@ -4,11 +4,6 @@ import { hash } from "bcrypt";
 const prisma = new PrismaClient();
 
 export async function seedDatabase() {
-  await prisma.expense.deleteMany();
-  await prisma.trip.deleteMany();
-  await prisma.participant.deleteMany();
-  await prisma.user.deleteMany();
-
   const salt = 10;
   const password = "password";
   const hashedPassword = await hash(password, salt);
@@ -54,7 +49,17 @@ export async function seedDatabase() {
     ],
   });
 
-  const [ala, jan] = await prisma.participant.findMany();
+  const ala = await prisma.participant.findFirst({
+    where: { firstName: "Ala" },
+  });
+
+  const jan = await prisma.participant.findFirst({
+    where: { firstName: "Jan" },
+  });
+
+  if (ala == null || jan == null) {
+    throw new Error("Nie znaleziono uczestników w bazie");
+  }
 
   await prisma.trip.createMany({
     data: [

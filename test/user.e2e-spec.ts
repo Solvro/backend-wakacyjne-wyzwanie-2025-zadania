@@ -46,7 +46,6 @@ describe("UserController (e2e)", () => {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      skipMissingProperties: true,
     };
 
     app.useGlobalPipes(new ValidationPipe(validationOptions));
@@ -56,9 +55,14 @@ describe("UserController (e2e)", () => {
     const salt = 10;
     const hashedPassword = await hash(adminUser.password, salt);
 
-    await prisma.user.create({
-      data: { ...adminUser, password: hashedPassword },
+    const admin = await prisma.user.findUnique({
+      where: { email: adminUser.email },
     });
+    if (admin === null) {
+      await prisma.user.create({
+        data: { ...adminUser, password: hashedPassword },
+      });
+    }
     const response = await request(app.getHttpServer())
       .post("/auth/login")
       .send({
@@ -67,7 +71,6 @@ describe("UserController (e2e)", () => {
       });
 
     const body = response.body as LoginResponse;
-    console.warn(body);
     adminToken = body.token;
   });
 
@@ -132,7 +135,6 @@ describe("UserController (e2e)", () => {
       },
     });
 
-    console.warn(adminToken);
     const response = await request(app.getHttpServer())
       .delete(`/user/${userEmail}`)
       .set("Authorization", `Bearer ${adminToken}`)
@@ -167,12 +169,12 @@ describe("UserController (e2e)", () => {
       .expect(400);
   });
 
-  // it('/user (POST)', () => {
-  //   return request(app.getHttpServer())
-  //     .post('/user')
-  //     .send({
-  //       name: 'Mark', // Email is required so it will also cause an error
-  //     })
-  //     .expect(400);
-  // });
+  it("/user (POST)", () => {
+    return request(app.getHttpServer())
+      .post("/user")
+      .send({
+        name: "Mark", // Email is required so it will also cause an error
+      })
+      .expect(400);
+  });
 });
