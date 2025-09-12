@@ -186,7 +186,7 @@ describe("UserController", () => {
 
     mockUserService.remove.mockResolvedValue(userMock);
 
-    const result = await controller.remove(1);
+    const result = await controller.remove(userMock.email);
 
     expect(result).toEqual(userMock);
     expect(mockUserService.remove).toHaveBeenCalled();
