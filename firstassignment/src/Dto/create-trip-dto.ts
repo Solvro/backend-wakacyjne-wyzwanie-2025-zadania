@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, Validate } from "class-validator";
-import { FutureDate } from "src/validators/future-date.validator";
+import { FutureDate } from "../validators/future-date.validator";
 export class CreateTripDto{
     
     @IsNotEmpty()

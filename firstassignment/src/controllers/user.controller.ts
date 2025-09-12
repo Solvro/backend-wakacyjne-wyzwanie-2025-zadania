@@ -1,12 +1,12 @@
 import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Request, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Role } from "generated/prisma";
-import { CreateUserDto } from "src/Dto/create-user-dto";
-import { UpdateUserDto } from "src/Dto/update-user.dto";
-import { UserMetadata } from "src/Dto/user-metadata";
-import { AuthGuard } from "src/guards/auth.guard";
-import { AuthService } from "src/services/auth.service";
-import { UserService } from "src/services/user.service";
+import { Role } from "../../generated/prisma";
+import { CreateUserDto } from "../Dto/create-user-dto";
+import { UpdateUserDto } from "../Dto/update-user.dto";
+import { UserMetadata } from "../Dto/user-metadata";
+import { AuthGuard } from "../guards/auth.guard";
+import { AuthService } from "../services/auth.service";
+import { UserService } from "../services/user.service";
 
 
 

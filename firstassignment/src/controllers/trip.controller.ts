@@ -2,11 +2,11 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TripsService } from '../services/trip.service';
 import { CreateTripDto } from '../Dto/create-trip-dto';
-import { RoleGuard } from 'src/guards/role.guard';
-import { Roles } from 'src/guards/role.decorator';
-import { Role } from 'generated/prisma';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { UpdateTripDto } from 'src/Dto/update-trip-dto';
+import { RoleGuard } from '../guards/role.guard';
+import { Roles } from '../guards/role.decorator';
+import { Role } from '../../generated/prisma';
+import { AuthGuard } from '../guards/auth.guard';
+import { UpdateTripDto } from '../Dto/update-trip-dto';
 
 @ApiTags('Wycieczki')
 @Controller('budzetownik')

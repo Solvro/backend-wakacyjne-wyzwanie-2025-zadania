@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 import { Expense } from "../../generated/prisma";
-import { CreateExpenseDto } from "src/Dto/create-expense-dto";
+import { CreateExpenseDto } from "../Dto/create-expense-dto";
 import { ParticipantsService } from "./participant.service";
-import { UpdateExpenseDto } from "src/Dto/update-expense-dto";
+import { UpdateExpenseDto } from "../Dto/update-expense-dto";
 
 @Injectable()
 export class ExpensesService{
@@ -17,7 +17,7 @@ export class ExpensesService{
         return this.prisma.expense.findMany();
     }
 
-    async createExpense(data: CreateExpenseDto){
+    async createExpense(data: CreateExpenseDto): Promise<Expense>{
         const participant = await this.participantService.participantById(data.participantId);
         if(participant === null){
             throw new NotFoundException(`Uczestnik z ID ${data.participantId.toString()} nie istnieje`);

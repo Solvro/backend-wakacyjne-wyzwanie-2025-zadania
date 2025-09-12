@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExpensesService } from '../services/expense.service';
 import { CreateExpenseDto } from '../Dto/create-expense-dto';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from '../guards/auth.guard';
 
 @ApiTags('Wydatki')
 @Controller('budzetownik')
@@ -15,7 +15,7 @@ export class ExpenseController {
     @Get('expenseById/:id')
     @ApiOperation({description: "Zwraca wydatek"})
     @ApiResponse({ status: 200, description: "Sukces!"})
-    async getWholeExpense(@Param('id') id: string){
+    async getExpenseById(@Param('id') id: string){
         return this.expenseService.expenseById(Number.parseInt(id));
     }
  
@@ -48,7 +48,7 @@ export class ExpenseController {
         return this.expenseService.createExpense(createExpenseDto);
     }
 
-    @Put('updateExpense/:id')
+    @Patch('updateExpense/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard)
     @ApiOperation({description: "Aktualizuje wydatek"})

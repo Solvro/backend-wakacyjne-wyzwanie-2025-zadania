@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 import { Participant } from "../../generated/prisma";
-import { CreateParticipantDto } from "src/Dto/create-participant-dto";
+import { CreateParticipantDto } from "../Dto/create-participant-dto";
 import { TripsService } from "./trip.service";
-import { UpdateParticipantDto } from "src/Dto/update-participant-dto";
+import { UpdateParticipantDto } from "../Dto/update-participant-dto";
 
 @Injectable()
 export class ParticipantsService{
