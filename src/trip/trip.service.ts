@@ -14,6 +14,7 @@ export class TripService {
   async create(createTripDto: CreateTripDto): Promise<Trip> {
     return this.database.trip.create({
       data: {
+        trip_id: 1,
         name: createTripDto.name,
         date_start: createTripDto.date_start,
         date_end: createTripDto.date_end,
@@ -50,6 +51,12 @@ export class TripService {
   }
 
   async remove(trip_id: number) {
+    const record = await this.database.trip.findUnique({ where: { trip_id } });
+    if (record == null) {
+      throw new NotFoundException("No record with this id");
+    }
+    await this.database.tripParticipant.deleteMany({ where: { trip_id } });
+    await this.database.expense.deleteMany({ where: { trip_id } });
     return this.database.trip.delete({ where: { trip_id } });
   }
 }

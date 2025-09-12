@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { AppModule } from "src/app.module";
 import { AuthGuard } from "src/auth/auth.guard";
 import { AuthModule } from "src/auth/auth.module";
@@ -14,6 +14,8 @@ import { Test } from "@nestjs/testing";
 import { ParticipantModule } from "../src/participant/participant.module";
 import { cleanDatabase } from "./clean-database";
 import { seedDatabase } from "./seed-database";
+
+const prisma = new PrismaClient();
 
 @Injectable()
 class MockAuthGuard extends AuthGuard {
@@ -91,16 +93,18 @@ describe("ParticipantController (e2e)", () => {
   });
 
   it("/participants/:id (DELETE)", async () => {
-    const id = 1;
+    const id = await prisma.participant.findFirst({
+      where: { email: "janusz@example.com" },
+    });
 
     //nie wiem o co mu chodzi tutaj xddd bo wydaje sie git
     const response = await request(app.getHttpServer())
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      .delete(`/participants/${id}`)
+      .delete(`/participants/${id?.participant_id}`)
       .expect(200);
 
     expect(response.body).toEqual({
-      participant_id: 1,
+      participant_id: id?.participant_id,
       name: "Janusz",
       email: "janusz@example.com",
       password: "Sigma admin 123",
@@ -109,7 +113,9 @@ describe("ParticipantController (e2e)", () => {
     });
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    await request(app.getHttpServer()).get(`/participants/${id}`).expect(404);
+    await request(app.getHttpServer())
+      .get(`/participants/${id?.participant_id}`)
+      .expect(404);
   });
 
   it("/participants (POST)", () => {

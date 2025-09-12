@@ -74,6 +74,12 @@ export class ParticipantService {
   }
 
   async remove(participant_id: number) {
+    const record = await this.database.participant.findUnique({
+      where: { participant_id },
+    });
+    if (record == null) {
+      throw new NotFoundException("No record with this id");
+    }
     await this.database.tripParticipant.deleteMany({
       where: { participant_id },
     });
