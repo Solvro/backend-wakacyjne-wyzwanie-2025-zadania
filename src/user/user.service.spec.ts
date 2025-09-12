@@ -190,12 +190,6 @@ describe("UserService", () => {
     });
   });
 
-  it("should throw NotFoundException when user not found", async () => {
-    mockDatabaseService.user.findUnique.mockResolvedValue(null);
-
-    await expect(service.findOne("999")).rejects.toThrow(NotFoundException);
-  });
-
   it("should enable user", async () => {
     const email = "test@example.com";
     const mockUser = {

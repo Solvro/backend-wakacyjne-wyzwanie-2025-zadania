@@ -190,6 +190,6 @@ describe("UserController", () => {
 
     expect(result).toEqual(userMock);
     expect(mockUserService.remove).toHaveBeenCalled();
-    expect(mockUserService.remove).toHaveBeenCalledWith(1);
+    expect(mockUserService.remove).toHaveBeenCalledWith(userMock.email);
   });
 });

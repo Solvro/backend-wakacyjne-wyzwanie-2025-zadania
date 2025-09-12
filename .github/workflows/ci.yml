@@ -68,6 +68,8 @@ jobs:
         if: always()
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+          TOKEN_PREFIX: "token_"
+          EXPIRY_TIME_MS: 600000
 
       - name: Build
         run: npm run build
