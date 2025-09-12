@@ -4,6 +4,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Controller("auth")
 @ApiTags("auth")
@@ -48,7 +49,10 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.CREATED)
   @Post("register")
-  async signUp(@Body() signUpDto: LoginDto): Promise<LoginResponseDto> {
-    return this.authService.signUp(signUpDto.email, signUpDto.password);
+  async signUp(@Body() signUpDto: RegisterDto): Promise<LoginResponseDto> {
+    return this.authService.signUp({
+      email: signUpDto.email,
+      password: signUpDto.password,
+    });
   }
 }

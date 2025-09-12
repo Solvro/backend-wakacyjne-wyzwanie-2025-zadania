@@ -14,8 +14,8 @@ export class CreateParticipantResponseDto {
   trip_id: number;
 
   @ApiProperty()
-  created_At: Date;
+  created_at: Date;
 
   @ApiProperty()
-  updated_At: Date;
+  updated_at: Date;
 }

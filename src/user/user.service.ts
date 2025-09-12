@@ -1,10 +1,10 @@
 import { User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
-// import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from "src/prisma/prisma.service";
 
 import { ConflictException, Injectable } from "@nestjs/common";
 
+// import { CreateUserDto } from './dto/create-user.dto';
+import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserResponseDto } from "./dto/create-user-response.dto";
 import { userToMetadata } from "./dto/user-metadata";
 import { UserUpdateResponseDto } from "./dto/user-update-response.dto";

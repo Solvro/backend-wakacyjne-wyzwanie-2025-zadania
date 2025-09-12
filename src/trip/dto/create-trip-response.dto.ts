@@ -11,14 +11,14 @@ export class CreateTripResponseDto {
   description?: string;
 
   @ApiProperty()
-  start_Date: Date;
+  start_date: Date;
 
   @ApiProperty()
-  end_Date: Date;
+  end_date: Date;
 
   @ApiProperty()
-  created_At: Date;
+  created_at: Date;
 
   @ApiProperty()
-  updated_At: Date;
+  updated_at: Date;
 }

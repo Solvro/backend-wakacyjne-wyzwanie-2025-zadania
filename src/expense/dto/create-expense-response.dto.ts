@@ -5,20 +5,20 @@ export class CreateExpenseResponseDto {
   id: number;
 
   @ApiProperty()
-  Name: string;
+  name: string;
 
   @ApiPropertyOptional()
-  Description?: string;
+  description?: string | null;
 
   @ApiProperty()
-  Value: number;
+  value: number;
 
   @ApiProperty()
-  Trip_id: number;
+  trip_id: number;
 
   @ApiProperty()
-  Created_At: Date;
+  created_at: Date;
 
   @ApiProperty()
-  Updated_At: Date;
+  updated_at: Date;
 }

@@ -8,8 +8,8 @@ export class CreateTripDto {
   description?: string;
 
   @ApiProperty()
-  start_Date: Date;
+  start_date: Date;
 
   @ApiProperty()
-  end_Date: Date;
+  end_date: Date;
 }

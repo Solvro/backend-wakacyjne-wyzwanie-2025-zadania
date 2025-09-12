@@ -1,13 +1,16 @@
 import { Injectable } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
+import type { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
 export class ExpenseService {
   constructor(private prisma: PrismaService) {}
-  async create(createExpenseDto: CreateExpenseDto) {
+  async create(
+    createExpenseDto: CreateExpenseDto,
+  ): Promise<CreateExpenseResponseDto> {
     return this.prisma.expense.create({
       data: {
         name: createExpenseDto.name,
@@ -27,7 +30,10 @@ export class ExpenseService {
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return this.prisma.trip.update({ where: { id }, data: updateExpenseDto });
+    return this.prisma.expense.update({
+      where: { id },
+      data: updateExpenseDto,
+    });
   }
 
   async remove(id: number) {

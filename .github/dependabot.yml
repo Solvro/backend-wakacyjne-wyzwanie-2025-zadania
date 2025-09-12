@@ -1,4 +1,4 @@
-version: 2
+npmversion: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
