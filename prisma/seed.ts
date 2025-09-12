@@ -9,7 +9,11 @@ async function main() {
   });
 
   const anna = await prisma.participant.create({
-    data: { firstName: "Anna", lastName: "Kowalska", email: "anna@example.com" },
+    data: {
+      firstName: "Anna",
+      lastName: "Kowalska",
+      email: "anna@example.com",
+    },
   });
 
   // 2) Trip + powiązania M2M (implicit) przez connect
@@ -22,6 +26,7 @@ async function main() {
       endDate: new Date("2024-07-10"),
       // participants relation removed due to schema mismatch
     },
+    include: { participants: true, expenses: true },
   });
 
   // 3) Wydatki (payer to Participant.id, tripId to Trip.id)

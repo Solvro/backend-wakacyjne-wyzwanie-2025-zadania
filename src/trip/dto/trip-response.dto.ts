@@ -48,4 +48,5 @@ export class TripResponseDto {
     format: "date-time",
   })
   createdAt: string;
+  @ApiProperty() coordinatorEmail!: string;
 }

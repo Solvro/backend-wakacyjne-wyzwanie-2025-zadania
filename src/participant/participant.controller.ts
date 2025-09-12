@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from "@nestjs/common";
@@ -71,7 +72,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.participantService.findOne(+id);
   }
 
@@ -90,7 +91,7 @@ export class ParticipantController {
     description: "Participant not found",
   })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
     return this.participantService.update(+id, updateParticipantDto);
@@ -109,7 +110,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  async remove(@Param("id") id: string) {
+  async remove(@Param("id", ParseIntPipe) id: string) {
     return this.participantService.remove(+id);
   }
 }
