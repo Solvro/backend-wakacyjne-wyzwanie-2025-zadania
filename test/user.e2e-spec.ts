@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { hash } from "bcrypt";
 import request from "supertest";
 import type { App } from "supertest/types";
@@ -8,12 +8,13 @@ import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { DatabaseService } from "../src/database/database.service";
 import { UserModule } from "../src/user/user.module";
 import { AppModule } from "./../src/app.module";
 import { cleanDatabase } from "./clean-database";
 import { seedDatabase } from "./seed-database";
 
-const prisma = new PrismaClient();
+let prisma: DatabaseService;
 let adminToken: string;
 
 describe("UserController (e2e)", () => {
@@ -33,12 +34,13 @@ describe("UserController (e2e)", () => {
   }
 
   beforeEach(async () => {
-    await cleanDatabase(); // wipe the testing database using special script
-    await seedDatabase(); // add some data to database
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UserModule, AppModule],
     }).compile();
+
+    prisma = moduleFixture.get(DatabaseService);
+    await cleanDatabase(prisma); // wipe the testing database using special script
+    await seedDatabase(prisma); // add some data to database
 
     app = moduleFixture.createNestApplication();
 

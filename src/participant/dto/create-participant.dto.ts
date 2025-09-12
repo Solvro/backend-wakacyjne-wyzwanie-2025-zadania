@@ -4,27 +4,31 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  Length,
   Max,
   Min,
+  Validate,
 } from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { NoSpaces } from "../../user/validation/no-spaces.validator";
+
 export class CreateParticipantDto {
   @ApiProperty()
   @IsString()
-  @Min(3)
-  @Max(25)
+  @Length(3)
   firstName!: string;
 
   @ApiProperty()
   @IsString()
-  @Min(3)
+  @Length(3)
   lastName!: string;
 
   @ApiProperty()
-  @Min(3)
+  @Length(3)
   @IsEmail()
+  @Validate(NoSpaces)
   email!: string;
 
   @ApiProperty()

@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import type { DatabaseService } from "../src/database/database.service";
 
-const prisma = new PrismaClient();
-
-export async function cleanDatabase() {
+export async function cleanDatabase(prisma: DatabaseService) {
   const tablenames = await prisma.$queryRaw<
     { tablename: string }[]
   >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;

@@ -1,9 +1,9 @@
-import { PrismaClient, Role, Sex } from "@prisma/client";
+import { Role, Sex } from "@prisma/client";
 import { hash } from "bcrypt";
 
-const prisma = new PrismaClient();
+import type { DatabaseService } from "../src/database/database.service";
 
-export async function seedDatabase() {
+export async function seedDatabase(prisma: DatabaseService) {
   const salt = 10;
   const password = "password";
   const hashedPassword = await hash(password, salt);
@@ -28,7 +28,17 @@ export async function seedDatabase() {
     skipDuplicates: true,
   });
 
-  const [user1, user2] = await prisma.user.findMany();
+  const user1 = await prisma.user.findFirst({
+    where: { email: "ala.makota@example.com" },
+  });
+
+  const user2 = await prisma.user.findFirst({
+    where: { email: "barka@gmail.com" },
+  });
+
+  if (user1 === null || user2 === null) {
+    throw new Error("Users not found");
+  }
   await prisma.participant.createMany({
     data: [
       {
@@ -58,7 +68,9 @@ export async function seedDatabase() {
   });
 
   if (ala == null || jan == null) {
-    throw new Error("Nie znaleziono uczestników w bazie");
+    console.warn(ala);
+    console.warn(jan);
+    throw new Error("Participants not found");
   }
 
   await prisma.trip.createMany({
@@ -78,7 +90,14 @@ export async function seedDatabase() {
     ],
   });
 
-  const [trip] = await prisma.trip.findMany();
+  const trip = await prisma.trip.findFirst({
+    where: { destination: "Japonia" },
+  });
+
+  if (trip === null) {
+    throw new Error("Trip not found");
+  }
+
   await prisma.expense.createMany({
     data: [
       {
@@ -94,12 +113,3 @@ export async function seedDatabase() {
     ],
   });
 }
-
-seedDatabase()
-  .catch((error: unknown) => {
-    console.error(error);
-    throw new Error("Błąd w głównej funkcji");
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
