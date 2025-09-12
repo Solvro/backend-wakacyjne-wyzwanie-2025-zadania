@@ -1,3 +1,8 @@
+import { Role } from "@prisma/client";
+import { AuthGuard } from "src/auth/auth.guard";
+import { Roles } from "src/auth/roles/role.decorator";
+import { RoleGuard } from "src/auth/roles/role.guard";
+
 import {
   Body,
   Controller,
@@ -6,15 +11,18 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
 
+@ApiTags("trip")
 @Controller("trip")
 export class TripController {
   constructor(private readonly tripService: TripService) {}
@@ -30,6 +38,8 @@ export class TripController {
     description: "The trip has been created.",
     type: CreateTripDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.GUIDE, Role.ADMIN)
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
@@ -60,7 +70,7 @@ export class TripController {
     description: "The trip with the specified ID.",
     type: CreateTripDto,
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.tripService.findOne(+id);
   }
 
@@ -75,7 +85,12 @@ export class TripController {
     description: "The trip has been updated.",
     type: UpdateTripDto,
   })
-  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.GUIDE, Role.ADMIN)
+  async update(
+    @Param("id", ParseIntPipe) id: string,
+    @Body() updateTripDto: UpdateTripDto,
+  ) {
     return this.tripService.update(+id, updateTripDto);
   }
 
@@ -86,7 +101,9 @@ export class TripController {
     description: "Delete a trip by its ID.",
   })
   @ApiResponse({ status: 204, description: "The trip has been deleted." })
-  async remove(@Param("id") id: string) {
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.GUIDE, Role.ADMIN)
+  async remove(@Param("id", ParseIntPipe) id: string) {
     return this.tripService.remove(+id);
   }
 }

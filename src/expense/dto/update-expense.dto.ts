@@ -5,6 +5,6 @@ import { CreateExpenseDto } from "./create-expense.dto";
 export class UpdateExpenseDto extends PartialType(CreateExpenseDto) {
   amount?: number;
   description?: string;
-  createdAt?: string;
+  createdAt?: Date;
   tripId?: number;
 }
