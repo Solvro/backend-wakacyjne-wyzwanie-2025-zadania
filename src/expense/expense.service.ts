@@ -92,17 +92,17 @@ export class ExpenseService {
   }
 
   private async ensureMembership(tripId: number, participantId: number) {
-  const count = await this.prisma.trip.count({
-    where: {
-      id: tripId,
-      participants: { some: { id: participantId } },
-    },
-  });
+    const count = await this.prisma.trip.count({
+      where: {
+        id: tripId,
+        participants: { some: { id: participantId } },
+      },
+    });
 
-  if (count === 0) {
-    throw new BadRequestException(
-      `Participant ${String(participantId)} is not a member of Trip ${String(tripId)}`,
-    );
+    if (count === 0) {
+      throw new BadRequestException(
+        `Participant ${String(participantId)} is not a member of Trip ${String(tripId)}`,
+      );
+    }
   }
-}
 }

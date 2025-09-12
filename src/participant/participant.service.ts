@@ -1,6 +1,10 @@
 import { DatabaseService } from "src/database/database.service";
 
-import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -29,7 +33,7 @@ export class ParticipantService {
     const p = await this.prisma.participant.findUnique({
       where: { id },
       include: {
-        trips: true,        // zamiast memberships -> trips
+        trips: true, // zamiast memberships -> trips
         paidExpenses: true,
       },
     });
@@ -69,8 +73,6 @@ export class ParticipantService {
     });
   }
 
-
-
   async joinTrip(participantId: number, tripId: number) {
     // 1) istnienie obu encji
     await this.ensureParticipant(participantId);
@@ -96,11 +98,13 @@ export class ParticipantService {
     });
   }
 
-
   async leaveTrip(participantId: number, tripId: number) {
     // sprawdź, czy obie encje istnieją
     await this.ensureParticipant(participantId);
-    const trip = await this.prisma.trip.findUnique({ where: { id: tripId }, select: { id: true } });
+    const trip = await this.prisma.trip.findUnique({
+      where: { id: tripId },
+      select: { id: true },
+    });
     if (trip == null) {
       throw new NotFoundException(`Trip ${String(tripId)} not found`);
     }
@@ -110,7 +114,9 @@ export class ParticipantService {
       where: { id: tripId, participants: { some: { id: participantId } } },
     });
     if (isMember === 0) {
-      throw new BadRequestException(`Participant ${String(participantId)} is not a member of Trip ${String(tripId)}`);
+      throw new BadRequestException(
+        `Participant ${String(participantId)} is not a member of Trip ${String(tripId)}`,
+      );
     }
 
     // odłącz uczestnika od tripa
