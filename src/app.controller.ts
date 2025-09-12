@@ -1,5 +1,10 @@
 import { Controller, Get, HttpCode } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags, ApiNotFoundResponse } from "@nestjs/swagger";
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { AppService } from "./app.service";
 
