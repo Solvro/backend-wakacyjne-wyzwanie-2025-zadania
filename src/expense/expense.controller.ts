@@ -16,7 +16,12 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -38,6 +43,7 @@ export class ExpenseController {
     description: "The expense has been created.",
     type: CreateExpenseDto,
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.GUIDE, Role.ADMIN)
   async create(@Body() createExpenseDto: CreateExpenseDto) {
@@ -83,6 +89,7 @@ export class ExpenseController {
     description: "The expense has been updated.",
     type: UpdateExpenseDto,
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.GUIDE, Role.ADMIN)
   async update(
@@ -103,6 +110,7 @@ export class ExpenseController {
     description: "The expense has been deleted.",
     type: CreateExpenseDto,
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.GUIDE, Role.ADMIN)
   async remove(@Param("id", ParseIntPipe) id: string) {

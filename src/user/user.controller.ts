@@ -12,7 +12,12 @@ import {
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { Roles } from "../auth/roles/role.decorator";
@@ -34,6 +39,7 @@ export class UserController {
     status: 200,
     description: "Field(s) updated",
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Patch(":email")
@@ -78,6 +84,7 @@ export class UserController {
   @UseGuards(AuthGuard, RoleGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post("disable/:email")
+  @ApiBearerAuth()
   @Roles(Role.ADMIN)
   async disableUser(@Param("email") email: string) {
     return this.userService.disableAccount(email);
@@ -101,6 +108,7 @@ export class UserController {
   @UseGuards(AuthGuard, RoleGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post("enable/:email")
+  @ApiBearerAuth()
   @Roles(Role.ADMIN)
   async enableUser(@Param("email") email: string) {
     return this.userService.enableAccount(email);

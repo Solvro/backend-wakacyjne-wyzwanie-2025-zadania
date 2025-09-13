@@ -16,7 +16,12 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -38,6 +43,7 @@ export class TripController {
     description: "The trip has been created.",
     type: CreateTripDto,
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.GUIDE, Role.ADMIN)
   async create(@Body() createTripDto: CreateTripDto) {
@@ -85,6 +91,7 @@ export class TripController {
     description: "The trip has been updated.",
     type: UpdateTripDto,
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.GUIDE, Role.ADMIN)
   async update(
@@ -101,6 +108,7 @@ export class TripController {
     description: "Delete a trip by its ID.",
   })
   @ApiResponse({ status: 204, description: "The trip has been deleted." })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.GUIDE, Role.ADMIN)
   async remove(@Param("id", ParseIntPipe) id: string) {
