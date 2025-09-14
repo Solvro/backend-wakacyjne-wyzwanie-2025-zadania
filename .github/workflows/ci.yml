@@ -8,6 +8,17 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: wakacyjne_wyzwanie_2025
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,10 +53,12 @@ jobs:
       - name: Run tests
         run: npm test
         if: always()
+	env: DATABASE_URL: "postgresql://postgres:admin@localhost:5432/wakacyjne_wyzwanie_2025"
 
       - name: Run e2e tests
         run: npm run test:e2e
         if: always()
+	env: DATABASE_URL: "postgresql://postgres:admin@localhost:5432/wakacyjne_wyzwanie_2025"
 
       - name: Build
         run: npm run build
