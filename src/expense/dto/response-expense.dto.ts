@@ -1,11 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ResponseExpenseDto {
-       @ApiProperty()
-       trip_id: number;
-       @ApiProperty()
-       desc:    string;
-       @ApiProperty()
-       price:   number;
-
+  @ApiProperty()
+  trip_id: number;
+  @ApiProperty()
+  desc: string;
+  @ApiProperty()
+  price: number;
 }
