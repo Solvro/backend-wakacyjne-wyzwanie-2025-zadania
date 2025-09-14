@@ -1,15 +1,36 @@
-import { AccountType, PrismaClient } from "@prisma/client";
+import { AccountType, PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
   await prisma.participant.createMany({
     data: [
-      { name: "Jan", surname: "Nowak", account_type: AccountType.BASIC },
+      {
+        name: "Jan",
+        surname: "Nowak",
+        account_type: AccountType.BASIC,
+        email: "JanNowak@example.com",
+        password:
+          "$2b$10$f5pQ/1yvPBt2JeixhxJG4e24MewHrb..j8VcSzPVZIHCfhdt4ny26",
+        role: Role.COORDINATOR,
+      },
       {
         name: "Katarzyna",
         surname: "Kowalska",
         account_type: AccountType.PREMIUM,
+        email: "KatarzynaKowalska@example.com",
+        password:
+          "$2b$10$f5pQ/1yvPBt2JeixhxJG4e24MewHrb..j8VcSzPVZIHCfhdt4ny26",
+        role: Role.USER,
+      },
+      {
+        name: "Marek",
+        surname: "Kowal",
+        account_type: AccountType.TRIAL,
+        email: "MarekKowal@example.com",
+        password:
+          "$2b$10$f5pQ/1yvPBt2JeixhxJG4e24MewHrb..j8VcSzPVZIHCfhdt4ny26",
+        role: Role.ADMIN,
       },
     ],
   });
