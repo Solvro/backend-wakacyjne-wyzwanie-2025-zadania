@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -7,11 +9,15 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/role/role.decorator";
+import { RoleGuard } from "../auth/role/role.guard";
 import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
-import { PersonResponseDto } from "../persons/dto/person-response.dto";
+import { UserResponseDto } from "../users/dto/user-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripResponseDto } from "./dto/trip-response.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -28,6 +34,8 @@ export class TripsController {
     description: "Trip created successfully.",
     type: TripResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Post()
   async create(@Body() dto: CreateTripDto): Promise<TripResponseDto> {
     return await this.service.create(dto);
@@ -80,6 +88,8 @@ export class TripsController {
     type: TripResponseDto,
   })
   @ApiResponse({ status: 404, description: "Trip not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Delete(":id")
   async remove(
     @Param("id", ParseIntPipe) id: number,
@@ -91,12 +101,14 @@ export class TripsController {
   @ApiResponse({
     status: 200,
     description: "List of participants.",
-    type: [PersonResponseDto],
+    type: [UserResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Get(":id/participants")
   async getParticipants(
     @Param("id", ParseIntPipe) id: number,
-  ): Promise<PersonResponseDto[]> {
+  ): Promise<UserResponseDto[]> {
     return await this.service.getParticipants(id);
   }
 
@@ -106,6 +118,8 @@ export class TripsController {
     description: "List of expenses.",
     type: [ExpenseResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Get(":id/expenses")
   async getExpenses(
     @Param("id", ParseIntPipe) id: number,

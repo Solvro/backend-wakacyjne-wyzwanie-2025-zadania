@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 
 import { ExpenseResponseDto } from "../expenses/dto/expense-response.dto";
-import { PersonResponseDto } from "../persons/dto/person-response.dto";
 import { PrismaService } from "../prisma/prisma.service";
+import { UserResponseDto } from "../users/dto/user-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripResponseDto } from "./dto/trip-response.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -31,13 +31,13 @@ export class TripsService {
     return await this.prisma.trip.delete({ where: { id } });
   }
 
-  async getParticipants(id: number): Promise<PersonResponseDto[]> {
+  async getParticipants(id: number): Promise<UserResponseDto[]> {
     const participants = await this.prisma.participant.findMany({
       where: { trip_id: id },
     });
-    const personIds = participants.map((p) => p.person_id);
-    return await this.prisma.person.findMany({
-      where: { id: { in: personIds } },
+    const userEmails = participants.map((p) => p.user_email);
+    return await this.prisma.user.findMany({
+      where: { email: { in: userEmails } },
     });
   }
 

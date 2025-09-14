@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -7,9 +9,13 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/role/role.decorator";
+import { RoleGuard } from "../auth/role/role.guard";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { ExpenseResponseDto } from "./dto/expense-response.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -26,6 +32,8 @@ export class ExpensesController {
     description: "Expense created successfully.",
     type: ExpenseResponseDto,
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Post()
   async create(@Body() dto: CreateExpenseDto): Promise<ExpenseResponseDto> {
     return await this.service.create(dto);
@@ -37,6 +45,8 @@ export class ExpensesController {
     description: "List of all expenses.",
     type: [ExpenseResponseDto],
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Get()
   async findAll(): Promise<ExpenseResponseDto[]> {
     return await this.service.findAll();
@@ -49,6 +59,8 @@ export class ExpensesController {
     type: ExpenseResponseDto,
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Get(":id")
   async findOne(
     @Param("id", ParseIntPipe) id: number,
@@ -63,6 +75,8 @@ export class ExpensesController {
     type: ExpenseResponseDto,
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Delete(":id")
   async remove(
     @Param("id", ParseIntPipe) id: number,
@@ -77,6 +91,8 @@ export class ExpensesController {
     type: ExpenseResponseDto,
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @Patch(":id")
   async update(
     @Param("id", ParseIntPipe) id: number,
