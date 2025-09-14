@@ -1,14 +1,13 @@
-import { DatabaseService } from "src/database/database.service";
-
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 
 @Injectable()
 export class ParticipantService {
   constructor(private database: DatabaseService) {}
   async create(createParticipantDto: CreateParticipantDto) {
-    this.database.user
+    await this.database.user
       .findFirstOrThrow({
         where: { email: createParticipantDto.userEmail },
       })
@@ -17,7 +16,7 @@ export class ParticipantService {
           `User with email ${createParticipantDto.userEmail} not found`,
         );
       });
-    this.database.trip
+    await this.database.trip
       .findFirstOrThrow({
         where: { id: createParticipantDto.tripId },
       })
