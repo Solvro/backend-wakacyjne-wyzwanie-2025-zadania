@@ -7,7 +7,6 @@ import { ParticipantService } from "./participant.service";
 
 describe("ParticipantService", () => {
   let service: ParticipantService;
-  let database: DatabaseService;
 
   const mockDatabaseService = {
     user: {
@@ -33,7 +32,6 @@ describe("ParticipantService", () => {
       .compile();
 
     service = module.get<ParticipantService>(ParticipantService);
-    database = module.get<DatabaseService>(DatabaseService);
   });
 
   afterEach(() => {
@@ -44,15 +42,15 @@ describe("ParticipantService", () => {
     it("should create a participant when user and trip exist", async () => {
       const dto = { userEmail: "test@example.com", tripId: 1 };
 
-      database.user.findFirstOrThrow.mockResolvedValue({
+      mockDatabaseService.user.findFirstOrThrow.mockResolvedValue({
         id: 10,
         email: dto.userEmail,
       });
-      database.trip.findFirstOrThrow.mockResolvedValue({
+      mockDatabaseService.trip.findFirstOrThrow.mockResolvedValue({
         id: dto.tripId,
         title: "Trip",
       });
-      database.participant.create.mockResolvedValue({
+      mockDatabaseService.participant.create.mockResolvedValue({
         id: 1,
         ...dto,
       });
@@ -60,13 +58,13 @@ describe("ParticipantService", () => {
       const result = await service.create(dto);
 
       expect(result).toEqual({ id: 1, ...dto });
-      expect(database.user.findFirstOrThrow).toHaveBeenCalledWith({
+      expect(mockDatabaseService.user.findFirstOrThrow).toHaveBeenCalledWith({
         where: { email: dto.userEmail },
       });
-      expect(database.trip.findFirstOrThrow).toHaveBeenCalledWith({
+      expect(mockDatabaseService.trip.findFirstOrThrow).toHaveBeenCalledWith({
         where: { id: dto.tripId },
       });
-      expect(database.participant.create).toHaveBeenCalledWith({
+      expect(mockDatabaseService.participant.create).toHaveBeenCalledWith({
         data: dto,
       });
     });
@@ -74,7 +72,9 @@ describe("ParticipantService", () => {
     it("should throw NotFoundException if user does not exist", async () => {
       const dto = { userEmail: "missing@example.com", tripId: 1 };
 
-      database.user.findFirstOrThrow.mockRejectedValue(new Error("Not found"));
+      mockDatabaseService.user.findFirstOrThrow.mockRejectedValue(
+        new Error("Not found"),
+      );
 
       await expect(service.create(dto)).rejects.toThrow(NotFoundException);
     });
@@ -82,11 +82,13 @@ describe("ParticipantService", () => {
     it("should throw NotFoundException if trip does not exist", async () => {
       const dto = { userEmail: "test@example.com", tripId: 99 };
 
-      database.user.findFirstOrThrow.mockResolvedValue({
+      mockDatabaseService.user.findFirstOrThrow.mockResolvedValue({
         id: 1,
         email: dto.userEmail,
       });
-      database.trip.findFirstOrThrow.mockRejectedValue(new Error("Not found"));
+      mockDatabaseService.trip.findFirstOrThrow.mockRejectedValue(
+        new Error("Not found"),
+      );
 
       await expect(service.create(dto)).rejects.toThrow(NotFoundException);
     });
@@ -95,24 +97,28 @@ describe("ParticipantService", () => {
   describe("findAll", () => {
     it("should return all participants", async () => {
       const mockParticipants = [{ id: 1 }, { id: 2 }];
-      database.participant.findMany.mockResolvedValue(mockParticipants);
+      mockDatabaseService.participant.findMany.mockResolvedValue(
+        mockParticipants,
+      );
 
       const result = await service.findAll();
 
       expect(result).toEqual(mockParticipants);
-      expect(database.participant.findMany).toHaveBeenCalledTimes(1);
+      expect(mockDatabaseService.participant.findMany).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("findOne", () => {
     it("should return one participant", async () => {
       const mockParticipant = { id: 1, userEmail: "test@example.com" };
-      database.participant.findUnique.mockResolvedValue(mockParticipant);
+      mockDatabaseService.participant.findUnique.mockResolvedValue(
+        mockParticipant,
+      );
 
       const result = await service.findOne(1);
 
       expect(result).toEqual(mockParticipant);
-      expect(database.participant.findUnique).toHaveBeenCalledWith({
+      expect(mockDatabaseService.participant.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
       });
     });
@@ -121,12 +127,12 @@ describe("ParticipantService", () => {
   describe("remove", () => {
     it("should remove a participant", async () => {
       const mockParticipant = { id: 1, userEmail: "test@example.com" };
-      database.participant.delete.mockResolvedValue(mockParticipant);
+      mockDatabaseService.participant.delete.mockResolvedValue(mockParticipant);
 
       const result = await service.remove(1);
 
       expect(result).toEqual(mockParticipant);
-      expect(database.participant.delete).toHaveBeenCalledWith({
+      expect(mockDatabaseService.participant.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
     });

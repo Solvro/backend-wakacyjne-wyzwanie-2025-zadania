@@ -18,6 +18,16 @@ describe("participant service", () => {
       })),
       delete: jest.fn(),
     },
+    user: {
+      findFirstOrThrow: jest.fn().mockResolvedValue({
+        email: "email",
+      }),
+    },
+    trip: {
+      findFirstOrThrow: jest.fn().mockResolvedValue({
+        id: 1,
+      }),
+    },
   };
 
   beforeEach(async () => {
