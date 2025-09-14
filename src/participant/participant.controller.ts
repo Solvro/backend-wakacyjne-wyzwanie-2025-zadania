@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -6,11 +8,21 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateParticipantResponseDto } from "./dto/create-participant-response.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -22,6 +34,9 @@ export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @ApiBearerAuth("access-token")
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a participant",
@@ -65,11 +80,14 @@ export class ParticipantController {
     status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
-  async findOne(@Param("id") id: string) {
-    return this.participantService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.findOne(id);
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Update participant details",
     description: "Modify information for an existing participant",
@@ -84,13 +102,16 @@ export class ParticipantController {
     description: "Participant not found",
   })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
-    return this.participantService.update(+id, updateParticipantDto);
+    return this.participantService.update(id, updateParticipantDto);
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Delete a participant",
     description:
@@ -104,7 +125,7 @@ export class ParticipantController {
     status: HttpStatus.NOT_FOUND,
     description: "Participant not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.participantService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.participantService.remove(id);
   }
 }

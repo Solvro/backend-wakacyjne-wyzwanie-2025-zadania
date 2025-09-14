@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CORS Test</title>
+  </head>
+  <body>
+    <h1>CORS Testing</h1>
+    <button id="sendRequest">Send Test Request</button>
+
+    <script>
+      document
+        .getElementById("sendRequest")
+        .addEventListener("click", async () => {
+          try {
+            const response = await fetch(
+              "http://localhost:3000/wakacyjne/backend",
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            const data = await response.json();
+            console.log("Response:", data);
+
+            if (response.ok) {
+              alert("Request succeeded: " + JSON.stringify(data));
+            } else {
+              alert("Request failed: " + response.statusText);
+            }
+          } catch (err) {
+            console.error("Error:", err);
+            alert("Request failed: " + err.message);
+          }
+        });
+    </script>
+  </body>
+</html>

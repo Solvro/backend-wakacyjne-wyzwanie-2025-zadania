@@ -21,6 +21,8 @@ model Participant {
   lastName      String  @db.VarChar(255)
   address       String  @db.VarChar(255)
   phoneNumber   String? @db.VarChar(20)
+  email         String
+  User          User     @relation(fields: [email], references: [email])
   sex           Sex?
   trips         Trip[]
 }
@@ -31,7 +33,7 @@ model Trip {
   destination   String      @db.VarChar(255)
   startDate     DateTime    @db.Timestamp(6)
   endDate       DateTime    @db.Timestamp(6)
-  expenses       Expense[]
+  expenses      Expense[]
   participant   Participant @relation(fields: [participantId], references: [participantId], onDelete: NoAction, onUpdate: NoAction, map: "participant_constraint")
 }
 
@@ -39,4 +41,21 @@ enum Sex {
   MALE
   FEMALE
   OTHER
+}
+
+enum Role {
+  USER
+  ADMIN
+  COORDINATOR
+}
+
+
+model User {
+  email       String        @id
+  aboutMe     String?
+  password    String
+  role        Role
+  isEnabled   Boolean
+  name        String?
+  participant Participant[]
 }

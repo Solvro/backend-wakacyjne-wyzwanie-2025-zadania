@@ -1,4 +1,5 @@
-import { PrismaClient, Sex } from "@prisma/client";
+import { PrismaClient, Role, Sex } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -6,7 +7,37 @@ async function main() {
   await prisma.expense.deleteMany();
   await prisma.trip.deleteMany();
   await prisma.participant.deleteMany();
+  await prisma.user.deleteMany();
 
+  const salt = 10;
+  const password = "password";
+  const hashedPassword = await hash(password, salt);
+
+  await prisma.user.createMany({
+    data: [
+      {
+        email: "ala.makota@example.com",
+        name: "Ala Makota",
+        password: hashedPassword,
+        role: Role.ADMIN,
+        isEnabled: true,
+      },
+      {
+        email: "barka@gmail.com",
+        name: "Jan Paweł",
+        password: hashedPassword,
+        role: Role.COORDINATOR,
+        isEnabled: true,
+      },
+      {
+        email: "marian@gmail.com",
+        name: "Jaś Melon",
+        password: hashedPassword,
+        role: Role.USER,
+        isEnabled: false,
+      },
+    ],
+  });
   await prisma.participant.createMany({
     data: [
       {
@@ -14,18 +45,21 @@ async function main() {
         lastName: "Makota",
         address: "Zielona 3",
         phoneNumber: "2137",
+        email: "ala.makota@example.com",
         sex: Sex.FEMALE,
       },
       {
         firstName: "Jan",
         lastName: "Paweł",
         address: "Kremówkowa 2",
+        email: "barka@gmail.com",
         sex: Sex.MALE,
       },
       {
         firstName: "Jaś",
         lastName: "Melon",
         address: "Zielona 3",
+        email: "marian@gmail.com",
         phoneNumber: "3123",
       },
     ],

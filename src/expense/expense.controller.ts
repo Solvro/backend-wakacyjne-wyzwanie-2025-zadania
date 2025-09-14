@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -6,11 +8,21 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -22,6 +34,9 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a expense",
@@ -64,11 +79,14 @@ export class ExpenseController {
     status: HttpStatus.NOT_FOUND,
     description: "Expense not found (lucky you)",
   })
-  async findOne(@Param("id") id: string) {
-    return this.expenseService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.findOne(id);
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Update expense details",
     description: "Modify information for an existing expense",
@@ -83,13 +101,16 @@ export class ExpenseController {
     description: "Expense not found",
   })
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
-    return this.expenseService.update(+id, updateExpenseDto);
+    return this.expenseService.update(id, updateExpenseDto);
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Delete a expense",
     description: "Remove a expense and all its associated data from the system",
@@ -102,7 +123,7 @@ export class ExpenseController {
     status: HttpStatus.NOT_FOUND,
     description: "Expense not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.expenseService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.expenseService.remove(id);
   }
 }

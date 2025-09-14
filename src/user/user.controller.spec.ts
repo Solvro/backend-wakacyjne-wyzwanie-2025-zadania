@@ -2,13 +2,13 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { AuthService } from "../auth/auth.service";
-import { TripController } from "./trip.controller";
-import { TripService } from "./trip.service";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
 
-describe("TripController", () => {
-  let controller: TripController;
+describe("UserController", () => {
+  let controller: UserController;
 
-  const mockTripService = {
+  const mockUserService = {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
@@ -20,17 +20,16 @@ describe("TripController", () => {
     login: jest.fn(),
     register: jest.fn(),
   };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [TripController],
+      controllers: [UserController],
       providers: [
-        { provide: TripService, useValue: mockTripService },
+        { provide: UserService, useValue: mockUserService },
         { provide: AuthService, useValue: mockAuthService },
       ],
     }).compile();
 
-    controller = module.get<TripController>(TripController);
+    controller = module.get<UserController>(UserController);
   });
 
   it("should be defined", () => {

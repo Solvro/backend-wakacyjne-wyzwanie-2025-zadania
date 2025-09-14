@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -6,11 +8,21 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/roles.decorator";
+import { RoleGuard } from "../auth/roles/roles.guard";
 import { CreateTripResponseDto } from "./dto/create-trip-response.dto";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
@@ -23,6 +35,9 @@ export class TripController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Create a trip",
     description:
@@ -65,11 +80,14 @@ export class TripController {
     status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
-  async findOne(@Param("id") id: string) {
-    return this.tripService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.findOne(id);
   }
 
   @Patch(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Update trip details",
     description: "Modify information for an existing trip",
@@ -83,11 +101,17 @@ export class TripController {
     status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
-  async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripService.update(+id, updateTripDto);
+  async update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateTripDto: UpdateTripDto,
+  ) {
+    return this.tripService.update(id, updateTripDto);
   }
 
   @Delete(":id")
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
+  @ApiBearerAuth("access-token")
   @ApiOperation({
     summary: "Delete a trip",
     description: "Remove a trip and all its associated data from the system",
@@ -100,7 +124,7 @@ export class TripController {
     status: HttpStatus.NOT_FOUND,
     description: "Trip not found",
   })
-  async remove(@Param("id") id: string) {
-    return this.tripService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number) {
+    return this.tripService.remove(id);
   }
 }
