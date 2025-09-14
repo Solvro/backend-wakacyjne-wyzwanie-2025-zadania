@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
-export type HelloResponseDTO = {
+export interface HelloResponseDTO {
   title: string;
   quote: string;
-};
+}
 
 @Injectable()
 export class AppService {
