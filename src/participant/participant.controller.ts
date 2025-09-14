@@ -10,6 +10,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -60,7 +61,7 @@ export class ParticipantController {
   })
   @ApiBearerAuth()
   @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.GUIDE)
+  @Roles(Role.GUIDE, Role.ADMIN)
   async findAll() {
     return this.participantService.findAll();
   }
@@ -91,6 +92,9 @@ export class ParticipantController {
     },
   ) {
     const participant = await this.participantService.findOne(+id);
+    if (participant === null) {
+      throw new NotFoundException("Participant not found");
+    }
     if (
       request.user.role === Role.ADMIN ||
       request.user.role === Role.GUIDE ||
@@ -125,6 +129,9 @@ export class ParticipantController {
     },
   ) {
     const participant = await this.participantService.findOne(+id);
+    if (participant === null) {
+      throw new NotFoundException("Participant not found");
+    }
     if (
       request.user.role === Role.ADMIN ||
       request.user.role === Role.GUIDE ||
