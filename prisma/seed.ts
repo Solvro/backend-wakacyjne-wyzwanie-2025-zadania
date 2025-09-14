@@ -1,5 +1,5 @@
 //import { PrismaClient } from '../generated/prisma';
-import { PrismaClient } from "@prisma/client";
+import { Gender, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,7 +8,7 @@ async function main() {
 
   const trp = await prisma.trip.create({
     data: {
-      startDate: new Date("2025-08-01T12:34:56Z"),
+      date_start: new Date("2025-08-01T12:34:56Z"),
       participant_id: 1,
       destination: "Paris",
     },
@@ -20,7 +20,7 @@ async function main() {
       second_name: "K",
       last_name: "Kowalski",
       email: "emao",
-      gender: "MALE",
+      gender: Gender.MALE,
     },
   });
 

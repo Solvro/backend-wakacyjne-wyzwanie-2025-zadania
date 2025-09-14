@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+//  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -35,13 +35,13 @@ model Trip {
   destination 	 String
   expense        Expense[]
   date_start     DateTime
-  user           Participant @relation(fields: [participant_id], references: [id])
+  user           Participant @relation(onDelete: Cascade, fields: [participant_id], references: [id])
 }
 
 model Expense {
   id      Int   @id @default(autoincrement())
   trip_id Int
   desc	  String
-  trip    Trip  @relation(fields: [trip_id], references: [id])
+  trip    Trip  @relation(onDelete: Cascade, fields: [trip_id], references: [id])
   price   Float
 }
