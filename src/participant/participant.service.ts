@@ -26,7 +26,7 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    const participant: unknown = this.database.participant.findUnique({
+    const participant: unknown = await this.database.participant.findUnique({
       where: { id },
     });
     if (participant == null) {

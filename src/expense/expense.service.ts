@@ -24,7 +24,7 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    const expense: unknown = this.database.expense.findUnique({
+    const expense: unknown = await this.database.expense.findUnique({
       where: { id },
     });
     if (expense == null) {
