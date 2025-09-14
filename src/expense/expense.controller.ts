@@ -86,7 +86,6 @@ export class ExpenseController {
   }
 
   @Get(":id")
-  @Get(":id")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get expense by ID",
@@ -143,6 +142,7 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
+  @UseGuards(AuthGuard)
   @ApiBearerAuth("access-token")
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.expenseService.remove(id);

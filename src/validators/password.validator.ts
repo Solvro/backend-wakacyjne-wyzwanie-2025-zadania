@@ -6,7 +6,7 @@ import type {
 } from "class-validator";
 
 @ValidatorConstraint({ name: "NicePassword", async: false })
-class NicePasswordConstraint implements ValidatorConstraintInterface {
+export class NicePasswordConstraint implements ValidatorConstraintInterface {
   validate(password: string, _arguments_: ValidationArguments): boolean {
     if (!password) {
       return false;

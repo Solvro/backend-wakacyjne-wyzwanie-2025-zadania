@@ -86,9 +86,6 @@ export class ParticipantController {
     required: false,
     description: "Include related data [trips, expenses]",
   })
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.TRIPCOORD, Role.USER)
-  @ApiBearerAuth("access-token")
   async findAll(
     @Query("skip") skip?: string,
     @Query("take") take?: string,
@@ -101,7 +98,6 @@ export class ParticipantController {
       orderBy: parsedOrderBy,
     } = QueryParser.parseQueryParameters({ skip, take, orderBy });
     const includeOptions = this.parseIncludeOptions(include);
-
     return this.participantService.findAll({
       skip: parsedSkip,
       take: parsedTake,
@@ -147,9 +143,6 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.TRIPCOORD, Role.USER)
-  @ApiBearerAuth("access-token")
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,

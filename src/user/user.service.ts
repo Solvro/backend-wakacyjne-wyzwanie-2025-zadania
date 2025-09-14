@@ -59,19 +59,19 @@ export class UserService {
   async update(
     email: string,
     updateUserDto: UpdateUserDto,
-    currentUser: { email: string; roles: Role },
+    currentUser: { email: string; role: Role },
   ): Promise<UserMetadata> {
-    const isAdmin = currentUser.roles === Role.ADMIN;
-    if (!isAdmin && currentUser.email !== email) {
-      throw new ForbiddenException(
-        "Admin rights required to update other users.",
-      );
-    }
     const existingUser = await this.database.user.findUnique({
       where: { email },
     });
     if (existingUser == null) {
       throw new NotFoundException(`User ${email} not found`);
+    }
+    const isAdmin = currentUser.role === Role.ADMIN;
+    if (!isAdmin && currentUser.email !== email) {
+      throw new ForbiddenException(
+        "Admin rights required to update other users.",
+      );
     }
     const updateData: Partial<UpdateUserDto & { password?: string }> =
       Object.assign({}, updateUserDto);

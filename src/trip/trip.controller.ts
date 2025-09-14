@@ -98,7 +98,6 @@ export class TripController {
       orderBy: parsedOrderBy,
     } = QueryParser.parseQueryParameters({ skip, take, orderBy });
     const includeOptions = this.parseIncludeOptions(include);
-
     return this.tripService.findAll({
       skip: parsedSkip,
       take: parsedTake,

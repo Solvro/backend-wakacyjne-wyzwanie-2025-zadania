@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
@@ -18,8 +18,23 @@ interface TripOptions {
 export class TripService {
   constructor(private database: DatabaseService) {}
   async create(createTripDto: CreateTripDto) {
+    const { participantIds, expensesIds, ...tripData } = createTripDto;
     return this.database.trip.create({
-      data: createTripDto,
+      data: {
+        ...tripData,
+        ...(participantIds !== undefined &&
+          participantIds.length > 0 && {
+            participants: {
+              connect: participantIds.map((id) => ({ id })),
+            },
+          }),
+        ...(expensesIds !== undefined &&
+          expensesIds.length > 0 && {
+            expenses: {
+              connect: expensesIds.map((id) => ({ id })),
+            },
+          }),
+      },
     });
   }
 
@@ -34,17 +49,62 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    return this.database.trip.findUnique({ where: { id } });
+    const trip = await this.database.trip.findUnique({ where: { id } });
+    if (trip === null) {
+      throw new NotFoundException(`Trip with id ${String(id)} not found`);
+    }
+    return trip;
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    return this.database.trip.update({
-      where: { id },
-      data: updateTripDto,
-    });
+    const { participantIds, expensesIds, ...tripData } = updateTripDto;
+    try {
+      const trip = await this.database.trip.update({
+        where: { id },
+        data: {
+          ...tripData,
+          ...(participantIds !== undefined && {
+            participants:
+              participantIds.length > 0
+                ? {
+                    set: participantIds.map((participantId) => ({
+                      id: participantId,
+                    })),
+                  }
+                : {
+                    set: [],
+                  },
+          }),
+          ...(expensesIds !== undefined && {
+            expenses:
+              expensesIds.length > 0
+                ? {
+                    set: expensesIds.map((expenseId) => ({ id: expenseId })),
+                  }
+                : {
+                    set: [],
+                  },
+          }),
+        },
+      });
+      return trip;
+    } catch (error: unknown) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+      }
+      throw error;
+    }
   }
 
   async remove(id: number) {
-    return this.database.trip.delete({ where: { id } });
+    const trip = await this.database.trip.findUnique({ where: { id } });
+    if (trip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
+    }
+    const deletedTrip = await this.database.trip.delete({ where: { id } });
+    return deletedTrip;
   }
 }

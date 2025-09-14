@@ -19,6 +19,7 @@ enum TripCategory {
   FAMILY
   PERSONAL
   WEEKEND
+  LEISURE
   OTHER
 }
 
@@ -41,6 +42,7 @@ enum ParticipantRole {
   GUEST
   DRIVER
   VOLUNTEER
+  GUIDE
   OTHER
 }
 
@@ -52,7 +54,7 @@ enum ParticipantSex {
 
 enum ActivityCategory {
   SIGHTSEEING
-  RELAXATION
+  LEISURE
   CULTURE
   NATURE
   SPORTS

@@ -4,10 +4,8 @@ import {
   IsDateString,
   IsEmail,
   IsEnum,
-  IsIBAN,
   IsNotEmpty,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   MaxLength,
   Validate,
@@ -43,7 +41,6 @@ export class CreateParticipantDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsPhoneNumber()
   @IsString()
   @MaxLength(25)
   phone?: string;
@@ -55,7 +52,6 @@ export class CreateParticipantDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsIBAN()
   @IsString()
   @MaxLength(50)
   iban?: string;
@@ -68,7 +64,7 @@ export class CreateParticipantDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
-  dateOfBirth?: string = new Date().toString();
+  dateOfBirth?: string = new Date().toISOString();
 
   @ApiPropertyOptional()
   @IsOptional()

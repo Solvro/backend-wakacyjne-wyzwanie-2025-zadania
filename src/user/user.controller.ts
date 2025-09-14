@@ -82,7 +82,7 @@ export class UserController {
   async update(
     @Param("email") email: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Request() request: { user: { email: string; roles: Role } },
+    @Request() request: { user: { email: string; role: Role } },
   ): Promise<UserMetadata> {
     return this.userService.update(email, updateUserDto, request.user);
   }

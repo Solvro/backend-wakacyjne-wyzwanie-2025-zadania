@@ -1,16 +1,18 @@
-import { IsBoolean, IsDateString } from "class-validator";
+import { IsBoolean, IsDateString, IsOptional } from "class-validator";
 
 import { PartialType } from "@nestjs/mapped-types";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 import { CreateParticipantDto } from "./create-participant.dto";
 
 export class UpdateParticipantDto extends PartialType(CreateParticipantDto) {
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsDateString()
-  updatedAt: string = new Date().toString();
+  updatedAt?: string = new Date().toISOString();
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsBoolean()
-  isArchived: boolean;
+  isArchived?: boolean;
 }

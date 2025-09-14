@@ -6,12 +6,12 @@ import type {
 } from "class-validator";
 
 @ValidatorConstraint({ name: "NiceText", async: false })
-class NiceTextConstraint implements ValidatorConstraintInterface {
+export class NiceTextConstraint implements ValidatorConstraintInterface {
   validate(text: string, _arguments_: ValidationArguments): boolean {
     if (!text) {
       return true;
     }
-    return !text.includes("loser");
+    return !text.includes("przegryw");
   }
   defaultMessage(_arguments_: ValidationArguments): string {
     return "That's not a nice text, is it?";

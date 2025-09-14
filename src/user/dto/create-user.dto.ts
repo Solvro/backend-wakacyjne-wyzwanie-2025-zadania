@@ -27,16 +27,16 @@ export class CreateUserDto {
   @IsNotEmpty()
   username?: string;
 
-  @Validate(NicePassword)
   @ApiProperty()
   @IsOptional()
   @IsString()
   @MaxLength(255)
+  @Validate(NicePassword)
   password: string;
 
-  @Validate(NiceText)
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @Validate(NiceText)
   note?: string;
 }
