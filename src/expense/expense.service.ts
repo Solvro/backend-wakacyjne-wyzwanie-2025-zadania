@@ -71,7 +71,7 @@ export class ExpenseService {
       data: {
         amount: updateExpenseDto.amount,
         category: updateExpenseDto.category,
-        tripId: updateExpenseDto.tripId,
+        trip: { connect: { id: updateExpenseDto.tripId } },
       },
       include: { trip: true },
     });
