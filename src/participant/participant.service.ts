@@ -80,10 +80,6 @@ export class ParticipantService {
     if (record == null) {
       throw new NotFoundException("No record with this id");
     }
-    await this.database.tripParticipant.deleteMany({
-      where: { participant_id },
-    });
-    await this.database.expense.deleteMany({ where: { participant_id } });
     return this.database.participant.delete({ where: { participant_id } });
   }
 

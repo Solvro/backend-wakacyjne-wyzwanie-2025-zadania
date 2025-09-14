@@ -4,9 +4,9 @@ import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { seedDatabase } from "../prisma/seeds";
 import { AppModule } from "./../src/app.module";
 import { cleanDatabases } from "./clean-database";
-import { seedDatabase } from "./seed-database";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication<App>;

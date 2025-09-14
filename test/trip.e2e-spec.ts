@@ -1,37 +1,46 @@
-import { PrismaClient } from "@prisma/client";
 import { AppModule } from "src/app.module";
-import { AuthGuard } from "src/auth/auth.guard";
 import { AuthModule } from "src/auth/auth.module";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 import { TripModule } from "src/trip/trip.module";
 import request from "supertest";
-import { App } from "supertest/types";
+import type { App } from "supertest/types";
 
-import { ExecutionContext, INestApplication, Injectable } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
+import { seedDatabase } from "../prisma/seeds";
 import { cleanDatabases } from "./clean-database";
-import { seedDatabase } from "./seed-database";
 
-const prisma = new PrismaClient();
+const wroclaw = {
+  name: "Wycieczka do Wrocławia",
+  date_start: "2025-08-13T00:00:00.000Z",
+  date_end: "2025-08-14T00:00:00.000Z",
+  description: "wycieczka na politechnike",
+};
 
-@Injectable()
-class MockAuthGuard extends AuthGuard {
-  async canActivate(_context: ExecutionContext): Promise<boolean> {
-    await Promise.resolve();
-    return true;
-  }
+const wycieczka = {
+  name: "Wycieczka 1",
+  date_start: "2025-09-09T00:00:00.000Z",
+  date_end: "2025-09-10T00:00:00.000Z",
+  description: "Super fajowa wycieczka 1",
+};
+
+async function getAuthToken(server): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const response = await request(server)
+    .post("/auth/login")
+    .send({
+      email: "janusz@example.com",
+      password: "123",
+    })
+    .expect(200);
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return response.body.token;
 }
-
-@Injectable()
-class MockRoleGuard extends RoleGuard {
-  canActivate(_context: ExecutionContext): boolean {
-    return true;
-  }
-}
-
 describe("TripController (e2e)", () => {
   let app: INestApplication<App>;
+  let tokenValue: string;
 
   beforeEach(async () => {
     await cleanDatabases();
@@ -39,53 +48,35 @@ describe("TripController (e2e)", () => {
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TripModule, AppModule, AuthModule],
-    })
-      .overrideGuard(RoleGuard)
-      .useValue(MockRoleGuard)
-      .overrideGuard(AuthGuard)
-      .useValue(MockAuthGuard)
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    const server = app.getHttpServer();
+
+    tokenValue = await getAuthToken(server);
   });
 
   it("/trips (GET)", async () => {
     const response = await request(app.getHttpServer())
       .get("/trips")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
     expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: "Wycieczka do Wrocławia",
-          date_start: "2025-08-13T00:00:00.000Z",
-          date_end: "2025-08-14T00:00:00.000Z",
-          description: "wycieczka na politechnike",
-        }),
-      ]),
+      expect.arrayContaining([expect.objectContaining(wroclaw)]),
     );
   });
 
   it("/trips (POST)", async () => {
     const response = await request(app.getHttpServer())
       .post("/trips")
-      .send({
-        name: "Wycieczka 1",
-        date_start: "2025-09-09T00:00:00.000Z",
-        date_end: "2025-09-10T00:00:00.000Z",
-        description: "Super fajowa wycieczka 1",
-      })
+      .set("Authorization", `Bearer ${tokenValue}`)
+      .send(wycieczka)
       .expect(201);
 
-    expect(response.body).toEqual({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      trip_id: expect.any(Number),
-      name: "Wycieczka 1",
-      date_start: "2025-09-09T00:00:00.000Z",
-      date_end: "2025-09-10T00:00:00.000Z",
-      description: "Super fajowa wycieczka 1",
-    });
+    expect(response.body).toEqual({ ...wycieczka, trip_id: 2 });
   });
 
   it("trips (PATCH)", async () => {
@@ -94,36 +85,24 @@ describe("TripController (e2e)", () => {
       .send({
         name: "Wycieczka do Wrocławia updejt",
       })
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
     expect(response.body).toEqual({
-      trip_id: 1,
+      ...wroclaw,
       name: "Wycieczka do Wrocławia updejt",
-      date_start: "2025-08-13T00:00:00.000Z",
-      date_end: "2025-08-14T00:00:00.000Z",
-      description: "wycieczka na politechnike",
+      trip_id: 1,
     });
   });
 
   it("/trips/:id (DELETE)", async () => {
-    const id = await prisma.trip.findFirst({
-      where: { name: "Wycieczka do Wrocławia" },
-    });
-
     const response = await request(app.getHttpServer())
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      .delete(`/trips/${id?.trip_id}`)
+      .delete("/trips/1")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
-    expect(response.body).toEqual({
-      trip_id: id?.trip_id,
-      name: "Wycieczka do Wrocławia",
-      date_end: "2025-08-14T00:00:00.000Z",
-      date_start: "2025-08-13T00:00:00.000Z",
-      description: "wycieczka na politechnike",
-    });
+    expect(response.body).toEqual({ ...wroclaw, trip_id: 1 });
 
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    await request(app.getHttpServer()).get(`/trips/${id?.trip_id}`).expect(404);
+    await request(app.getHttpServer()).get("/trips/1").expect(404);
   });
 });

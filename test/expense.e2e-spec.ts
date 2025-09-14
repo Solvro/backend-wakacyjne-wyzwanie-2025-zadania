@@ -1,50 +1,50 @@
-import { Category, Role } from "@prisma/client";
+import { Category } from "@prisma/client";
 import { AppModule } from "src/app.module";
-import { AuthGuard } from "src/auth/auth.guard";
 import { AuthModule } from "src/auth/auth.module";
-import { RequestWithParticipant } from "src/auth/dto/request-with-participant.dto";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 import { ExpenseModule } from "src/expense/expense.module";
 import request from "supertest";
-import { App } from "supertest/types";
+import type { App } from "supertest/types";
 
-import {
-  ExecutionContext,
-  INestApplication,
-  Injectable,
-  ValidationPipe,
-} from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import { ValidationPipe } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
+import { seedDatabase } from "../prisma/seeds";
 import { cleanDatabases } from "./clean-database";
-import { seedDatabase } from "./seed-database";
 
-@Injectable()
-class MockAuthGuard extends AuthGuard {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    //dobra tutaj sie wspomogłem kolegą gpt ale już wiem jak to działa
-    const request_ = context
-      .switchToHttp()
-      .getRequest<RequestWithParticipant>();
-    request_.participant = {
-      participant_id: 1,
+async function getAuthToken(server): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const response = await request(server)
+    .post("/auth/login")
+    .send({
       email: "janusz@example.com",
-      role: Role.Admin,
-    };
-    await Promise.resolve();
-    return true;
-  }
+      password: "123",
+    })
+    .expect(200);
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return response.body.token;
 }
 
-@Injectable()
-class MockRoleGuard extends RoleGuard {
-  canActivate(_context: ExecutionContext): boolean {
-    return true;
-  }
-}
+const bilet = {
+  title: "Bilet PKP",
+  category: "Transport",
+  amount: "21.37",
+  date: "2025-08-13T00:00:00.000Z",
+};
+
+const wydatek = {
+  title: "Wydatek testowy",
+  category: Category.Jedzenie,
+  amount: 200,
+  date: "2025-08-13T00:00:00.000Z",
+  trip_id: 1,
+};
 
 describe("ExpenseController (e2e)", () => {
   let app: INestApplication<App>;
+  let tokenValue: string;
 
   beforeEach(async () => {
     await cleanDatabases();
@@ -52,93 +52,69 @@ describe("ExpenseController (e2e)", () => {
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ExpenseModule, AppModule, AuthModule],
-    })
-      .overrideGuard(RoleGuard)
-      .useClass(MockRoleGuard)
-      .overrideGuard(AuthGuard)
-      .useClass(MockAuthGuard)
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
 
     app.useGlobalPipes(
       new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
         transform: true,
         forbidUnknownValues: true,
       }),
     );
 
     await app.init();
+    const server = app.getHttpServer();
+
+    tokenValue = await getAuthToken(server);
   });
 
   it("/expenses (GET)", async () => {
     const response = await request(app.getHttpServer())
       .get("/expenses")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
     expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          title: "Bilet PKP",
-          category: "Transport",
-          amount: "21.37",
-          date: "2025-08-13T00:00:00.000Z",
-        }),
-      ]),
+      expect.arrayContaining([expect.objectContaining(bilet)]),
     );
   });
 
   it("/expenses (POST)", async () => {
     return request(app.getHttpServer())
       .post("/expenses")
-      .send({
-        title: "Wydatek testowy",
-        category: Category.Jedzenie,
-        amount: 200,
-        date: "2025-08-13T00:00:00.000Z",
-        trip_id: 1,
-      })
+      .set("Authorization", `Bearer ${tokenValue}`)
+      .send(wydatek)
       .expect(201);
   });
 
   it("/expenses (PATCH)", async () => {
     const response = await request(app.getHttpServer())
       .patch("/expenses/1")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .send({
         title: "Wydatek updejt",
       })
       .expect(200);
 
-    expect(response.body).toEqual({
-      expense_id: 1,
-      title: "Wydatek updejt",
-      category: "Transport",
-      amount: "21.37",
-      date: "2025-08-13T00:00:00.000Z",
-      participant_id: 1,
-      trip_id: 1,
-    });
+    expect(response.body).toMatchObject({ ...bilet, title: "Wydatek updejt" });
   });
 
   it("/expenses/:id (DELETE)", async () => {
     const response = await request(app.getHttpServer())
       .delete(`/expenses/1`)
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
-    expect(response.body).toEqual({
-      expense_id: 1,
-      title: "Bilet PKP",
-      category: Category.Transport,
-      amount: "21.37",
-      date: "2025-08-13T00:00:00.000Z",
-      participant_id: 1,
-      trip_id: 1,
-    });
+    expect(response.body).toMatchObject(bilet);
   });
 
   it("/expenses (POST) validation", async () => {
     return request(app.getHttpServer())
       .post("/expenses")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .send({
         title: "Wydatek testowy",
         category: Category.Jedzenie,

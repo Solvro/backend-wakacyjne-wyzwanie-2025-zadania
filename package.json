@@ -15,12 +15,12 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "test": "cross-env DATABASE_URL=\"postgresql://postgres:123@localhost:5432/db_test\" jest",
-    "test:cov": "cross-env DATABASE_URL=\"postgresql://postgres:123@localhost:5432/db_test\" jest --coverage",
-    "test:e2e": "cross-env DATABASE_URL=\"postgresql://postgres:123@localhost:5432/db_test\" jest --config ./test/jest-e2e.json",
-    "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://postgres:123@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --watch",
-    "test:prepare": "cross-env DATABASE_URL=\"postgresql://postgres:123@localhost:5432/db_test?schema=public\" npx prisma db push",
-    "test:watch": "cross-env DATABASE_URL=\"postgresql://postgres:123@localhost:5432/db_test\" jest --watch",
+    "test": "dotenv -e .env.test -- jest",
+    "test:cov": "dotenv -e .env.test -- jest --coverage",
+    "test:e2e": "dotenv -e .env.test -- jest --config ./test/jest-e2e.json --runInBand",
+    "test:e2e:watch": "dotenv -e .env.test -- jest --config ./test/jest-e2e.json --watch --runInBand",
+    "test:prepare": "dotenv -e .env.test -- npx prisma db push",
+    "test:watch": "dotenv -e .env.test -- jest --watch",
     "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
@@ -58,6 +58,8 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cross-env": "^10.0.0",
+    "dotenv": "^17.2.2",
+    "dotenv-cli": "^10.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1"

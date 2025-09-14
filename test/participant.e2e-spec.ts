@@ -1,39 +1,56 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { AppModule } from "src/app.module";
-import { AuthGuard } from "src/auth/auth.guard";
 import { AuthModule } from "src/auth/auth.module";
-import { RoleGuard } from "src/auth/roles/roles.guard";
 import request from "supertest";
 import type { App } from "supertest/types";
 
 import type { INestApplication } from "@nestjs/common";
-import { ExecutionContext, Injectable } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { seedDatabase } from "../prisma/seeds";
 import { ParticipantModule } from "../src/participant/participant.module";
 import { cleanDatabases } from "./clean-database";
-import { seedDatabase } from "./seed-database";
 
-const prisma = new PrismaClient();
+async function getAuthToken(server): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const response = await request(server)
+    .post("/auth/login")
+    .send({
+      email: "janusz@example.com",
+      password: "123",
+    })
+    .expect(200);
 
-@Injectable()
-class MockAuthGuard extends AuthGuard {
-  async canActivate(_context: ExecutionContext): Promise<boolean> {
-    await Promise.resolve();
-    return true;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return response.body.token;
 }
 
-@Injectable()
-class MockRoleGuard extends RoleGuard {
-  canActivate(_context: ExecutionContext): boolean {
-    return true;
-  }
-}
+const janusz1 = {
+  name: "Janusz",
+  email: "janusz@example.com",
+  role: Role.Admin,
+  isEnabled: true,
+};
+
+const janusz2 = {
+  name: "Janusz2",
+  email: "janusz2@example.com",
+  password: "123",
+  role: Role.Participant,
+  isEnabled: true,
+};
+
+const user = {
+  name: "user",
+  email: "user@example.com",
+  role: Role.Participant,
+  isEnabled: true,
+};
 
 describe("ParticipantController (e2e)", () => {
   let app: INestApplication<App>;
+  let tokenValue: string;
 
   beforeEach(async () => {
     await cleanDatabases();
@@ -41,31 +58,25 @@ describe("ParticipantController (e2e)", () => {
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ParticipantModule, AppModule, AuthModule],
-    })
-      .overrideGuard(RoleGuard)
-      .useClass(MockRoleGuard)
-      .overrideGuard(AuthGuard)
-      .useClass(MockAuthGuard)
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    const server = app.getHttpServer();
+
+    tokenValue = await getAuthToken(server);
   });
 
   it("/participants (GET)", async () => {
     const response = await request(app.getHttpServer())
       .get("/participants")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
     expect(response.body).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          name: "Janusz",
-          email: "janusz@example.com",
-          password: "Sigma admin 123",
-          role: Role.Admin,
-          isEnabled: true,
-        }),
+        expect.objectContaining(janusz1),
+        expect.objectContaining(user),
       ]),
     );
   });
@@ -73,76 +84,49 @@ describe("ParticipantController (e2e)", () => {
   it("/participants (POST)", async () => {
     const response = await request(app.getHttpServer())
       .post("/participants")
-      .send({
-        name: "Janusz2",
-        email: "janusz2@example.com",
-        password: "123",
-        role: Role.Participant,
-        isEnabled: true,
-      })
+      .set("Authorization", `Bearer ${tokenValue}`)
+      .send(janusz2)
       .expect(201);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     expect(response.body).toEqual({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      ...janusz2,
       participant_id: expect.any(Number),
-      name: "Janusz2",
-      email: "janusz2@example.com",
-      password: "123",
-      role: Role.Participant,
-      isEnabled: true,
     });
   });
 
   it("/participants (PATCH)", async () => {
     const response = await request(app.getHttpServer())
       .patch("/participants/1")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .send({
         name: "janek 123",
       })
       .expect(200);
 
-    expect(response.body).toEqual({
-      participant_id: 1,
-      name: "janek 123",
-      email: "janusz@example.com",
-      password: "Sigma admin 123",
-      role: Role.Admin,
-      isEnabled: true,
-    });
+    expect(response.body).toMatchObject({ ...janusz1, name: "janek 123" });
   });
 
   it("/participants/:id (DELETE)", async () => {
-    const id = await prisma.participant.findFirst({
-      where: { email: "janusz@example.com" },
-    });
-
-    //nie wiem o co mu chodzi tutaj xddd bo wydaje sie git
     const response = await request(app.getHttpServer())
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      .delete(`/participants/${id?.participant_id}`)
+      .delete(`/participants/2`)
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(200);
 
-    expect(response.body).toEqual({
-      participant_id: id?.participant_id,
-      name: "Janusz",
-      email: "janusz@example.com",
-      password: "Sigma admin 123",
-      role: Role.Admin,
-      isEnabled: true,
-    });
+    expect(response.body).toMatchObject(user);
 
     await request(app.getHttpServer())
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      .get(`/participants/${id?.participant_id}`)
+      .get(`/participants/2`)
+      .set("Authorization", `Bearer ${tokenValue}`)
       .expect(404);
   });
 
   it("/participants (POST)", () => {
     return request(app.getHttpServer())
       .post("/participants")
+      .set("Authorization", `Bearer ${tokenValue}`)
       .send({
         name: "Janusz",
-        password: "Sigma admin 123",
         role: Role.Admin,
         isEnabled: true,
       })

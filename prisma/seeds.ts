@@ -1,20 +1,9 @@
 import { Category, PrismaClient, Role } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const janusz = await prisma.participant.upsert({
-    where: { email: "janusz@example.com" },
-    update: {},
-    create: {
-      name: "Janusz",
-      email: "janusz@example.com",
-      password: "Sigma admin 123",
-      role: Role.Admin,
-      isEnabled: true,
-    },
-  });
-
+export async function seedDatabase() {
   const trip = await prisma.trip.create({
     data: {
       name: "Wycieczka do Wrocławia",
@@ -23,7 +12,17 @@ async function main() {
       description: "wycieczka na politechnike",
     },
   });
-
+  const password = "123";
+  const hash = await bcrypt.hash(password, 10);
+  const janusz = await prisma.participant.create({
+    data: {
+      name: "Janusz",
+      email: "janusz@example.com",
+      password: hash,
+      role: Role.Admin,
+      isEnabled: true,
+    },
+  });
   await prisma.expense.create({
     data: {
       title: "Bilet PKP",
@@ -41,12 +40,13 @@ async function main() {
       participant_id: janusz.participant_id,
     },
   });
-}
-
-main()
-  .catch((error: unknown) => {
-    console.error(error);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
+  await prisma.participant.create({
+    data: {
+      name: "user",
+      email: "user@example.com",
+      password: "123",
+      role: Role.Participant,
+      isEnabled: true,
+    },
   });
+}
