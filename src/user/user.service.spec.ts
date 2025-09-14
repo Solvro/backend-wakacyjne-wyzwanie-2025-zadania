@@ -1,17 +1,17 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
-import { TripService } from "./trip.service";
+import { UserService } from "./user.service";
 
-describe.skip("TripService", () => {
-  let service: TripService;
+describe.skip("UserService", () => {
+  let service: UserService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TripService],
+      providers: [UserService],
     }).compile();
 
-    service = module.get<TripService>(TripService);
+    service = module.get<UserService>(UserService);
   });
 
   it("should be defined", () => {

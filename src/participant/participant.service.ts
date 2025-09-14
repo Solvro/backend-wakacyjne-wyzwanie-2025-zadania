@@ -1,6 +1,10 @@
 import { DatabaseService } from "src/database/database.service";
 
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
@@ -29,10 +33,11 @@ export class ParticipantService {
     const p = await this.prisma.participant.findUnique({
       where: { id },
       include: {
-        memberships: { include: { trip: true } },
+        trips: true, // zamiast memberships -> trips
         paidExpenses: true,
       },
     });
+
     if (p == null) {
       throw new NotFoundException(`Participant ${String(id)} not found`);
     }
@@ -61,31 +66,69 @@ export class ParticipantService {
 
   async listTrips(participantId: number) {
     await this.ensureParticipant(participantId);
-    const ms = await this.prisma.tripParticipant.findMany({
-      where: { participantId },
-      include: { trip: true },
-      orderBy: { tripId: "asc" },
+
+    return this.prisma.trip.findMany({
+      where: { participants: { some: { id: participantId } } },
+      orderBy: { id: "asc" },
     });
-    return ms.map((m) => m.trip);
   }
 
   async joinTrip(participantId: number, tripId: number) {
+    // 1) istnienie obu encji
     await this.ensureParticipant(participantId);
-    const trip = await this.prisma.trip.findUnique({ where: { id: tripId } });
+    const trip = await this.prisma.trip.findUnique({
+      where: { id: tripId },
+      select: { id: true },
+    });
     if (trip == null) {
       throw new NotFoundException(`Trip ${String(tripId)} not found`);
     }
 
-    return this.prisma.tripParticipant.upsert({
-      where: { tripId_participantId: { tripId, participantId } },
-      update: {},
-      create: { tripId, participantId },
+    await this.prisma.trip.update({
+      where: { id: tripId },
+      data: { participants: { connect: { id: participantId } } },
+    });
+
+    return this.prisma.trip.findUnique({
+      where: { id: tripId },
+      include: {
+        participants: true,
+        expenses: true,
+      },
     });
   }
 
   async leaveTrip(participantId: number, tripId: number) {
-    return this.prisma.tripParticipant.delete({
-      where: { tripId_participantId: { tripId, participantId } },
+    // sprawdź, czy obie encje istnieją
+    await this.ensureParticipant(participantId);
+    const trip = await this.prisma.trip.findUnique({
+      where: { id: tripId },
+      select: { id: true },
+    });
+    if (trip == null) {
+      throw new NotFoundException(`Trip ${String(tripId)} not found`);
+    }
+
+    // opcjonalnie: wymuś, że musi być członkiem (jak wcześniej)
+    const isMember = await this.prisma.trip.count({
+      where: { id: tripId, participants: { some: { id: participantId } } },
+    });
+    if (isMember === 0) {
+      throw new BadRequestException(
+        `Participant ${String(participantId)} is not a member of Trip ${String(tripId)}`,
+      );
+    }
+
+    // odłącz uczestnika od tripa
+    return this.prisma.trip.update({
+      where: { id: tripId },
+      data: {
+        participants: { disconnect: { id: participantId } },
+      },
+      include: {
+        participants: true,
+        expenses: true,
+      },
     });
   }
 

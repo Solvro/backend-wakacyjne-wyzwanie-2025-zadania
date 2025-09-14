@@ -21,6 +21,7 @@ export class DatabaseController {
         name: "Test Trip",
         createdAt: new Date(),
         startDate: new Date(), // Add a valid startDate value here
+        coordinatorEmail: "jkahsdjkahdaj", // Ensure this ID exists in your database
       },
     });
   }

@@ -6,6 +6,7 @@ import {
   MaxLength,
   Min,
 } from "class-validator";
+import { IsFutureDate } from "src/validators/is-future-date.validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -36,7 +37,7 @@ export class CreateTripDto {
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
   @Min(0)
-  budget?: number; // w serwisie rzutuj na Prisma.Decimal
+  budget?: number;
 
   @ApiProperty({
     description: "Trip start date (ISO 8601)",
@@ -44,6 +45,7 @@ export class CreateTripDto {
     format: "date",
   })
   @IsDateString()
+  @IsFutureDate({ message: "Start date must be in the future" })
   startDate: string | Date; // w serwisie: new Date(dto.startDate)
 
   @ApiPropertyOptional({
@@ -54,5 +56,9 @@ export class CreateTripDto {
   })
   @IsOptional()
   @IsDateString()
+  @IsFutureDate({ message: "End date must be in the future" })
   endDate?: string | Date;
+
+  @IsOptional()
+  participantIds?: number[];
 }
