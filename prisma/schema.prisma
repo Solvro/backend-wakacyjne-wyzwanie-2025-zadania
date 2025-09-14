@@ -25,8 +25,9 @@ model Trip {
 }
 
 model Participant {
+  user        User     @relation(fields: [email], references: [email])
   id          Int       @id @default(autoincrement())
-  email       String?
+  email       String
   name        String
   role        Role
   trips       Trip[] @relation("TripParticipants")
@@ -39,13 +40,27 @@ model Expense {
   amount         Float
   currency       String
   date           DateTime
-  participant_id Int?
-  trip_id        Int? 
-  participant    Participant? @relation(fields: [participant_id], references: [id])
-  trip           Trip?        @relation(fields: [trip_id], references: [id])
+  participant_id Int
+  trip_id        Int 
+  participant    Participant @relation(fields: [participant_id], references: [id])
+  trip           Trip        @relation(fields: [trip_id], references: [id])
+}
+
+model User {
+  email       String        @id
+  password    String
+  role        AuthRole
+  isEnabled   Boolean
+  name        String?
+  Participant Participant[] // relacja 1:N z Participant
 }
 
 enum Role {
   GUIDE
   PARTICIPANT
+}
+
+enum AuthRole {
+  ADMIN
+  USER
 }

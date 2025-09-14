@@ -24,11 +24,11 @@ import { ParticipantService } from "./participant.service";
 import { UpdateParticipantDto } from "./update-participant.dto";
 
 @ApiTags("Participant")
-@Controller("api/v1/participant")
+@Controller("api/v1/participants")
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
-  @Get("all")
+  @Get()
   @ApiOperation({ summary: "Get all participants" })
   @ApiResponse({ status: 200, description: "List of participants" })
   async getAll() {

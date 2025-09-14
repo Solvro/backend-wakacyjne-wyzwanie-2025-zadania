@@ -14,12 +14,18 @@ export class ParticipantService {
     return this.databaseService.participant.findMany();
   }
 
-  async getOne(id: number): Promise<Participant | null> {
-    return this.databaseService.participant.findUnique({
+  async getOne(id: number): Promise<Participant> {
+    const participant = await this.databaseService.participant.findUnique({
       where: {
         id,
       },
     });
+
+    if (participant === null) {
+      throw new NotFoundException("Participant not found");
+    }
+
+    return participant;
   }
 
   async create(dto: CreateParticipantDto): Promise<Participant> {
@@ -40,14 +46,6 @@ export class ParticipantService {
   }
 
   async delete(id: number): Promise<void> {
-    const participant = await this.databaseService.participant.findUnique({
-      where: { id },
-    });
-
-    if (participant === null) {
-      throw new NotFoundException("Participant not found");
-    }
-
     await this.databaseService.participant.delete({
       where: { id },
     });

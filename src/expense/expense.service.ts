@@ -14,12 +14,18 @@ export class ExpenseService {
     return this.databaseService.expense.findMany();
   }
 
-  async getOne(id: number): Promise<Expense | null> {
-    return this.databaseService.expense.findUnique({
+  async getOne(id: number): Promise<Expense> {
+    const expense = await this.databaseService.expense.findUnique({
       where: {
         id,
       },
     });
+
+    if (expense === null) {
+      throw new NotFoundException("Expense not found");
+    }
+
+    return expense;
   }
 
   async create(dto: CreateExpenseDto): Promise<Expense> {
@@ -43,14 +49,6 @@ export class ExpenseService {
   }
 
   async delete(id: number): Promise<void> {
-    const expense = await this.databaseService.expense.findUnique({
-      where: { id },
-    });
-
-    if (expense === null) {
-      throw new NotFoundException("Expense not found");
-    }
-
     await this.databaseService.expense.delete({
       where: { id },
     });

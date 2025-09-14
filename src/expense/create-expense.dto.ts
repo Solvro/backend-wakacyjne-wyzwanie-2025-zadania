@@ -1,12 +1,6 @@
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateExpenseDto {
   @ApiProperty({
@@ -39,19 +33,17 @@ export class CreateExpenseDto {
   @IsDateString()
   date: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "ID of the participant related to the expense",
     example: 3,
   })
-  @IsOptional()
   @IsNumber()
-  participant_id?: number;
+  participant_id: number;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "ID of the trip related to the expense",
     example: 7,
   })
-  @IsOptional()
   @IsNumber()
-  trip_id?: number;
+  trip_id: number;
 }

@@ -1,17 +1,7 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from "class-validator";
+import { Role } from "@prisma/client";
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-
-export enum Role {
-  GUIDE = "GUIDE",
-  PARTICIPANT = "PARTICIPANT",
-}
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateParticipantDto {
   @ApiProperty({
@@ -22,13 +12,12 @@ export class CreateParticipantDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "Email of the participant (optional)",
     example: "john.doe@example.com",
   })
-  @IsOptional()
   @IsEmail()
-  email?: string;
+  email: string;
 
   @ApiProperty({
     description: "Role of the participant",
