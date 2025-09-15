@@ -34,6 +34,10 @@ describe("ExpenseController (e2e)", () => {
     );
     await app.init();
   });
+  beforeEach(async () => {
+    await cleanDatabase();
+    await seedDatabase();
+  });
 
   afterAll(async () => {
     await app.close();

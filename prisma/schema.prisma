@@ -16,8 +16,8 @@ model Trip{
   startDate    DateTime
   endDate      DateTime
 
-  participants Participant[]
-  expenses     Expense[]
+  participants Participant[]  
+  expenses     Expense[]  
 
 }
 
@@ -27,7 +27,7 @@ model Expense {
   description String
   createdAt   DateTime @default(now())
 
-  trip        Trip @relation(fields: [tripId], references: [id])
+  trip        Trip @relation(fields: [tripId], references: [id],onDelete: Cascade)
   tripId      Int
 }
 
@@ -48,9 +48,9 @@ model User {
 
 model Participant {
   id          Int @id @default(autoincrement())
-  user        User @relation(fields: [userEmail], references: [email])
+  user        User @relation(fields: [userEmail], references: [email],onDelete: Cascade)
   userEmail     String
-  trip        Trip @relation(fields: [tripId], references: [id])
+  trip        Trip @relation(fields: [tripId], references: [id],onDelete: Cascade)
   tripId      Int
  
 

@@ -39,6 +39,11 @@ describe("TripController (e2e)", () => {
     await app.close();
   });
 
+  beforeEach(async () => {
+    await cleanDatabase();
+    await seedDatabase();
+  });
+
   it("/trip (GET)", async () => {
     const response = await request(app.getHttpServer())
       .get("/trip")
