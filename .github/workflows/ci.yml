@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: combo2025
+          POSTGRES_DB: budget
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check commit name
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+      - name: Run prettier
+        run: npm run format:check
+        if: always()
+
+      - name: Run Lint
+        run: npm run lint
+        if: always()
+
+      - name: Check types
+        run: npm run typecheck
+        if: always()
+
+      - name: Run tests
+        run: npm test
+        if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:combo2025@localhost:5432/budget"
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:combo2025@localhost:5432/budget"
+
+      - name: Build
+        run: npm run build
+        if: always()
