@@ -37,17 +37,21 @@ model Trip {
 }
 
 model Participant {
-  id        Int              @id @default(autoincrement())
-  name      String
-  lastname  String
-  email     String?
-  role      ParticipantRole  @default(MEMBER)
-  createdAt DateTime         @default(now())
+  id          Int              @id @default(autoincrement())
+  name        String
+  lastname    String
+  email       String?
+  role        ParticipantRole  @default(MEMBER)
+  createdAt   DateTime         @default(now())
 
-  trip   Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  tripId Int
+  trip        Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId      Int
 
-  expenses Expense[] @relation("ParticipantExpenses")
+  expenses    Expense[] @relation("ParticipantExpenses")
+
+  User        User?     @relation(fields: [email], references: [email], onDelete: Cascade)
+
+  
 }
 
 model Expense {
@@ -60,4 +64,22 @@ model Expense {
 
   participant   Participant @relation("ParticipantExpenses", fields: [participantId], references: [id], onDelete: SetNull)
   participantId Int
+}
+
+enum Role {
+  USER
+  ADMIN
+  COORDINATOR
+}
+
+model User {
+  email          String          @id @unique
+  password       String
+  name           String?
+  role           Role            @default(USER)
+  additionalInfo String?
+  isEnabled      Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  
+  participants   Participant[]
 }

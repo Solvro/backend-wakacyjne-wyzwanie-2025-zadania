@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Public } from "../common/decorators/public.decorator";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
@@ -26,6 +27,7 @@ import { ExpenseService } from "./expense.service";
 export class ExpenseController {
   constructor(private readonly service: ExpenseService) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "Get all expenses" })
   @ApiOkResponse({ description: "List all expenses" })
@@ -34,6 +36,7 @@ export class ExpenseController {
     return this.service.findAll();
   }
 
+  @Public()
   @Get(":id")
   @ApiOperation({ summary: "Get specific expense" })
   @ApiOkResponse({ description: "Get one expense" })

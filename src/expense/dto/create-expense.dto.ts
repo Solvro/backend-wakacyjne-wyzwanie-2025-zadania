@@ -7,6 +7,8 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  Max,
+  MaxLength,
 } from "class-validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -19,6 +21,7 @@ export class CreateExpenseDto {
   @ApiProperty({ example: 132.12 })
   @IsNumber()
   @IsPositive()
+  @Max(100_000_000)
   amount: number;
 
   @ApiProperty({ enum: ExpenseCategory, enumName: "ExpenseCategory" })
@@ -28,6 +31,7 @@ export class CreateExpenseDto {
   @ApiPropertyOptional({ example: "Train tickets" })
   @IsOptional()
   @IsString()
+  @MaxLength(250)
   note?: string;
 
   @ApiPropertyOptional({ example: "2025-08-24T09:00:00.000Z" })

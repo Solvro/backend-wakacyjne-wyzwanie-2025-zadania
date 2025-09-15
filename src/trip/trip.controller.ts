@@ -16,6 +16,8 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Public } from "../common/decorators/public.decorator";
+import { Roles } from "../common/decorators/roles.decorator";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
@@ -25,6 +27,7 @@ import { TripService } from "./trip.service";
 export class TripController {
   constructor(private readonly tripService: TripService) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "Get all trips" })
   @ApiOkResponse({ description: "List of trips" })
@@ -34,6 +37,7 @@ export class TripController {
   }
 
   @Post()
+  @Roles("COORDINATOR", "ADMIN") // Only coordinators or admins can post
   @ApiOperation({ summary: "Create a new trip" })
   @ApiCreatedResponse({ description: "Created trip" })
   @ApiBadRequestResponse({ description: "Invalid input data" })
@@ -42,6 +46,7 @@ export class TripController {
   }
 
   @Patch(":id")
+  @Roles("COORDINATOR", "ADMIN") // Only coordinators or admins can update
   @ApiOperation({ summary: "Update a trip" })
   @ApiOkResponse({ description: "Updated trip" })
   @ApiNotFoundResponse({ description: "trip not found" })
