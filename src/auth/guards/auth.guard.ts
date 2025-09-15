@@ -32,21 +32,17 @@ export class AuthGuard implements CanActivate {
       .switchToHttp()
       .getRequest<Request & { user?: unknown }>();
 
-    const rawHeader =
-      request.headers.authorization ?? request.headers.Authorization;
-    const header: string | undefined = Array.isArray(rawHeader)
-      ? rawHeader[0]
-      : rawHeader;
+    const header = request.headers.authorization;
 
-    if (typeof header !== "string") {
+    if (header == null) {
       throw new UnauthorizedException("Missing Authorization header");
     }
 
-    const token = header.startsWith("Bearer ") ? header.slice(7) : header;
-
-    if (!token) {
+    if (!header.startsWith("Bearer ")) {
       throw new UnauthorizedException("Invalid Authorization header format");
     }
+
+    const token = header.slice(7);
 
     try {
       const userMeta = await this.authService.validateToken(token);

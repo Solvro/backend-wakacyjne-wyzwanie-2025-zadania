@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -51,7 +53,7 @@ export class UserController {
     @Body() dto: UpdateUserDto,
     @CurrentUser() currentUser: { email: string; role: string },
   ) {
-    if (currentUser.role === "ADMIN") {
+    if (currentUser.role === Role.ADMIN) {
       return this.userService.updateUser(email, dto);
     }
 

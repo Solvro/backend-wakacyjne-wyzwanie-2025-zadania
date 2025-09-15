@@ -5,6 +5,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
@@ -33,8 +34,10 @@ export class RolesGuard implements CanActivate {
 
     const user = request.user;
 
-    if (!user?.role) {
-      throw new ForbiddenException("No roles assigned");
+    if (user == null) {
+      throw new InternalServerErrorException(
+        "User not found in request. Ensure AuthGuard is applied before RolesGuard",
+      );
     }
 
     if (requiredRoles.includes(user.role)) {

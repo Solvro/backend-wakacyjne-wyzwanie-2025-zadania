@@ -5,6 +5,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
+  MaxLength,
   Min,
 } from "class-validator";
 
@@ -16,6 +18,7 @@ export class CreateTripDto {
   @ApiProperty({ example: "Summer Vacation 2025" })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(150)
   name: string;
 
   @ApiProperty({ example: "2025-07-01T00:00:00.000Z" })
@@ -35,5 +38,6 @@ export class CreateTripDto {
   @IsNumber()
   @Min(0)
   @IsOptional()
+  @Max(100_000_000)
   budget?: number;
 }

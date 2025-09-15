@@ -8,12 +8,15 @@ import { LoginResponseDto } from "./dto/login-response.dto";
 @Injectable()
 export class AuthService {
   private readonly tokenPrefix = "token_";
+  private expiryMs: number;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {
+    this.expiryMs = Number(process.env.EXPIRY_TIME_MS ?? "86400000");
+  }
 
   generateToken(email: string): string {
     const ts = Date.now();
-    const payload = `${email}::${String(ts)}`;
+    const payload = `${email}::${ts.toString()}`;
     const b64 = Buffer.from(payload, "utf8").toString("base64");
     return `${this.tokenPrefix}${b64}`;
   }
@@ -35,8 +38,7 @@ export class AuthService {
       throw new Error("Invalid token");
     }
 
-    const expiryMs = Number(process.env.EXPIRY_TIME_MS ?? "86400000");
-    if (Date.now() - ts > expiryMs) {
+    if (Date.now() - ts > this.expiryMs) {
       throw new Error("Token expired");
     }
 

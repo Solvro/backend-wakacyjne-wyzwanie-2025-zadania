@@ -1,10 +1,12 @@
 import { Role } from "@prisma/client";
 import { hash } from "bcrypt";
+import { UpdateUserDto } from "src/auth/dto/update-user.dto";
 
 import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
@@ -34,17 +36,15 @@ export class UserService {
   }
 
   async findMetadataOrFail(email: string) {
-    const u = await this.prisma.user.findUnique({
-      where: { email },
-      select: { email: true, role: true, isEnabled: true },
-    });
-    if (u === null) {
-      throw new NotFoundException("User not Found");
-    }
+    const u = await this.findByEmailOrFail(email);
     if (!u.isEnabled) {
-      throw new NotFoundException("User disabled");
+      throw new UnauthorizedException("User disabled");
     }
-    return u;
+    return {
+      email: u.email,
+      name: u.name,
+      role: u.role,
+    };
   }
 
   async findAll() {
@@ -57,16 +57,7 @@ export class UserService {
     });
   }
 
-  async updateUser(
-    email: string,
-    dto: Partial<{
-      email: string;
-      password: string;
-      name?: string;
-      role?: Role;
-      additionalInfo?: string;
-    }>,
-  ) {
+  async updateUser(email: string, dto: UpdateUserDto) {
     const exists = await this.prisma.user.findUnique({ where: { email } });
     if (exists === null) {
       throw new NotFoundException("User not found");
@@ -80,21 +71,19 @@ export class UserService {
       additionalInfo?: string | null;
     } = {};
 
-    if (dto.email !== undefined) {
+    if (dto.email != null) {
       data.email = dto.email;
     }
-
-    if (dto.password !== undefined && dto.password !== "") {
+    if (dto.password != null) {
       data.password = await hash(dto.password, 10);
     }
-
-    if (dto.name !== undefined) {
+    if (dto.name != null) {
       data.name = dto.name;
     }
-    if (dto.role !== undefined) {
+    if (dto.role != null) {
       data.role = dto.role;
     }
-    if (dto.additionalInfo !== undefined) {
+    if (dto.additionalInfo != null) {
       data.additionalInfo = dto.additionalInfo;
     }
 
