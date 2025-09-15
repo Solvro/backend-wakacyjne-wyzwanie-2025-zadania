@@ -6,31 +6,26 @@ on:
   pull_request:
 
 jobs:
-  ci:
+  lint:
     runs-on: ubuntu-latest
 
     services:
-      postgres_test:
-        image: postgres:15
+      postgres:
+        image: postgres:latest
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: budzetownik_test
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@postgres_test:5432/budzetownik_test
-      NODE_ENV: test
+          POSTGRES_DB: wakacyjne_test_db
+        ports:
+          - 5432:5432
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -39,37 +34,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for Test DB
-        run: |
-          echo "Waiting for Test DB to be ready..."
-          TIMEOUT=30
-          until pg_isready -h postgres_test -U postgres -d budzetownik_test; do
-            sleep 1
-            TIMEOUT=$((TIMEOUT-1))
-            if [ $TIMEOUT -le 0 ]; then
-              echo "Postgres not ready after 30s"
-              exit 1
-            fi
-          done
+      - name: Check commit name
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-      - name: Lint
+      - name: Run prettier
+        run: npm run format:check
+        if: always()
+
+      - name: Run Lint
         run: npm run lint
+        if: always()
 
-      - name: Typecheck
+      - name: Check types
         run: npm run typecheck
+        if: always()
 
-      - name: Run unit tests
+      - name: Run tests
         run: npm test
-
-      - name: Migrate and seed Test DB
-        run: |
-          echo "Migrating Test DB..."
-          npx prisma migrate deploy
-          echo "Seeding Test DB..."
-          npx ts-node prisma/seed.test.ts
+        if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik"
 
       - name: Run e2e tests
         run: npm run test:e2e
+        if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
 
       - name: Build
         run: npm run build
+        if: always()
