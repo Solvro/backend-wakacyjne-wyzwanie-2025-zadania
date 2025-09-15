@@ -121,9 +121,6 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
-  @UseGuards(AuthGuard, RoleGuard)
-  @Roles(Role.ADMIN, Role.TRIPCOORD, Role.USER)
-  @ApiBearerAuth("access-token")
   async findOne(@Param("id", ParseIntPipe) id: number) {
     return this.participantService.findOne(id);
   }
@@ -143,6 +140,9 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN, Role.TRIPCOORD, Role.USER)
+  @ApiBearerAuth("access-token")
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,

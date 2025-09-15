@@ -107,9 +107,9 @@ model Expense {
   participantId Int?
   tripId        Int?
   activityId    Int?
-  participant   Participant? @relation(fields: [participantId], references: [id])
-  trip          Trip?        @relation(fields: [tripId], references: [id])
-  activity      Activity?    @relation(fields: [activityId], references: [id])
+  participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  activity      Activity?    @relation(fields: [activityId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([tripId])
   @@index([participantId])

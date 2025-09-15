@@ -1,17 +1,17 @@
 -- CreateEnum
-CREATE TYPE "public"."TripCategory" AS ENUM ('BUSINESS', 'VACATION', 'FAMILY', 'PERSONAL', 'WEEKEND', 'OTHER');
+CREATE TYPE "public"."TripCategory" AS ENUM ('BUSINESS', 'VACATION', 'FAMILY', 'PERSONAL', 'WEEKEND', 'LEISURE', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "public"."ExpenseCategory" AS ENUM ('ACCOMMODATION', 'TRANSPORT', 'FOOD', 'HEALTH', 'ENTERTAINMENT', 'GIFT', 'UTILITIES', 'SHOPPING', 'INSURANCE', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "public"."ParticipantRole" AS ENUM ('ORGANIZER', 'PARTICIPANT', 'GUEST', 'DRIVER', 'VOLUNTEER', 'OTHER');
+CREATE TYPE "public"."ParticipantRole" AS ENUM ('ORGANIZER', 'PARTICIPANT', 'GUEST', 'DRIVER', 'VOLUNTEER', 'GUIDE', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "public"."ParticipantSex" AS ENUM ('FEMALE', 'MALE', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "public"."ActivityCategory" AS ENUM ('SIGHTSEEING', 'RELAXATION', 'CULTURE', 'NATURE', 'SPORTS', 'ENTERTAINMENT', 'MEDIA', 'OTHER');
+CREATE TYPE "public"."ActivityCategory" AS ENUM ('SIGHTSEEING', 'LEISURE', 'CULTURE', 'NATURE', 'SPORTS', 'ENTERTAINMENT', 'MEDIA', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "public"."Role" AS ENUM ('ADMIN', 'USER', 'TRIPCOORD', 'GUEST', 'OTHER');
@@ -148,13 +148,13 @@ CREATE INDEX "_ParticipantToTrip_B_index" ON "public"."_ParticipantToTrip"("B");
 ALTER TABLE "public"."Activity" ADD CONSTRAINT "Activity_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "public"."Activity"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "public"."Activity"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."User" ADD CONSTRAINT "User_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE SET NULL ON UPDATE CASCADE;

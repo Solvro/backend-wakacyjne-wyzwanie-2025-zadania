@@ -45,7 +45,7 @@ export class UserController {
   }
 
   @Get(":email")
-  @ApiOperation({ summary: "Get user by email" })
+  @ApiOperation({ summary: "Get user" })
   @ApiParam({ name: "email", description: "User email" })
   @ApiResponse({
     status: 200,
@@ -63,7 +63,7 @@ export class UserController {
 
   @Patch(":email")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Update user info by email" })
+  @ApiOperation({ summary: "Update user" })
   @ApiResponse({
     status: 200,
     description: "User updated successfully",
@@ -89,7 +89,7 @@ export class UserController {
 
   @Patch(":email/archive")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Archive user by email" })
+  @ApiOperation({ summary: "Archive user" })
   @ApiResponse({
     status: 200,
     description: "User archived successfully",
@@ -107,7 +107,7 @@ export class UserController {
 
   @Patch(":email/dearchive")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Dearchive user by email" })
+  @ApiOperation({ summary: "Dearchive user" })
   @ApiResponse({
     status: 200,
     description: "User archived successfully",
@@ -125,7 +125,7 @@ export class UserController {
 
   @Delete(":email")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Delete user by email" })
+  @ApiOperation({ summary: "Delete user" })
   @ApiResponse({
     status: 204,
     description: "User deleted successfully",
