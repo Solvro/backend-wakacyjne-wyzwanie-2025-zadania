@@ -1,4 +1,4 @@
-import { Controller, Get, Put } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { PrismaService } from "./prisma.service";
@@ -16,25 +16,6 @@ export class PrismaController {
   @ApiOperation({ summary: "Get all trips" })
   async getTrips() {
     return await this.prisma.trip.findMany();
-  }
-
-  @Put("trips")
-  @ApiResponse({
-    status: 200,
-    description: "Example Trip created successfully",
-  })
-  @ApiOperation({ summary: "Create a test trip" })
-  async testCreateTrips() {
-    return await this.prisma.trip.create({
-      data: {
-        destination: "Test Trip",
-        description: "This is a test trip.",
-        start_date: new Date(),
-        end_date: new Date(),
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
-    });
   }
 
   @Get("participants")

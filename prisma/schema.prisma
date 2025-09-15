@@ -19,15 +19,22 @@ enum Role {
   USER
 }
 
+enum Currencies {
+  USD
+  EUR
+  GBP
+}
+
 model Participant {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
   email      String
-  user       User     @relation(fields: [email], references: [email], onDelete: Cascade)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  trip       Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [email], references: [email], onDelete: Cascade)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  trip       Trip      @relation(fields: [trip_id], references: [id], onDelete: Cascade)
   trip_id    Int
+  payments   Payment[]
 }
 
 model Trip {
@@ -61,4 +68,21 @@ model User {
   is_enabled   Boolean
   name         String?
   participants Participant[]
+}
+
+model CurrencyRate {
+  id        Int      @id @default(autoincrement())
+  currency  String   @db.Char(3)
+  rate      Decimal  @db.Decimal(12, 6)
+  timestamp DateTime @default(now())
+}
+
+model Payment {
+  id             Int         @id @default(autoincrement())
+  currency       String      @db.Char(3)
+  amount         Decimal     @db.Decimal(12, 2)
+  amount_pln     Decimal     @db.Decimal(12, 2)
+  created_at     DateTime    @default(now())
+  participant_id Int
+  participant    Participant @relation(fields: [participant_id], references: [id], onDelete: Cascade)
 }

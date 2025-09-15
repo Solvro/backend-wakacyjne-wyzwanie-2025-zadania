@@ -28,7 +28,7 @@ export class ExpenseService {
   async findOne(id: number) {
     const expense = await this.prisma.expense.findUnique({ where: { id } });
     if (expense === null) {
-      throw new NotFoundException(`participant with id not found`);
+      throw new NotFoundException(`expense with id not found`);
     }
     return expense;
   }
