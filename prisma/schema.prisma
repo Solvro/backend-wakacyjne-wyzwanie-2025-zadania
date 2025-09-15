@@ -14,22 +14,26 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
-  password String
-  name     String?
-  expenses Expense[]
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  name              String?
+  role              UserRole  @default(USER)
+  expenses          Expense[]
+  coordinatedTrips  Trip[]    @relation("TripCoordinator")
 }
 
 model Trip {
-  id          Int        @id @default(autoincrement())
-  name        String
-  description String?
-  destination String
-  travel_type TravelType
-  start_date  DateTime
-  end_date    DateTime
-  expenses    Expense[]
+  id            Int        @id @default(autoincrement())
+  name          String
+  description   String?
+  destination   String
+  travel_type   TravelType
+  start_date    DateTime
+  end_date      DateTime
+  coordinator   User       @relation("TripCoordinator", fields: [coordinator_id], references: [id])
+  coordinator_id Int
+  expenses      Expense[]
 }
 
 model Expense {
@@ -39,6 +43,11 @@ model Expense {
   trip_id Int
   user    User  @relation(fields: [user_id], references: [id])
   user_id Int
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
 
 enum TravelType {
