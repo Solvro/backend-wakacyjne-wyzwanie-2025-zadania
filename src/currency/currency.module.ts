@@ -9,6 +9,6 @@ import { TasksService } from "./tasks/tasks.service";
   controllers: [CurrencyController],
   providers: [CurrencyService, TasksService],
   imports: [PrismaModule],
-  exports: [CurrencyService],
+  exports: [CurrencyService, TasksService],
 })
 export class CurrencyModule {}
