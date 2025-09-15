@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client";
-import { hash } from "bcrypt";
 import request from "supertest";
 import type { App } from "supertest/types";
 
@@ -12,36 +11,20 @@ import { DatabaseService } from "../src/database/database.service";
 import { UserModule } from "../src/user/user.module";
 import { AppModule } from "./../src/app.module";
 import { cleanDatabase } from "./clean-database";
+import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
 
 let prisma: DatabaseService;
 let adminToken: string;
+let app: INestApplication<App>;
 
 describe("UserController (e2e)", () => {
-  let app: INestApplication<App>;
-
-  const adminUser = {
-    email: "admin134@example.com",
-    password: "admin123dsad",
-    role: Role.ADMIN,
-    isEnabled: true,
-    name: "Admin",
-    aboutMe: "None",
-  };
-
-  interface LoginResponse {
-    token: string;
-  }
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UserModule, AppModule],
     }).compile();
 
     prisma = moduleFixture.get(DatabaseService);
-    await cleanDatabase(prisma); // wipe the testing database using special script
-    await seedDatabase(prisma); // add some data to database
-
     app = moduleFixture.createNestApplication();
 
     const validationOptions = {
@@ -53,27 +36,16 @@ describe("UserController (e2e)", () => {
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 
     await app.init();
+  });
 
-    const salt = 10;
-    const hashedPassword = await hash(adminUser.password, salt);
+  afterAll(async () => {
+    await app.close();
+  });
 
-    const admin = await prisma.user.findUnique({
-      where: { email: adminUser.email },
-    });
-    if (admin === null) {
-      await prisma.user.create({
-        data: { ...adminUser, password: hashedPassword },
-      });
-    }
-    const response = await request(app.getHttpServer())
-      .post("/auth/login")
-      .send({
-        email: adminUser.email,
-        password: adminUser.password,
-      });
-
-    const body = response.body as LoginResponse;
-    adminToken = body.token;
+  beforeEach(async () => {
+    await cleanDatabase(prisma); // wipe the testing database using special script
+    await seedDatabase(prisma); // add some data to database
+    adminToken = await loginAdmin(prisma, app);
   });
 
   it("/user (GET)", async () => {

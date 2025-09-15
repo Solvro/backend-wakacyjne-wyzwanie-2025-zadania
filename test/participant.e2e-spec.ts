@@ -1,7 +1,7 @@
-import { Role, Sex } from "@prisma/client";
-import { hash } from "bcrypt";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { Sex } from "@prisma/client";
 import request from "supertest";
-import type { App } from "supertest/types";
 
 import { ValidationPipe } from "@nestjs/common";
 import type { INestApplication } from "@nestjs/common";
@@ -12,36 +12,20 @@ import { AppModule } from "../src/app.module";
 import { DatabaseService } from "../src/database/database.service";
 import { ParticipantModule } from "../src/participant/participant.module";
 import { cleanDatabase } from "./clean-database";
+import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
 
 let prisma: DatabaseService;
 let adminToken: string;
+let app: INestApplication;
 
 describe("ParticipantController (e2e)", () => {
-  let app: INestApplication<App>;
-
-  const adminUser = {
-    email: "admin134@example.com",
-    password: "admin123dsad",
-    role: Role.ADMIN,
-    isEnabled: true,
-    name: "Admin",
-    aboutMe: "None",
-  };
-
-  interface LoginResponse {
-    token: string;
-  }
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ParticipantModule, AppModule],
     }).compile();
 
     prisma = moduleFixture.get(DatabaseService);
-    await cleanDatabase(prisma); // wipe the testing database using special script
-    await seedDatabase(prisma); // add some data to database
-
     app = moduleFixture.createNestApplication();
 
     const validationOptions = {
@@ -53,27 +37,16 @@ describe("ParticipantController (e2e)", () => {
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 
     await app.init();
+  });
 
-    const salt = 10;
-    const hashedPassword = await hash(adminUser.password, salt);
+  afterAll(async () => {
+    await app.close();
+  });
 
-    const admin = await prisma.user.findUnique({
-      where: { email: adminUser.email },
-    });
-    if (admin === null) {
-      await prisma.user.create({
-        data: { ...adminUser, password: hashedPassword },
-      });
-    }
-    const response = await request(app.getHttpServer())
-      .post("/auth/login")
-      .send({
-        email: adminUser.email,
-        password: adminUser.password,
-      });
-
-    const body = response.body as LoginResponse;
-    adminToken = body.token;
+  beforeEach(async () => {
+    await cleanDatabase(prisma); // wipe the testing database using special script
+    await seedDatabase(prisma); // add some data to database
+    adminToken = await loginAdmin(prisma, app);
   });
 
   it("/participant (GET)", async () => {
@@ -84,7 +57,7 @@ describe("ParticipantController (e2e)", () => {
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          participantId: 1,
+          participantId: expect.any(Number),
           firstName: "Ala",
           lastName: "Makota",
           address: "Zielona 3",
@@ -93,7 +66,7 @@ describe("ParticipantController (e2e)", () => {
           sex: "FEMALE",
         }),
         expect.objectContaining({
-          participantId: 2,
+          participantId: expect.any(Number),
           firstName: "Jan",
           lastName: "Paweł",
           address: "Kremówkowa 2",
@@ -112,7 +85,7 @@ describe("ParticipantController (e2e)", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
-        participantId: 1,
+        participantId: expect.any(Number),
         firstName: "Ala",
         lastName: "Makota",
         address: "Zielona 3",
@@ -140,7 +113,7 @@ describe("ParticipantController (e2e)", () => {
       .expect(201)
       .then((participant) => {
         expect(participant.body).toEqual({
-          participantId: 3,
+          participantId: expect.any(Number),
           firstName: "Test",
           lastName: "Participant",
           address: "Future",
@@ -192,7 +165,7 @@ describe("ParticipantController (e2e)", () => {
       .expect(200)
       .then((participant) => {
         expect(participant.body).toEqual({
-          participantId: 2,
+          participantId: expect.any(Number),
           firstName: "Jan",
           lastName: "Paweł",
           address: "Kremówkowa 2",

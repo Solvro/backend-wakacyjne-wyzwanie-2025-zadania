@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NotFoundException } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
@@ -107,7 +108,7 @@ describe("ExpenseService", () => {
     });
 
     expect(result).toEqual({
-      expenseId: 3,
+      expenseId: expect.any(Number),
       trip: {
         connect: {
           tripId: 1,
@@ -148,7 +149,7 @@ describe("ExpenseService", () => {
       expenseAmount: 213,
       expenseDescription: "Test Value",
     };
-    const expenseMock = await service.create(dto); //expenseId == 3
+    const expenseMock = await service.create(dto);
 
     const expenseUpdated = {
       expenseId: expenseMock.expenseId,

@@ -1,7 +1,6 @@
-import { Role } from "@prisma/client";
-import { hash } from "bcrypt";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import request from "supertest";
-import type { App } from "supertest/types";
 
 import { ValidationPipe } from "@nestjs/common";
 import type { INestApplication } from "@nestjs/common";
@@ -12,36 +11,20 @@ import { DatabaseService } from "../src/database/database.service";
 import { TripModule } from "../src/trip/trip.module";
 import { AppModule } from "./../src/app.module";
 import { cleanDatabase } from "./clean-database";
+import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
 
 let prisma: DatabaseService;
 let adminToken: string;
+let app: INestApplication;
 
 describe("TripController (e2e)", () => {
-  let app: INestApplication<App>;
-
-  const adminUser = {
-    email: "admin134@example.com",
-    password: "admin123dsad",
-    role: Role.ADMIN,
-    isEnabled: true,
-    name: "Admin",
-    aboutMe: "None",
-  };
-
-  interface LoginResponse {
-    token: string;
-  }
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [TripModule, AppModule],
     }).compile();
 
     prisma = moduleFixture.get(DatabaseService);
-    await cleanDatabase(prisma); // wipe the testing database using special script
-    await seedDatabase(prisma); // add some data to database
-
     app = moduleFixture.createNestApplication();
 
     const validationOptions = {
@@ -53,27 +36,16 @@ describe("TripController (e2e)", () => {
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 
     await app.init();
+  });
 
-    const salt = 10;
-    const hashedPassword = await hash(adminUser.password, salt);
+  afterAll(async () => {
+    await app.close();
+  });
 
-    const admin = await prisma.user.findUnique({
-      where: { email: adminUser.email },
-    });
-    if (admin === null) {
-      await prisma.user.create({
-        data: { ...adminUser, password: hashedPassword },
-      });
-    }
-    const response = await request(app.getHttpServer())
-      .post("/auth/login")
-      .send({
-        email: adminUser.email,
-        password: adminUser.password,
-      });
-
-    const body = response.body as LoginResponse;
-    adminToken = body.token;
+  beforeEach(async () => {
+    await cleanDatabase(prisma); // wipe the testing database using special script
+    await seedDatabase(prisma); // add some data to database
+    adminToken = await loginAdmin(prisma, app);
   });
 
   it("/trip (GET)", async () => {
@@ -84,15 +56,15 @@ describe("TripController (e2e)", () => {
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          tripId: 1,
-          participantId: 1,
+          tripId: expect.any(Number),
+          participantId: expect.any(Number),
           destination: "Japonia",
           startDate: "2025-07-01T00:00:00.000Z",
           endDate: "2025-07-14T00:00:00.000Z",
         }),
         expect.objectContaining({
-          tripId: 2,
-          participantId: 2,
+          tripId: expect.any(Number),
+          participantId: expect.any(Number),
           destination: "Berlin",
           startDate: "2025-08-10T00:00:00.000Z",
           endDate: "2025-08-15T00:00:00.000Z",
@@ -108,8 +80,8 @@ describe("TripController (e2e)", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
-        tripId: 1,
-        participantId: 1,
+        tripId: expect.any(Number),
+        participantId: expect.any(Number),
         destination: "Japonia",
         startDate: "2025-07-01T00:00:00.000Z",
         endDate: "2025-07-14T00:00:00.000Z",
@@ -132,8 +104,8 @@ describe("TripController (e2e)", () => {
       .expect(201)
       .then((trip) => {
         expect(trip.body).toEqual({
-          tripId: 3, // jak zaaplikować expect.any(Number)
-          participantId: 1,
+          tripId: expect.any(Number),
+          participantId: expect.any(Number),
           destination: "Poland",
           startDate: "2026-06-10T00:00:00.000Z",
           endDate: "2026-08-11T00:00:00.000Z",
@@ -164,8 +136,8 @@ describe("TripController (e2e)", () => {
       .expect(200)
       .then((trip) => {
         expect(trip.body).toEqual({
-          tripId: 2,
-          participantId: 2,
+          tripId: expect.any(Number),
+          participantId: expect.any(Number),
           destination: "New Island",
           startDate: "2025-08-10T00:00:00.000Z",
           endDate: "2025-08-15T00:00:00.000Z",
@@ -190,7 +162,7 @@ describe("TripController (e2e)", () => {
 
     expect(response.body).toEqual({
       tripId: trip.tripId,
-      participantId: 2,
+      participantId: expect.any(Number),
       destination: "Poland",
       startDate: "2026-06-10T00:00:00.000Z",
       endDate: "2026-08-11T00:00:00.000Z",

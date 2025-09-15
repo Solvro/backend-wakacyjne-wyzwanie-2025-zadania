@@ -16,7 +16,7 @@ describe("ParticipantService", () => {
     participantId: number;
     firstName: string;
     lastName: string;
-    email: { connect: { email: string } };
+    user: { connect: { email: string } };
   }[] = [];
 
   const initialParticipants = [
@@ -24,7 +24,7 @@ describe("ParticipantService", () => {
       participantId: 1,
       firstName: "A",
       lastName: "B",
-      email: { connect: { email: "C" } },
+      user: { connect: { email: "C" } },
       address: "W",
       phoneNumber: "2137",
       sex: Sex.OTHER,
@@ -33,7 +33,7 @@ describe("ParticipantService", () => {
       participantId: 2,
       firstName: "D",
       lastName: "E",
-      email: { connect: { email: "G" } },
+      user: { connect: { email: "G" } },
       address: "F",
       phoneNumber: "123123",
       sex: Sex.FEMALE,
@@ -44,7 +44,7 @@ describe("ParticipantService", () => {
     data: {
       firstName: string;
       lastName: string;
-      email: { connect: { email: string } };
+      user: { connect: { email: string } };
       address: string;
       phoneNumber: string;
       sex: Sex;

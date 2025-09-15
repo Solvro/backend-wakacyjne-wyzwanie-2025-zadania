@@ -1,7 +1,7 @@
-import { Role } from "@prisma/client";
-import { hash } from "bcrypt";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+// import { Role } from "@prisma/client";
 import request from "supertest";
-import type { App } from "supertest/types";
 
 import { ValidationPipe } from "@nestjs/common";
 import type { INestApplication } from "@nestjs/common";
@@ -12,36 +12,20 @@ import { AppModule } from "../src/app.module";
 import { DatabaseService } from "../src/database/database.service";
 import { ExpenseModule } from "../src/expense/expense.module";
 import { cleanDatabase } from "./clean-database";
+import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
 
 let prisma: DatabaseService;
 let adminToken: string;
+let app: INestApplication;
 
 describe("ExpenseController (e2e)", () => {
-  let app: INestApplication<App>;
-
-  const adminUser = {
-    email: "admin134@example.com",
-    password: "admin123dsad",
-    role: Role.ADMIN,
-    isEnabled: true,
-    name: "Admin",
-    aboutMe: "None",
-  };
-
-  interface LoginResponse {
-    token: string;
-  }
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ExpenseModule, AppModule],
     }).compile();
 
     prisma = moduleFixture.get(DatabaseService);
-    await cleanDatabase(prisma); // wipe the testing database using special script
-    await seedDatabase(prisma); // add some data to database
-
     app = moduleFixture.createNestApplication();
 
     const validationOptions = {
@@ -53,27 +37,16 @@ describe("ExpenseController (e2e)", () => {
     app.useGlobalPipes(new ValidationPipe(validationOptions));
 
     await app.init();
+  });
 
-    const salt = 10;
-    const hashedPassword = await hash(adminUser.password, salt);
+  afterAll(async () => {
+    await app.close();
+  });
 
-    const admin = await prisma.user.findUnique({
-      where: { email: adminUser.email },
-    });
-    if (admin === null) {
-      await prisma.user.create({
-        data: { ...adminUser, password: hashedPassword },
-      });
-    }
-    const response = await request(app.getHttpServer())
-      .post("/auth/login")
-      .send({
-        email: adminUser.email,
-        password: adminUser.password,
-      });
-
-    const body = response.body as LoginResponse;
-    adminToken = body.token;
+  beforeEach(async () => {
+    await cleanDatabase(prisma); // wipe the testing database using special script
+    await seedDatabase(prisma); // add some data to database
+    adminToken = await loginAdmin(prisma, app);
   });
 
   it("/expense (GET)", async () => {
@@ -84,14 +57,14 @@ describe("ExpenseController (e2e)", () => {
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          expenseId: 1,
-          tripId: 1,
+          expenseId: expect.any(Number),
+          tripId: expect.any(Number),
           expenseAmount: 1978,
           expenseDescription: "Hotel",
         }),
         expect.objectContaining({
-          expenseId: 2,
-          tripId: 1,
+          expenseId: expect.any(Number),
+          tripId: expect.any(Number),
           expenseAmount: 120,
           expenseDescription: "Transport",
         }),
@@ -106,8 +79,8 @@ describe("ExpenseController (e2e)", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
-        expenseId: 1,
-        tripId: 1,
+        expenseId: expect.any(Number),
+        tripId: expect.any(Number),
         expenseAmount: 1978,
         expenseDescription: "Hotel",
       }),
@@ -128,8 +101,8 @@ describe("ExpenseController (e2e)", () => {
       .expect(201)
       .then((expense) => {
         expect(expense.body).toEqual({
-          expenseId: 3,
-          tripId: 1,
+          expenseId: expect.any(Number),
+          tripId: expect.any(Number),
           expenseAmount: 1234,
           expenseDescription: "Test",
         });
@@ -158,8 +131,8 @@ describe("ExpenseController (e2e)", () => {
       .expect(200)
       .then((expense) => {
         expect(expense.body).toEqual({
-          expenseId: 2,
-          tripId: 1,
+          expenseId: expect.any(Number),
+          tripId: expect.any(Number),
           expenseAmount: 5444,
           expenseDescription: "Transport",
         });
@@ -182,7 +155,7 @@ describe("ExpenseController (e2e)", () => {
 
     expect(response.body).toEqual({
       expenseId: expense.expenseId,
-      tripId: 1,
+      tripId: expect.any(Number),
       expenseAmount: 5444,
       expenseDescription: "Transport",
     });

@@ -78,7 +78,7 @@ describe("ExpenseController", () => {
     expect(controller).toBeDefined();
   });
 
-  it("should create a user", async () => {
+  it("should create an expense", async () => {
     const dto = {
       tripId: 1,
       expenseAmount: 213,
@@ -121,7 +121,7 @@ describe("ExpenseController", () => {
     expect(mockExpenseService.findOne).toHaveBeenCalledTimes(1);
   });
 
-  it("should update a expense", async () => {
+  it("should update an expense", async () => {
     const dto = {
       tripId: 1,
       expenseAmount: 213,

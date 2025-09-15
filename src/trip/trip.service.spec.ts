@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NotFoundException } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
@@ -114,8 +115,7 @@ describe("TripService", () => {
     });
 
     expect(result).toEqual({
-      // new triptripId == 3
-      tripId: 3,
+      tripId: expect.any(Number),
       participant: {
         connect: {
           participantId: 1,
