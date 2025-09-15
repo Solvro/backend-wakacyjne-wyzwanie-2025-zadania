@@ -13,8 +13,8 @@ export class CreateExpenseDto {
   @IsNotEmpty()
   trip_id: number;
 
-  @ApiProperty({ example: 1, description: "ID of the participant" })
+  @ApiProperty({ example: 1, description: "ID of the user" })
   @IsInt()
   @IsNotEmpty()
-  participant_id: number;
+  user_id: number;
 }

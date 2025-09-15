@@ -13,6 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  password String
+  name     String?
+  expenses Expense[]
+}
+
 model Trip {
   id          Int        @id @default(autoincrement())
   name        String
@@ -24,20 +32,13 @@ model Trip {
   expenses    Expense[]
 }
 
-model Participant {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  expenses Expense[]
-}
-
 model Expense {
-  id             Int         @id @default(autoincrement())
-  price          Float
-  trip           Trip        @relation(fields: [trip_id], references: [id])
-  trip_id        Int
-  participant    Participant @relation(fields: [participant_id], references: [id])
-  participant_id Int
+  id      Int   @id @default(autoincrement())
+  price   Float
+  trip    Trip  @relation(fields: [trip_id], references: [id])
+  trip_id Int
+  user    User  @relation(fields: [user_id], references: [id])
+  user_id Int
 }
 
 enum TravelType {

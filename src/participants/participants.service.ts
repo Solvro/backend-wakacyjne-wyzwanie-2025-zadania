@@ -9,25 +9,53 @@ export class ParticipantsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
-    return this.prisma.participant.create({ data: createParticipantDto });
+    // Dla uczestników dodawanych przez organizatora generujemy tymczasowe hasło
+    const tempPassword = Math.random().toString(36).slice(-8);
+    return this.prisma.user.create({
+      data: {
+        ...createParticipantDto,
+        password: tempPassword, // Tymczasowe hasło - uczestnik będzie mógł je zmienić
+      },
+    });
   }
 
   async findAll() {
-    return this.prisma.participant.findMany();
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        // Nie zwracamy hasła w odpowiedzi
+      },
+    });
   }
 
   async findOne(id: number) {
-    return this.prisma.participant.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        // Nie zwracamy hasła w odpowiedzi
+      },
+    });
   }
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    return this.prisma.participant.update({
+    return this.prisma.user.update({
       where: { id },
       data: updateParticipantDto,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        // Nie zwracamy hasła w odpowiedzi
+      },
     });
   }
 
   async remove(id: number) {
-    return this.prisma.participant.delete({ where: { id } });
+    return this.prisma.user.delete({ where: { id } });
   }
 }
