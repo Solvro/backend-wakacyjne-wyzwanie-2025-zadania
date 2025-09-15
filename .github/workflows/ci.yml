@@ -67,10 +67,6 @@ jobs:
         run: npx prisma migrate deploy
         if: always()
 
-      - name: Seed database
-        run: npm run seed
-        if: always()
-
       - name: Create test database
         run: PGPASSWORD=budzetownik_password createdb -h localhost -U budzetownik_user budzetownik_test
 
