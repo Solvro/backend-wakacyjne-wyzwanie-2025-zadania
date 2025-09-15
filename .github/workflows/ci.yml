@@ -59,18 +59,18 @@ jobs:
         run: npm test
         if: always()
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
 
       - name: Generate Prisma client
         run: npx prisma generate
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
 
       - name: Run e2e tests
         run: npm run test:e2e
         if: always()
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
 
       - name: Build
         run: npm run build
