@@ -72,7 +72,7 @@ jobs:
       - name: Run E2E Tests
         run: |
           npx prisma migrate deploy
-          cross-env DATABASE_URL=$DATABASE_URL npm run test:e2e
+          npx cross-env DATABASE_URL=$DATABASE_URL npm run test:e2e
         if: always()
 
       - name: Build
