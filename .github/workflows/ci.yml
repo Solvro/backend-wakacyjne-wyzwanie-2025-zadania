@@ -11,21 +11,13 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:latest
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
+          POSTGRES_DB: wakacyjne_test_db
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
 
     steps:
       - name: Checkout
@@ -61,12 +53,14 @@ jobs:
       - name: Run tests
         run: npm test
         if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
 
       - name: Run e2e tests
-        run: |
-          npx prisma migrate deploy
-          npm run test:e2e
+        run: npm run test:e2e
         if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
 
       - name: Build
         run: npm run build
