@@ -88,7 +88,7 @@ describe("ExpenseService", () => {
 
     expect(result).not.toBeNull();
     expect(result).toHaveProperty("expense_id", 1);
-    expect(result?.title).toBe("wydatek");
+    expect(result.title).toBe("wydatek");
     expect(mockDatabaseService.expense.findUnique).toHaveBeenCalledWith({
       where: { expense_id: 1 },
     });
