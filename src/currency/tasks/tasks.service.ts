@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Currencies } from "@prisma/client";
 import { load } from "cheerio";
 import puppeteer, { Browser, LaunchOptions } from "puppeteer";
@@ -22,9 +18,9 @@ export class TasksService {
     await this.scrapeRates();
   }
 
-  async onModuleInit() {
-    await this.scrapeRates();
-  }
+  // async onModuleInit() {
+  //   await this.scrapeRates();
+  // }
 
   // Helper function
   private async scrapeRates() {

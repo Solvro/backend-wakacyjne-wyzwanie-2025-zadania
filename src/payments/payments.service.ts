@@ -1,7 +1,6 @@
-import { CurrencyService } from "src/currency/currency.service";
-
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { CurrencyService } from "../currency/currency.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePaymentResponseDTO } from "./dto/create-payment-response.dto";
 import { CreatePaymentDTO } from "./dto/create-payment.dto";
@@ -37,7 +36,7 @@ export class PaymentsService {
       created_at: payment.created_at,
       amount: payment.amount.toNumber(),
       amount_pln: payment.amount_pln.toNumber(),
-      participant_id: Number(payment.participant_id),
+      participant_id: payment.participant_id,
     };
   }
   async findAll() {

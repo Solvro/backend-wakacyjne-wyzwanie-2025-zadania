@@ -1,9 +1,7 @@
-import { CurrencyModule } from "src/currency/currency.module";
-import { CurrencyService } from "src/currency/currency.service";
-import { PrismaModule } from "src/prisma/prisma.module";
-
 import { Module } from "@nestjs/common";
 
+import { CurrencyModule } from "../currency/currency.module";
+import { PrismaModule } from "../prisma/prisma.module";
 import { PaymentsController } from "./payments.controller";
 import { PaymentsService } from "./payments.service";
 
@@ -11,5 +9,6 @@ import { PaymentsService } from "./payments.service";
   controllers: [PaymentsController],
   providers: [PaymentsService],
   imports: [PrismaModule, CurrencyModule],
+  exports: [PaymentsService],
 })
 export class PaymentsModule {}
