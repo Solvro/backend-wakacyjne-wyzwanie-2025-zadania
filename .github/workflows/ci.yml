@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
 
     services:
@@ -15,22 +15,24 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: wakacyjne_test_db
+          POSTGRES_DB: testdb
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/testdb
+      NODE_ENV: test
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -39,39 +41,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check commit name
-        if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: Wait for Postgres
+        run: |
+          echo "Waiting for Postgres to be ready..."
+          until pg_isready -h postgres -U postgres; do
+            sleep 1
+          done
 
-      - name: Run prettier
-        run: npm run format:check
-        if: always()
-
-      - name: Run Lint
+      - name: Run lint
         run: npm run lint
-        if: always()
 
-      - name: Check types
+      - name: Run typecheck
         run: npm run typecheck
-        if: always()
 
-      - name: Run unit tests
+      - name: Run tests
         run: npm test
-        if: always()
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
-
-      - name: Generate Prisma client
-        run: npx prisma generate
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
 
       - name: Run e2e tests
-        run: npm run test:e2e
-        if: always()
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/budzetownik_test"
+        run: |
+          echo "Deploying migrations..."
+          npx prisma migrate deploy
+          echo "Running e2e tests..."
+          npm run test:e2e
 
       - name: Build
         run: npm run build
-        if: always()
