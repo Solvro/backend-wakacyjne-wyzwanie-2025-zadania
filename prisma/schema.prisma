@@ -23,10 +23,10 @@ model Participant {
   id         Int      @id @default(autoincrement())
   name       String
   email      String
-  user       User     @relation(fields: [email], references: [email])
+  user       User     @relation(fields: [email], references: [email], onDelete: Cascade)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  trip       Trip     @relation(fields: [trip_id], references: [id])
+  trip       Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
   trip_id    Int
 }
 
@@ -47,7 +47,7 @@ model Expense {
   name        String
   description String?
   value       Float
-  trip        Trip     @relation(fields: [trip_id], references: [id])
+  trip        Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
   trip_id     Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt

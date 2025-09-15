@@ -8,6 +8,24 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:1234@localhost:5432/postgres?schema=public
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +46,7 @@ jobs:
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
       - name: Generate Prisma
-        run: npx prisma generate
+        run: npm run test:setup
         if: always()
 
       - name: Run prettier
@@ -43,15 +61,17 @@ jobs:
         run: npm run typecheck
         if: always()
 
-      # Turned them off so i don't have to delete the tests
+      - name: Setup database
+        run: npm run test:prepare
+        if: always()
 
-      # - name: Run tests
-      #   run: npm test
-      #   if: always()
+      - name: Run tests
+        run: npm test
+        if: always()
 
-      #      - name: Run e2e tests
-      #        run: npm run test:e2e
-      #        if: always()
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
 
       - name: Build
         run: npm run build

@@ -1,10 +1,12 @@
 import * as bcrypt from "bcrypt";
-import { UserMetadata } from "src/user/dto/user-metadata";
-import { UserService } from "src/user/user.service";
 
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 
+import { UserMetadata } from "../user/dto/user-metadata";
+import { UserService } from "../user/user.service";
 import { LoginResponseDto } from "./dto/login-response.dto";
+import { RegisterResponseDto } from "./dto/register-response.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Injectable()
 export class AuthService {
@@ -58,8 +60,11 @@ export class AuthService {
     return { accessToken: this.generateToken(user.email) };
   }
 
-  async signUp(email: string, password: string): Promise<LoginResponseDto> {
-    const user = await this.userService.createUser(email, password);
+  async signUp(userData: RegisterDto): Promise<RegisterResponseDto> {
+    const user = await this.userService.createUser(
+      userData.email,
+      userData.password,
+    );
     return { accessToken: this.generateToken(user.email) };
   }
 }

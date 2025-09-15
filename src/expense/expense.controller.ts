@@ -1,5 +1,3 @@
-import { AuthGuard } from "src/auth/auth.guard";
-
 import {
   Body,
   Controller,
@@ -19,6 +17,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -30,7 +29,7 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
-  @HttpCode(HttpStatus.ACCEPTED)
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Created a new expense",
     description: "Add and expense to a specific trip and a participant",

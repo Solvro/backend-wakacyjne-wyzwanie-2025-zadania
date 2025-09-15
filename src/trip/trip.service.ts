@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTripDto } from "./dto/create-trip.dto";
@@ -13,8 +13,8 @@ export class TripService {
       data: {
         destination: createTripDto.destination,
         description: createTripDto.description,
-        start_date: createTripDto.start_Date,
-        end_date: createTripDto.end_Date,
+        start_date: createTripDto.start_date,
+        end_date: createTripDto.end_date,
       },
     });
   }
@@ -24,7 +24,11 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    return this.prisma.trip.findUnique({ where: { id } });
+    const trip = await this.prisma.trip.findUnique({ where: { id } });
+    if (trip === null) {
+      throw new NotFoundException(`Trip with id not found`);
+    }
+    return trip;
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
