@@ -57,7 +57,7 @@ jobs:
           DATABASE_URL: "postgresql://postgres:haslomaslo@localhost:5432/budzetownik_test"
 
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: npm run test:prepere npm run test:e2e
         if: always()
         env:
           DATABASE_URL: "postgresql://postgres:haslomaslo@localhost:5432/budzetownik_test"
