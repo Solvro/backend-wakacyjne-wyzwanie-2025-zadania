@@ -1,6 +1,3 @@
-import { AuthGuard } from "src/auth/auth.guard";
-import type { RequestWithUser } from "src/auth/dto/request-with-user.dto";
-
 import {
   Body,
   Controller,
@@ -22,6 +19,8 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import type { RequestWithUser } from "../auth/dto/request-with-user.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { ParticipantResponseDto } from "./dto/participant-response.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";

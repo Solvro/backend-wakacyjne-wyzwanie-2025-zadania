@@ -8,6 +8,22 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: db_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d db_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,13 +55,17 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Setup database
+        run: npx prisma generate && npm run test:prepare
+        if: always()
+
       - name: Run tests
         run: npm test
         if: always()
 
-      #- name: Run e2e tests
-      #  run: npm run test:e2e
-      #  if: always()
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
 
       - name: Build
         run: npm run build

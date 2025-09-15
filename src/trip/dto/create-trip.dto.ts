@@ -5,9 +5,10 @@ import {
   MinLength,
   Validate,
 } from "class-validator";
-import { EndAfterStartValidator } from "src/validators/end-after-start.validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { EndAfterStartValidator } from "../../validators/end-after-start.validator";
 
 export class CreateTripDto {
   @ApiProperty({

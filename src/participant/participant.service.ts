@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client";
-import { UserMetadata } from "src/users/dto/user-metadata.dto";
 
 import {
   ForbiddenException,
@@ -8,6 +7,7 @@ import {
 } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
+import { UserMetadata } from "../users/dto/user-metadata.dto";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 

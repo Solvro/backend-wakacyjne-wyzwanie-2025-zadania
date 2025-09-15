@@ -1,7 +1,4 @@
 import { Role } from "@prisma/client";
-import { AuthGuard } from "src/auth/auth.guard";
-import { Roles } from "src/auth/roles/role.decorator";
-import { RoleGuard } from "src/auth/roles/role.guard";
 
 import {
   Body,
@@ -21,6 +18,9 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import { UserMetadata } from "./dto/user-metadata.dto";
 import { UserUpdateResponseDto } from "./dto/user-update-response.dto";
 import { UserUpdateDto } from "./dto/user-update.dto";

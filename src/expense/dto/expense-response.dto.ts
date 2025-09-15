@@ -13,7 +13,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class ExpenseResponseDto {
   @ApiProperty()
   @IsNumber()
-  id: number;
+  expense_id: number;
 
   @ApiProperty()
   @IsNumber()

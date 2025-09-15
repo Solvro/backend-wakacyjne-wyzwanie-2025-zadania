@@ -8,7 +8,7 @@ export class ParticipantResponseDto {
     example: 1,
   })
   @IsNumber()
-  id: number;
+  participant_id: number;
 
   @ApiProperty({
     description: "The first name of the participant",

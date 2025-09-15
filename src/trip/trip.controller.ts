@@ -1,9 +1,5 @@
 import { Role } from "@prisma/client";
 import { plainToInstance } from "class-transformer";
-import { AuthGuard } from "src/auth/auth.guard";
-import type { RequestWithUser } from "src/auth/dto/request-with-user.dto";
-import { Roles } from "src/auth/roles/role.decorator";
-import { RoleGuard } from "src/auth/roles/role.guard";
 
 import {
   Body,
@@ -26,6 +22,10 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import type { RequestWithUser } from "../auth/dto/request-with-user.dto";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripResponsePrivateDto } from "./dto/trip-response-private.dto";
 import { TripResponsePublicDto } from "./dto/trip-response-public.dto";

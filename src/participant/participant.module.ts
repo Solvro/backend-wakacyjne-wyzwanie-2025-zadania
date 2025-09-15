@@ -1,8 +1,7 @@
-import { AuthModule } from "src/auth/auth.module";
-import { DatabaseModule } from "src/database/database.module";
-
 import { Module } from "@nestjs/common";
 
+import { AuthModule } from "../auth/auth.module";
+import { DatabaseModule } from "../database/database.module";
 import { ParticipantController } from "./participant.controller";
 import { ParticipantService } from "./participant.service";
 

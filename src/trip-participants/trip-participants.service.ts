@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client";
-import { UserMetadata } from "src/users/dto/user-metadata.dto";
 
 import {
   ConflictException,
@@ -9,6 +8,7 @@ import {
 } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
+import { UserMetadata } from "../users/dto/user-metadata.dto";
 import { CreateTripParticipantDto } from "./dto/create-trip-participant.dto";
 
 @Injectable()

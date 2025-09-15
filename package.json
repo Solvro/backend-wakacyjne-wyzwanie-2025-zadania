@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "author": "",
   "scripts": {
-    "all-checks": "npm run format && npm run format:check & npm run lint && npm run test && npm run typecheck",
+    "all-checks": "npm run format && npm run format:check && npm run lint && npm run test && npm run test:e2e && npm run typecheck",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"ellipsis.yaml\" \"README.md\"",
     "format:check": "prettier --check .",
@@ -16,11 +16,13 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "test": "jest",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch",
+    "test": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" jest",
+    "test:cov": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" jest --coverage",
+    "test:debug": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --runInBand",
+    "test:e2e:watch": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --watch --runInBand",
+    "test:prepare": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" npx prisma db push",
+    "test:watch": "cross-env DATABASE_URL=\"postgres://user:password@localhost:5432/db_test\" jest --watch",
     "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
@@ -37,7 +39,10 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "rootDir": ".",
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
@@ -53,6 +58,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "cross-env": "^10.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

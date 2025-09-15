@@ -1,8 +1,7 @@
-import { ExpenseResponseDto } from "src/expense/dto/expense-response.dto";
-import { ParticipantResponseDto } from "src/participant/dto/participant-response.dto";
-
 import { ApiPropertyOptional } from "@nestjs/swagger";
 
+import { ExpenseResponseDto } from "../../expense/dto/expense-response.dto";
+import { ParticipantResponseDto } from "../../participant/dto/participant-response.dto";
 import { TripResponsePublicDto } from "./trip-response-public.dto";
 
 export class TripResponsePrivateDto extends TripResponsePublicDto {
