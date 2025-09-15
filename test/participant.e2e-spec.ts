@@ -11,20 +11,34 @@ import { Test } from "@nestjs/testing";
 import { seedDatabase } from "../prisma/seeds";
 import { ParticipantModule } from "../src/participant/participant.module";
 import { cleanDatabases } from "./clean-database";
+import type { AuthResponse, UserData } from "./test-interfaces";
 
-async function getAuthToken(server): Promise<string> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+async function getAuthToken(server: App, userData: UserData) {
   const response = await request(server)
     .post("/auth/login")
     .send({
-      email: "janusz@example.com",
-      password: "123",
+      email: userData.email,
+      password: userData.password,
     })
     .expect(200);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  return response.body.token;
+  return (response.body as AuthResponse).token;
 }
+
+const userData: UserData = {
+  email: "user@example.com",
+  password: "123",
+};
+
+const adminData: UserData = {
+  email: "janusz@example.com",
+  password: "123",
+};
+
+const coordinatorData: UserData = {
+  email: "coordinator@example.com",
+  password: "123",
+};
 
 const janusz1 = {
   name: "Janusz",
@@ -48,11 +62,17 @@ const user = {
   isEnabled: true,
 };
 
+const coordinator = {
+  name: "coordinator",
+  email: "coordinator@example.com",
+  role: Role.Trip_Coordinator,
+  isEnabled: true,
+};
+
 describe("ParticipantController (e2e)", () => {
   let app: INestApplication<App>;
-  let tokenValue: string;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await cleanDatabases();
     await seedDatabase();
 
@@ -62,74 +82,227 @@ describe("ParticipantController (e2e)", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const server = app.getHttpServer();
-
-    tokenValue = await getAuthToken(server);
   });
 
-  it("/participants (GET)", async () => {
-    const response = await request(app.getHttpServer())
-      .get("/participants")
-      .set("Authorization", `Bearer ${tokenValue}`)
-      .expect(200);
-
-    expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining(janusz1),
-        expect.objectContaining(user),
-      ]),
-    );
+  beforeEach(async () => {
+    await cleanDatabases();
+    await seedDatabase();
   });
 
-  it("/participants (POST)", async () => {
-    const response = await request(app.getHttpServer())
-      .post("/participants")
-      .set("Authorization", `Bearer ${tokenValue}`)
-      .send(janusz2)
-      .expect(201);
+  afterAll(async () => {
+    await app.close();
+  });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    expect(response.body).toEqual({
-      ...janusz2,
-      participant_id: expect.any(Number),
+  describe("/participants (GET)", () => {
+    it("should return 200 if logged as admin", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        adminData,
+      );
+      const response = await request(app.getHttpServer())
+        .get("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(200);
+
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining(janusz1),
+          expect.objectContaining(user),
+          expect.objectContaining(coordinator),
+        ]),
+      );
+    });
+
+    it("should return 403 if logged as coordinator", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        coordinatorData,
+      );
+      await request(app.getHttpServer())
+        .get("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(403);
+    });
+
+    it("should return 403 if logged as user", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        userData,
+      );
+      await request(app.getHttpServer())
+        .get("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(403);
+    });
+
+    it("should return 401 if token not providen", async () => {
+      await request(app.getHttpServer()).get("/participants").expect(401);
     });
   });
 
-  it("/participants (PATCH)", async () => {
-    const response = await request(app.getHttpServer())
-      .patch("/participants/1")
-      .set("Authorization", `Bearer ${tokenValue}`)
-      .send({
-        name: "janek 123",
-      })
-      .expect(200);
+  describe("/participants (POST)", () => {
+    it("should return 201 when logged as admin", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        adminData,
+      );
+      const response = await request(app.getHttpServer())
+        .post("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send(janusz2)
+        .expect(201);
 
-    expect(response.body).toMatchObject({ ...janusz1, name: "janek 123" });
+      expect(response.body).toMatchObject({
+        ...janusz2,
+      });
+    });
+
+    it("should return 403 when logged as user", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        userData,
+      );
+      await request(app.getHttpServer())
+        .post("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send(janusz2)
+        .expect(403);
+    });
+
+    it("should return 403 when logged as coordinator", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        coordinatorData,
+      );
+      await request(app.getHttpServer())
+        .post("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send(janusz2)
+        .expect(403);
+    });
+
+    it("should return 400 when data is incorrect (missing email)", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        adminData,
+      );
+      return request(app.getHttpServer())
+        .post("/participants")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send({
+          name: "Janusz",
+          role: Role.Admin,
+          isEnabled: true,
+        })
+        .expect(400);
+    });
+
+    it("should return 401 if token not providen", async () => {
+      await request(app.getHttpServer())
+        .post("/participants")
+        .send(janusz2)
+        .expect(401);
+    });
   });
 
-  it("/participants/:id (DELETE)", async () => {
-    const response = await request(app.getHttpServer())
-      .delete(`/participants/2`)
-      .set("Authorization", `Bearer ${tokenValue}`)
-      .expect(200);
+  describe("/participants (PATCH)", () => {
+    it("should return 200 if logged as admin", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        adminData,
+      );
+      const response = await request(app.getHttpServer())
+        .patch("/participants/1")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send({
+          name: "janek 123",
+        })
+        .expect(200);
 
-    expect(response.body).toMatchObject(user);
+      expect(response.body).toMatchObject({ ...janusz1, name: "janek 123" });
+    });
 
-    await request(app.getHttpServer())
-      .get(`/participants/2`)
-      .set("Authorization", `Bearer ${tokenValue}`)
-      .expect(404);
+    it("should return 403 if logged as coordinator", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        coordinatorData,
+      );
+      await request(app.getHttpServer())
+        .patch("/participants/1")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send({
+          name: "janek 123",
+        })
+        .expect(403);
+    });
+
+    it("should return 403 if logged as user", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        userData,
+      );
+      await request(app.getHttpServer())
+        .patch("/participants/1")
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .send({
+          name: "janek 123",
+        })
+        .expect(403);
+    });
+
+    it("should return 401 if no token is providen", async () => {
+      await request(app.getHttpServer())
+        .patch("/participants/1")
+        .send({
+          name: "janek 123",
+        })
+        .expect(401);
+    });
   });
 
-  it("/participants (POST)", () => {
-    return request(app.getHttpServer())
-      .post("/participants")
-      .set("Authorization", `Bearer ${tokenValue}`)
-      .send({
-        name: "Janusz",
-        role: Role.Admin,
-        isEnabled: true,
-      })
-      .expect(400);
+  describe("/participants/:id (DELETE)", () => {
+    it("should return 200 if logged as admin", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        adminData,
+      );
+      const response = await request(app.getHttpServer())
+        .delete(`/participants/2`)
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(200);
+
+      expect(response.body).toMatchObject(user);
+
+      await request(app.getHttpServer())
+        .get(`/participants/2`)
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(404);
+    });
+
+    it("should return 403 if logged as coordinator", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        coordinatorData,
+      );
+      await request(app.getHttpServer())
+        .delete(`/participants/2`)
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(403);
+    });
+
+    it("should return 403 if logged as coordinator", async () => {
+      const tokenValue: string = await getAuthToken(
+        app.getHttpServer(),
+        userData,
+      );
+      await request(app.getHttpServer())
+        .delete(`/participants/2`)
+        .set("Authorization", `Bearer ${tokenValue}`)
+        .expect(403);
+    });
+
+    it("should return 401 if no token is providen", async () => {
+      await request(app.getHttpServer()).delete(`/participants/2`).expect(401);
+    });
   });
 });

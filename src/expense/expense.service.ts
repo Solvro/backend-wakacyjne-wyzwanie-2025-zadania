@@ -2,7 +2,11 @@ import { DatabaseService } from "src/database/database.service";
 import { PaginationDto } from "src/pagination/pagination.dto";
 import { DEFAULT_PAGE_SIZE } from "src/pagination/utils/constants";
 
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -35,7 +39,13 @@ export class ExpenseService {
   }
 
   async findOne(expense_id: number) {
-    return this.database.expense.findUnique({ where: { expense_id } });
+    const expense = await this.database.expense.findUnique({
+      where: { expense_id },
+    });
+    if (expense == null) {
+      throw new NotFoundException("No expense with this id");
+    }
+    return expense;
   }
 
   async update(expense_id: number, updateExpenseDto: UpdateExpenseDto) {

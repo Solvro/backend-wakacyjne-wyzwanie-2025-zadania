@@ -44,8 +44,17 @@ export async function seedDatabase() {
     data: {
       name: "user",
       email: "user@example.com",
-      password: "123",
+      password: hash,
       role: Role.Participant,
+      isEnabled: true,
+    },
+  });
+  await prisma.participant.create({
+    data: {
+      name: "coordinator",
+      email: "coordinator@example.com",
+      password: hash,
+      role: Role.Trip_Coordinator,
       isEnabled: true,
     },
   });

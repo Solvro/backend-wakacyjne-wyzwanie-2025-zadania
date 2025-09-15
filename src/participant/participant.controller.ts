@@ -60,7 +60,8 @@ export class ParticipantController {
     description: "List of participants returned successfully",
     type: [CreateParticipantResponseDto],
   })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   async findAll(@Query() paginationDto: PaginationDto) {
     return this.participantService.findAll(paginationDto);
   }

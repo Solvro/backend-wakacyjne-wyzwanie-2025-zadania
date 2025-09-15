@@ -1,6 +1,7 @@
 import { Role } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 import { Roles } from "src/auth/roles/roles.decorator";
+import { RoleGuard } from "src/auth/roles/roles.guard";
 import { PaginationDto } from "src/pagination/pagination.dto";
 import { ParticipantMetadata } from "src/participant/dto/participant-metadata.dto";
 
@@ -122,7 +123,7 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.Admin)
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.expenseService.remove(id);
