@@ -25,7 +25,7 @@ jobs:
           --health-retries=5
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/budzetownik_test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
 
     steps:
       - name: Checkout
