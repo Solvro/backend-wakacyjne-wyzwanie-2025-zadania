@@ -1,7 +1,8 @@
 import { Allow, IsOptional, IsString, Validate } from "class-validator";
-import { DateValidator } from "src/validators/date.validator";
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+import { DateValidator } from "../../validators/date.validator";
 
 export class CreateTripDto {
   @ApiProperty()

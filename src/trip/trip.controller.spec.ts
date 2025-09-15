@@ -2,13 +2,13 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { AuthService } from "../auth/auth.service";
-import { ExpenseController } from "./expense.controller";
-import { ExpenseService } from "./expense.service";
+import { TripController } from "./trip.controller";
+import { TripService } from "./trip.service";
 
 describe("espense controller", () => {
-  let controller: ExpenseController;
+  let controller: TripController;
 
-  const mockExpenseService = {
+  const mockTripService = {
     create: jest.fn(async (dto) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return await {
@@ -32,17 +32,17 @@ describe("espense controller", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ExpenseController],
+      controllers: [TripController],
       providers: [
-        ExpenseService,
+        TripService,
         { provide: AuthService, useValue: mockAuthService },
       ],
     })
-      .overrideProvider(ExpenseService)
-      .useValue(mockExpenseService)
+      .overrideProvider(TripService)
+      .useValue(mockTripService)
       .compile();
 
-    controller = module.get<ExpenseController>(ExpenseController);
+    controller = module.get<TripController>(TripController);
   });
 
   it("should be defind", () => {
@@ -51,10 +51,10 @@ describe("espense controller", () => {
 
   it("should create a trip", async () => {
     const dto = {
-      amount: 123,
-      description: "oplata",
-      createdAt: new Date(2025, 8, 14, 12, 30, 0),
-      tripId: 1,
+      title: "Test trip",
+      description: "",
+      startDate: new Date("2026-07-01"),
+      endDate: new Date("2026-07-15"),
     };
 
     const result = await controller.create(dto);
@@ -63,81 +63,84 @@ describe("espense controller", () => {
       id: expect.any(Number),
       ...dto,
     });
-    expect(mockExpenseService.create).toHaveBeenCalledWith(dto);
+    expect(mockTripService.create).toHaveBeenCalledWith(dto);
   });
 
-  it("should return all expenses", async () => {
+  it("should return all trips", async () => {
     const dto = [
       {
         id: 1,
-        amount: 100,
-        description: "Lunch",
-        createdAt: new Date(),
-        tripId: 1,
+        title: "Trip 1",
+        description: "",
+        startDate: new Date(),
+        endDate: new Date(),
       },
       {
         id: 2,
-        amount: 200,
-        description: "Taxi",
-        createdAt: new Date(),
-        tripId: 1,
+        title: "Trip 2",
+        description: "",
+        startDate: new Date(),
+        endDate: new Date(),
       },
     ];
 
-    mockExpenseService.findAll.mockResolvedValue(dto);
+    mockTripService.findAll.mockResolvedValue(dto);
 
     const result = await controller.findAll();
 
     expect(result).toEqual(dto);
-    expect(mockExpenseService.findAll).toHaveBeenCalled();
+    expect(mockTripService.findAll).toHaveBeenCalled();
   });
 
-  it("should return expense by id", async () => {
+  it("should return trips by id", async () => {
     const dto = {
       id: 1,
-      amount: 100,
-      description: "Lunch",
-      createdAt: new Date(),
-      tripId: 1,
+      title: "Trip 1",
+      description: "",
+      startDate: new Date(),
+      endDate: new Date(),
     };
-    mockExpenseService.findOne.mockResolvedValue(dto);
+    mockTripService.findOne.mockResolvedValue(dto);
 
     const result = await controller.findOne("1");
 
     expect(result).toEqual(dto);
-    expect(mockExpenseService.findOne).toHaveBeenCalledWith(1);
+    expect(mockTripService.findOne).toHaveBeenCalledWith(1);
   });
 
-  it("should update an expense", async () => {
+  it("should update an trip", async () => {
     const id = 1;
-    const dto = { amount: 200, description: "updated opłata" };
+    const dto = {
+      startDate: new Date("2027-07-01"),
+      endDate: new Date("2027-07-15"),
+    };
 
     const updatedExpense = {
       id,
+      title: "Trip 1",
+      description: "",
       ...dto,
-      createdAt: new Date(2025, 8, 14, 12, 30, 0),
-      tripId: 1,
     };
-    mockExpenseService.update.mockResolvedValue(updatedExpense);
+    mockTripService.update.mockResolvedValue(updatedExpense);
 
     const result = await controller.update(id.toString(), dto);
 
     expect(result).toEqual(updatedExpense);
-    expect(mockExpenseService.update).toHaveBeenCalledWith(id, dto);
+    expect(mockTripService.update).toHaveBeenCalledWith(id, dto);
   });
 
   it("should delete expense", async () => {
     const dto = {
       id: 1,
-      amount: 100,
-      description: "Lunch",
-      createdAt: new Date(),
-      tripId: 1,
+      title: "Trip 1",
+      description: "",
+      startDate: new Date(),
+      endDate: new Date(),
     };
-    mockExpenseService.remove.mockResolvedValue(dto);
+    mockTripService.remove.mockResolvedValue(dto);
 
     const result = await controller.remove("1");
     expect(result).toEqual(dto);
-    expect(mockExpenseService.remove).toHaveBeenCalledWith(1);
+    expect(mockTripService.remove).toHaveBeenCalledWith(1);
   });
 });

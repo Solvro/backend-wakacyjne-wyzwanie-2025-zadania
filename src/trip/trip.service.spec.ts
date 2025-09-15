@@ -38,8 +38,8 @@ describe("TripService", () => {
 
   it("should create a trip", async () => {
     const dto = {
-      title: "Summer Trip",
-      description: "Vacation in Italy",
+      title: "Test Trip",
+      description: "",
       startDate: new Date("2025-07-01"),
       endDate: new Date("2025-07-15"),
     };
