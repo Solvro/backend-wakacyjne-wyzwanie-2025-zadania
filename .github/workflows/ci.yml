@@ -10,30 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      # Testowa baza
       postgres_test:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: budzetownik_test
-        ports:
-          - 5433:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-      # Główna baza
-      postgres_main:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: budzetownik
-        ports:
-          - 5434:5432
         options: >-
           --health-cmd="pg_isready -U postgres"
           --health-interval=10s
@@ -41,8 +23,7 @@ jobs:
           --health-retries=5
 
     env:
-      TEST_DATABASE_URL: postgresql://postgres:postgres@postgres_test:5432/budzetownik_test
-      MAIN_DATABASE_URL: postgresql://postgres:postgres@postgres_main:5432/budzetownik
+      DATABASE_URL: postgresql://postgres:postgres@postgres_test:5432/budzetownik_test
       NODE_ENV: test
 
     steps:
@@ -60,16 +41,15 @@ jobs:
 
       - name: Wait for Test DB
         run: |
-          until pg_isready -h postgres_test -U postgres; do
-            echo "Waiting for Test DB..."
+          echo "Waiting for Test DB to be ready..."
+          TIMEOUT=30
+          until pg_isready -h postgres_test -U postgres -d budzetownik_test; do
             sleep 1
-          done
-
-      - name: Wait for Main DB
-        run: |
-          until pg_isready -h postgres_main -U postgres; do
-            echo "Waiting for Main DB..."
-            sleep 1
+            TIMEOUT=$((TIMEOUT-1))
+            if [ $TIMEOUT -le 0 ]; then
+              echo "Postgres not ready after 30s"
+              exit 1
+            fi
           done
 
       - name: Lint
@@ -84,16 +64,9 @@ jobs:
       - name: Migrate and seed Test DB
         run: |
           echo "Migrating Test DB..."
-          npx prisma migrate deploy --schema=prisma/schema.test.prisma
+          npx prisma migrate deploy
           echo "Seeding Test DB..."
           npx ts-node prisma/seed.test.ts
-
-      - name: Migrate and seed Main DB (opcjonalnie)
-        run: |
-          echo "Migrating Main DB..."
-          npx prisma migrate deploy --schema=prisma/schema.prisma
-          echo "Seeding Main DB..."
-          npx ts-node prisma/seed.ts
 
       - name: Run e2e tests
         run: npm run test:e2e
