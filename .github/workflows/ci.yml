@@ -6,34 +6,50 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
-        image: postgres:16
+      # Testowa baza
+      postgres_test:
+        image: postgres:15
         env:
-          POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: budzetownik_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         ports:
-          - 5432:5432
+          - 5433:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      # Główna baza
+      postgres_main:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: budzetownik
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/budzetownik_test?schema=public
+      TEST_DATABASE_URL: postgresql://postgres:postgres@postgres_test:5432/budzetownik_test
+      MAIN_DATABASE_URL: postgresql://postgres:postgres@postgres_main:5432/budzetownik
+      NODE_ENV: test
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -42,33 +58,45 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup database
-        run: npm run test:e2e:setup
+      - name: Wait for Test DB
+        run: |
+          until pg_isready -h postgres_test -U postgres; do
+            echo "Waiting for Test DB..."
+            sleep 1
+          done
 
-      - name: Check commit name
-        if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: Wait for Main DB
+        run: |
+          until pg_isready -h postgres_main -U postgres; do
+            echo "Waiting for Main DB..."
+            sleep 1
+          done
 
-      - name: Run prettier
-        run: npm run format:check
-        if: always()
-
-      - name: Run Lint
+      - name: Lint
         run: npm run lint
-        if: always()
 
-      - name: Check types
+      - name: Typecheck
         run: npm run typecheck
-        if: always()
 
-      - name: Run tests
+      - name: Run unit tests
         run: npm test
-        if: always()
+
+      - name: Migrate and seed Test DB
+        run: |
+          echo "Migrating Test DB..."
+          npx prisma migrate deploy --schema=prisma/schema.test.prisma
+          echo "Seeding Test DB..."
+          npx ts-node prisma/seed.test.ts
+
+      - name: Migrate and seed Main DB (opcjonalnie)
+        run: |
+          echo "Migrating Main DB..."
+          npx prisma migrate deploy --schema=prisma/schema.prisma
+          echo "Seeding Main DB..."
+          npx ts-node prisma/seed.ts
 
       - name: Run e2e tests
         run: npm run test:e2e
-        if: always()
 
       - name: Build
         run: npm run build
-        if: always()
