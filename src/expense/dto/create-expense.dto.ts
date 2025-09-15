@@ -20,7 +20,7 @@ export class CreateExpenseDto {
   @IsOptional()
   description?: string;
   @Type(() => Date)
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsDate()
   @IsOptional()
   @Validate(DateValidator)
