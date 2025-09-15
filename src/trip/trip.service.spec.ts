@@ -2,6 +2,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { DatabaseService } from "../database/database.service";
+import type { CreateTripDto } from "./dto/create-trip.dto";
 import { TripService } from "./trip.service";
 
 describe("TripService", () => {
@@ -37,13 +38,14 @@ describe("TripService", () => {
   });
 
   it("should create a trip", async () => {
-    const dto = {
+    const dto: CreateTripDto = {
       title: "Test Trip",
       description: "",
-      startDate: new Date("2025-07-01"),
-      endDate: new Date("2025-07-15"),
+      startDate: new Date("2025-07-01").toString(),
+      endDate: new Date("2025-07-15").toString(),
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread
     const mockTrip = { id: 1, ...dto };
 
     mockDatabaseService.trip.create.mockResolvedValue(mockTrip);
@@ -55,8 +57,8 @@ describe("TripService", () => {
       data: {
         title: dto.title,
         description: dto.description,
-        startDate: dto.startDate,
-        endDate: dto.endDate,
+        startDate: new Date(dto.startDate),
+        endDate: new Date(dto.endDate),
       },
     });
   });

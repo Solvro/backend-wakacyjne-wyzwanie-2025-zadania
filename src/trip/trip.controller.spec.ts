@@ -2,6 +2,8 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { AuthService } from "../auth/auth.service";
+import type { CreateTripDto } from "./dto/create-trip.dto";
+import type { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripController } from "./trip.controller";
 import { TripService } from "./trip.service";
 
@@ -50,17 +52,18 @@ describe("espense controller", () => {
   });
 
   it("should create a trip", async () => {
-    const dto = {
+    const dto: CreateTripDto = {
       title: "Test trip",
       description: "",
-      startDate: new Date("2026-07-01"),
-      endDate: new Date("2026-07-15"),
+      startDate: new Date("2026-07-01").toString(),
+      endDate: new Date("2026-07-15").toString(),
     };
 
     const result = await controller.create(dto);
     expect(result).toEqual({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       id: expect.any(Number),
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       ...dto,
     });
     expect(mockTripService.create).toHaveBeenCalledWith(dto);
@@ -110,15 +113,16 @@ describe("espense controller", () => {
 
   it("should update an trip", async () => {
     const id = 1;
-    const dto = {
-      startDate: new Date("2027-07-01"),
-      endDate: new Date("2027-07-15"),
+    const dto: UpdateTripDto = {
+      startDate: new Date("2027-07-01").toString(),
+      endDate: new Date("2027-07-15").toString(),
     };
 
     const updatedExpense = {
       id,
       title: "Trip 1",
       description: "",
+      // eslint-disable-next-line @typescript-eslint/no-misused-spread
       ...dto,
     };
     mockTripService.update.mockResolvedValue(updatedExpense);

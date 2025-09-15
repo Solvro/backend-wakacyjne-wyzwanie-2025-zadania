@@ -44,6 +44,7 @@ describe("ExpenseController (e2e)", () => {
   });
 
   it("/expense (GET)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .get("/expense")
       .expect(200);
@@ -51,16 +52,20 @@ describe("ExpenseController (e2e)", () => {
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           id: expect.any(Number),
           amount: 100,
           description: "Lunch",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           createdAt: expect.any(String),
           tripId: 1,
         }),
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           id: expect.any(Number),
           amount: 200,
           description: "Taxi",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           createdAt: expect.any(String),
           tripId: 1,
         }),
@@ -75,6 +80,7 @@ describe("ExpenseController (e2e)", () => {
       createdAt: new Date(Date.now()).toISOString(),
       tripId: 1,
     };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await request(app.getHttpServer())
       .post("/expense")
       .send(badRequestDto)
@@ -87,6 +93,7 @@ describe("ExpenseController (e2e)", () => {
       tripId: 1,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .post("/expense")
       .send(dto)
@@ -94,6 +101,7 @@ describe("ExpenseController (e2e)", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         id: expect.any(Number),
         amount: 123,
         description: "test",
@@ -103,6 +111,7 @@ describe("ExpenseController (e2e)", () => {
   });
 
   it("/expense/:id (GET)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .get("/expense/1")
       .expect(200);
@@ -112,6 +121,7 @@ describe("ExpenseController (e2e)", () => {
         id: 1,
         amount: 100,
         description: "Lunch",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         createdAt: expect.any(String),
         tripId: 1,
       }),
@@ -124,6 +134,7 @@ describe("ExpenseController (e2e)", () => {
       description: "test",
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .patch("/expense/1")
       .send(updateDto)
@@ -139,6 +150,7 @@ describe("ExpenseController (e2e)", () => {
   });
 
   it("/expense/:id (DELETE)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await request(app.getHttpServer()).delete("/expense/1").expect(204);
   });
 });

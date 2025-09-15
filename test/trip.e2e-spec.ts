@@ -45,6 +45,7 @@ describe("TripController (e2e)", () => {
   });
 
   it("/trip (GET)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .get("/trip")
       .expect(200);
@@ -52,17 +53,23 @@ describe("TripController (e2e)", () => {
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           id: expect.any(Number),
           title: "Trip 1",
           description: "",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           startDate: expect.any(String),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           endDate: expect.any(String),
         }),
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           id: expect.any(Number),
           title: "Trip 2",
           description: "",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           startDate: expect.any(String),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           endDate: expect.any(String),
         }),
       ]),
@@ -77,6 +84,7 @@ describe("TripController (e2e)", () => {
       endDate: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .post("/trip")
       .send(dto)
@@ -84,6 +92,7 @@ describe("TripController (e2e)", () => {
 
     expect(response.body).toEqual(
       expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         id: expect.any(Number),
         title: "Trip 3",
         description: "New adventure",
@@ -92,6 +101,7 @@ describe("TripController (e2e)", () => {
   });
 
   it("/trip/:id (GET)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .get("/trip/1")
       .expect(200);
@@ -101,7 +111,9 @@ describe("TripController (e2e)", () => {
         id: 1,
         title: "Trip 1",
         description: "",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         startDate: expect.any(String),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         endDate: expect.any(String),
       }),
     );
@@ -113,6 +125,7 @@ describe("TripController (e2e)", () => {
       description: "Updated description",
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const response = await request(app.getHttpServer())
       .patch("/trip/1")
       .send(updateDto)
@@ -128,6 +141,7 @@ describe("TripController (e2e)", () => {
   });
 
   it("/trip/:id (DELETE)", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await request(app.getHttpServer()).delete("/trip/2").expect(204);
   });
 });
