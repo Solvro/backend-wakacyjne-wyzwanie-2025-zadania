@@ -4,6 +4,8 @@ import { hash } from "bcrypt";
 const prisma = new PrismaClient();
 
 export async function seedDatabase() {
+  const email = `${Date.now().toString()}email`;
+
   await prisma.trip.createMany({
     data: [
       {
@@ -19,6 +21,19 @@ export async function seedDatabase() {
         endDate: new Date(),
       },
     ],
+  });
+  await prisma.user.create({
+    data: {
+      email,
+      name: "Kamil",
+      middleName: "Paweł",
+      lastName: "Kajta",
+      sex: Sex.MALE,
+      password: await hash("haslo", 10),
+      isEnabled: true,
+
+      role: Role.ADMIN,
+    },
   });
 
   await prisma.expense.createMany({
@@ -38,29 +53,15 @@ export async function seedDatabase() {
     ],
   });
 
-  await prisma.user.create({
-    data: {
-      email: "email",
-      name: "Kamil",
-      middleName: "Paweł",
-      lastName: "Kajta",
-      sex: Sex.MALE,
-      password: await hash("haslo", 10),
-      isEnabled: true,
-
-      role: Role.ADMIN,
-    },
-  });
-
   await prisma.participant.createMany({
     data: [
       {
-        userEmail: "email",
+        userEmail: email,
         tripId: 1,
       },
       {
-        userEmail: "email",
-        tripId: 1,
+        userEmail: email,
+        tripId: 2,
       },
     ],
   });
