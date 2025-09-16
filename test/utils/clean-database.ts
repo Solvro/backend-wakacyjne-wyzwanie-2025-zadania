@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function cleanDb() {
+export async function cleanDatabase() {
   await prisma.expense.deleteMany();
   await prisma.participant.deleteMany();
   await prisma.trip.deleteMany();

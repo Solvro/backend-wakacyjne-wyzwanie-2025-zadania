@@ -38,8 +38,8 @@ export class ParticipantController {
   @ApiOperation({ summary: "Get participant by ID" })
   @ApiResponse({ status: 200, description: "Participant details retrieved" })
   @ApiResponse({ status: 404, description: "Participant not found" })
-  async findOne(@Param("id") id: string) {
-    return this.participantService.findOne(+id);
+  async findOne(@Param("id") id: number) {
+    return this.participantService.findOne(id);
   }
 
   @Patch(":id")
@@ -47,10 +47,10 @@ export class ParticipantController {
   @ApiResponse({ status: 200, description: "Participant updated successfully" })
   @ApiResponse({ status: 404, description: "Participant not found" })
   async update(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @Body() updateParticipantDto: UpdateParticipantDto,
   ) {
-    return this.participantService.update(+id, updateParticipantDto);
+    return this.participantService.update(id, updateParticipantDto);
   }
 
   @Delete(":id")

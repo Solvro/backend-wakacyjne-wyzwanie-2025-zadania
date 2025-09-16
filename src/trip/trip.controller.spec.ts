@@ -1,9 +1,12 @@
 import { NotFoundException } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { TripRoleGuard } from "../auth/roles/trip-role.guard";
 import { RoleGuard } from "../auth/roles/user-role.guard";
+import type { CreateTripDto } from "./dto/create-trip.dto";
+import type { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripController } from "./trip.controller";
 import { TripService } from "./trip.service";
 
@@ -14,22 +17,26 @@ describe("TripController", () => {
     findAll: jest.fn(() => [
       { trip_id: 1, name: "Test trip", destination: "Kraków" },
     ]),
-    findOnePublic: jest.fn((id) => {
-      if (id === 1)
+    findOnePublic: jest.fn((id: number) => {
+      if (id === 1) {
         return { trip_id: 1, name: "Test trip", destination: "Kraków" };
+      }
       throw new NotFoundException();
     }),
-    findOnePrivate: jest.fn((id) => ({
+    findOnePrivate: jest.fn((id: number) => ({
       trip_id: id,
       name: "Secret trip",
       destination: "Wrocław",
       budget: 1000,
     })),
-    create: jest.fn((dto) => ({ trip_id: 2, ...dto })),
-    update: jest.fn((id, dto) => ({ trip_id: id, ...dto })),
-    remove: jest.fn((id) => {
-      if (id !== 1) throw new NotFoundException();
-      return;
+    create: jest.fn((dto: CreateTripDto) => Object.assign({ trip_id: 2 }, dto)),
+    update: jest.fn((id: number, dto: UpdateTripDto) =>
+      Object.assign({ trip_id: id }, dto),
+    ),
+    remove: jest.fn((id: number) => {
+      if (id !== 1) {
+        throw new NotFoundException();
+      }
     }),
   };
 
@@ -51,69 +58,94 @@ describe("TripController", () => {
     controller = module.get<TripController>(TripController);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  it("should return all trips", async () => {
-    expect(await controller.findAll()).toEqual([
-      { trip_id: 1, name: "Test trip", destination: "Kraków" },
-    ]);
-    expect(mockTripService.findAll).toHaveBeenCalled();
-  });
-
-  it("should return one trip (public)", async () => {
-    expect(await controller.findOnePublic({ id: 1 })).toEqual({
-      trip_id: 1,
-      name: "Test trip",
-      destination: "Kraków",
+  describe("findAll", () => {
+    it("should return all trips", async () => {
+      const result = await controller.findAll();
+      expect(result).toEqual([
+        { trip_id: 1, name: "Test trip", destination: "Kraków" },
+      ]);
+      expect(mockTripService.findAll).toHaveBeenCalled();
     });
-    expect(mockTripService.findOnePublic).toHaveBeenCalledWith(1);
   });
 
-  it("should throw NotFoundException if public trip not found", async () => {
-    await expect(controller.findOnePublic({ id: 99 })).rejects.toThrow(
-      NotFoundException,
-    );
-  });
-
-  it("should return one trip (private)", async () => {
-    expect(await controller.findOnePrivate({ id: 1 })).toEqual({
-      trip_id: 1,
-      name: "Secret trip",
-      destination: "Wrocław",
-      budget: 1000,
+  describe("findOnePublic", () => {
+    it("should return one public trip", async () => {
+      const result = await controller.findOnePublic({ id: 1 });
+      expect(result).toEqual({
+        trip_id: 1,
+        name: "Test trip",
+        destination: "Kraków",
+      });
+      expect(mockTripService.findOnePublic).toHaveBeenCalledWith(1);
     });
-    expect(mockTripService.findOnePrivate).toHaveBeenCalledWith(1);
-  });
 
-  it("should create a trip", async () => {
-    const dto = {
-      name: "Nowa wycieczka",
-      destination: "Warszawa",
-      start_date: new Date(),
-    };
-    expect(await controller.create(dto as any)).toEqual({ trip_id: 2, ...dto });
-    expect(mockTripService.create).toHaveBeenCalledWith(dto);
-  });
-
-  it("should update a trip", async () => {
-    const dto = { name: "Zmieniona wycieczka", destination: "Gdańsk" };
-    expect(await controller.update({ id: 1 }, dto as any)).toEqual({
-      trip_id: 1,
-      ...dto,
+    it("should throw NotFoundException if not found", async () => {
+      await expect(controller.findOnePublic({ id: 99 })).rejects.toThrow(
+        NotFoundException,
+      );
     });
-    expect(mockTripService.update).toHaveBeenCalledWith(1, dto);
   });
 
-  it("should remove a trip", async () => {
-    expect(await controller.remove({ id: 1 })).toBeUndefined();
-    expect(mockTripService.remove).toHaveBeenCalledWith(1);
+  describe("findOnePrivate", () => {
+    it("should return one private trip", async () => {
+      const result = await controller.findOnePrivate({ id: 1 });
+      expect(result).toEqual({
+        trip_id: 1,
+        name: "Secret trip",
+        destination: "Wrocław",
+        budget: 1000,
+      });
+      expect(mockTripService.findOnePrivate).toHaveBeenCalledWith(1);
+    });
   });
 
-  it("should throw NotFoundException if trip to remove not found", async () => {
-    await expect(controller.remove({ id: 99 })).rejects.toThrow(
-      NotFoundException,
-    );
+  describe("create", () => {
+    it("should create a trip", async () => {
+      const dto: CreateTripDto = {
+        name: "Nowa wycieczka",
+        destination: "Warszawa",
+        start_date: new Date().toISOString(),
+      };
+
+      const result = await controller.create(dto);
+
+      expect(result).toEqual(Object.assign({ trip_id: 2 }, dto));
+      expect(mockTripService.create).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe("update", () => {
+    it("should update a trip", async () => {
+      const dto: UpdateTripDto = {
+        name: "Zmieniona wycieczka",
+        destination: "Gdańsk",
+      };
+
+      const result = await controller.update({ id: 1 }, dto);
+
+      expect(result).toEqual(Object.assign({ trip_id: 1 }, dto));
+      expect(mockTripService.update).toHaveBeenCalledWith(1, dto);
+    });
+  });
+
+  describe("remove", () => {
+    it("should remove a trip", async () => {
+      await expect(controller.remove({ id: 1 })).resolves.toBeUndefined();
+      expect(mockTripService.remove).toHaveBeenCalledWith(1);
+    });
+
+    it("should throw NotFoundException if not found", async () => {
+      await expect(controller.remove({ id: 99 })).rejects.toThrow(
+        NotFoundException,
+      );
+    });
   });
 });

@@ -1,16 +1,18 @@
 import { TripRole } from "@prisma/client";
 
 import { NotFoundException } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { DatabaseService } from "../database/database.service";
-import { ParticipantService } from "../participant/participant.service";
+import type { CreateParticipantDto } from "./dto/create-participant.dto";
+import type { UpdateParticipantDto } from "./dto/update-participant.dto";
+import { ParticipantService } from "./participant.service";
 
 describe("ParticipantService", () => {
   let service: ParticipantService;
-  let db: DatabaseService;
 
-  const mockDb = {
+  const mockDatabase = {
     participant: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -32,14 +34,12 @@ describe("ParticipantService", () => {
         ParticipantService,
         {
           provide: DatabaseService,
-          useValue: mockDb,
+          useValue: mockDatabase,
         },
       ],
     }).compile();
 
     service = module.get<ParticipantService>(ParticipantService);
-    db = module.get<DatabaseService>(DatabaseService);
-
     jest.clearAllMocks();
   });
 
@@ -56,30 +56,35 @@ describe("ParticipantService", () => {
       const participants = [
         { participant_id: 1, first_name: "Jan", last_name: "Kowalski" },
       ];
-      (mockDb.participant.findMany as jest.Mock).mockResolvedValue(
-        participants,
-      );
+
+      mockDatabase.participant.findMany.mockResolvedValue(participants);
 
       const result = await service.findAll();
 
       expect(result).toEqual(participants);
-      expect(mockDb.participant.findMany).toHaveBeenCalled();
+      expect(mockDatabase.participant.findMany).toHaveBeenCalled();
     });
   });
 
   describe("findOne", () => {
     it("should return a participant if found", async () => {
-      const participant = { participant_id: 1, first_name: "Jan" };
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(
-        participant,
-      );
+      const participant = {
+        participant_id: 1,
+        first_name: "Jan",
+        last_name: "Kowalski",
+        email: "jan@example.com",
+        TripRole: TripRole.MEMBER,
+        trip_id: 1,
+      };
+
+      mockDatabase.participant.findUnique.mockResolvedValue(participant);
 
       const result = await service.findOne(1);
       expect(result).toEqual(participant);
     });
 
     it("should throw if not found", async () => {
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(null);
+      mockDatabase.participant.findUnique.mockResolvedValue(null);
 
       await expect(service.findOne(1)).rejects.toThrow(NotFoundException);
     });
@@ -87,22 +92,27 @@ describe("ParticipantService", () => {
 
   describe("create", () => {
     it("should create a participant", async () => {
-      const dto = {
+      const dto: CreateParticipantDto = {
         first_name: "Jan",
         last_name: "Kowalski",
-        TripRole: TripRole.MEMBER,
         email: "jan@example.com",
+        TripRole: TripRole.MEMBER,
         trip_id: 1,
       };
-      const created = { participant_id: 1, ...dto };
 
-      (mockDb.participant.create as jest.Mock).mockResolvedValue(created);
+      const created: { participant_id: number } & CreateParticipantDto =
+        Object.assign({ participant_id: 1 }, dto);
 
-      const result = await service.create(dto as any);
+      mockDatabase.participant.create.mockResolvedValue(created);
+
+      const result = await service.create(dto);
 
       expect(result).toEqual(created);
-      expect(mockDb.participant.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining(dto) }),
+
+      const expectedCreate: { data: CreateParticipantDto } = { data: dto };
+
+      expect(mockDatabase.participant.create).toHaveBeenCalledWith(
+        expect.objectContaining(expectedCreate),
       );
     });
   });
@@ -110,60 +120,82 @@ describe("ParticipantService", () => {
   describe("update", () => {
     it("should update a participant if found", async () => {
       const existing = { participant_id: 1 };
-      const updated = {
-        participant_id: 1,
+
+      const dto: UpdateParticipantDto = {
         first_name: "Adam",
         last_name: "Nowak",
+        email: "adam@example.com",
+        TripRole: TripRole.ORGANIZER,
+        trip_id: 2,
       };
 
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(existing);
-      (mockDb.participant.update as jest.Mock).mockResolvedValue(updated);
+      const updated: { participant_id: number } & UpdateParticipantDto =
+        Object.assign({ participant_id: 1 }, dto);
 
-      const result = await service.update(1, {
-        first_name: "Adam",
-        last_name: "Nowak",
-        TripRole: TripRole.ORGANIZER,
-      } as any);
+      mockDatabase.participant.findUnique.mockResolvedValue(existing);
+      mockDatabase.user.findUnique.mockResolvedValue({
+        user_id: 99,
+        email: "adam@example.com",
+      });
+      mockDatabase.trip.findUnique.mockResolvedValue({
+        trip_id: 2,
+        name: "Trip 2",
+      });
+
+      mockDatabase.participant.update.mockResolvedValue(updated);
+
+      const result = await service.update(1, dto);
 
       expect(result).toEqual(updated);
-      expect(mockDb.participant.update).toHaveBeenCalledWith({
+
+      const expectedUpdate = {
         where: { participant_id: 1 },
-        data: expect.objectContaining({
-          first_name: "Adam",
-          last_name: "Nowak",
-        }),
+        data: {
+          first_name: dto.first_name,
+          last_name: dto.last_name,
+          TripRole: dto.TripRole,
+          User: { connect: { email: dto.email } },
+          trip: { connect: { trip_id: dto.trip_id } },
+        },
         include: { trip: true },
-      });
+      } as const;
+
+      expect(mockDatabase.participant.update).toHaveBeenCalledWith(
+        expect.objectContaining(expectedUpdate),
+      );
     });
 
     it("should throw if participant not found", async () => {
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(null);
+      mockDatabase.participant.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.update(1, {
-          first_name: "X",
-          last_name: "Y",
-          TripRole: TripRole.MEMBER,
-        } as any),
-      ).rejects.toThrow(NotFoundException);
+      const dto: UpdateParticipantDto = {
+        first_name: "X",
+        last_name: "Y",
+        email: "x@example.com",
+        TripRole: TripRole.MEMBER,
+        trip_id: 99,
+      };
+
+      await expect(service.update(1, dto)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe("remove", () => {
     it("should remove participant if exists", async () => {
       const existing = { participant_id: 1 };
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(existing);
-      (mockDb.participant.delete as jest.Mock).mockResolvedValue(existing);
+
+      mockDatabase.participant.findUnique.mockResolvedValue(existing);
+      mockDatabase.participant.delete.mockResolvedValue(existing);
 
       await service.remove(1);
 
-      expect(mockDb.participant.delete).toHaveBeenCalledWith({
+      expect(mockDatabase.participant.delete).toHaveBeenCalledWith({
         where: { participant_id: 1 },
       });
     });
 
     it("should throw if participant not found", async () => {
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(null);
+      mockDatabase.participant.findUnique.mockResolvedValue(null);
 
       await expect(service.remove(1)).rejects.toThrow(NotFoundException);
     });

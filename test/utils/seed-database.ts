@@ -2,7 +2,7 @@ import { ExpenseType, PrismaClient, TripRole, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function seedDb() {
+export async function seedDatabase() {
   await prisma.user.createMany({
     data: [
       {
@@ -39,7 +39,7 @@ export async function seedDb() {
       destination: "Kraków",
       start_date: new Date("2025-09-01"),
       end_date: new Date("2025-09-03"),
-      budget: 1200.0,
+      budget: 1200,
     },
   });
 

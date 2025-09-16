@@ -1,22 +1,21 @@
 import { ExpenseType } from "@prisma/client";
 
 import { NotFoundException } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
-import { CreateExpenseDto } from "./dto/create-expense.dto";
-import { UpdateExpenseDto } from "./dto/update-expense.dto";
+import type { CreateExpenseDto } from "./dto/create-expense.dto";
+import type { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
 
 describe("ExpenseController", () => {
   let controller: ExpenseController;
-  let service: ExpenseService;
 
   const mockExpenseService = {
-    create: jest.fn((dto: CreateExpenseDto) => ({
-      expense_id: 1,
-      ...dto,
-    })),
+    create: jest.fn((dto: CreateExpenseDto) =>
+      Object.assign({ expense_id: 1 }, dto),
+    ),
     findAll: jest.fn(() => [
       {
         expense_id: 1,
@@ -48,13 +47,13 @@ describe("ExpenseController", () => {
       }
       throw new NotFoundException();
     }),
-    update: jest.fn((id: number, dto: UpdateExpenseDto) => ({
-      expense_id: id,
-      ...dto,
-    })),
+    update: jest.fn((id: number, dto: UpdateExpenseDto) =>
+      Object.assign({ expense_id: id }, dto),
+    ),
     remove: jest.fn((id: number) => {
-      if (id !== 1) throw new NotFoundException();
-      return;
+      if (id !== 1) {
+        throw new NotFoundException();
+      }
     }),
   };
 
@@ -70,7 +69,6 @@ describe("ExpenseController", () => {
     }).compile();
 
     controller = module.get<ExpenseController>(ExpenseController);
-    service = module.get<ExpenseService>(ExpenseService);
   });
 
   afterEach(() => {
@@ -91,11 +89,10 @@ describe("ExpenseController", () => {
         expense_date: new Date("2025-09-01"),
       };
 
-      expect(await controller.create(dto)).toEqual({
-        expense_id: 1,
-        ...dto,
-      });
-      expect(service.create).toHaveBeenCalledWith(dto);
+      const result = await controller.create(dto);
+
+      expect(result).toEqual(Object.assign({ expense_id: 1 }, dto));
+      expect(mockExpenseService.create).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -103,7 +100,7 @@ describe("ExpenseController", () => {
     it("should return all expenses", async () => {
       const result = await controller.findAll();
       expect(result).toHaveLength(2);
-      expect(service.findAll).toHaveBeenCalled();
+      expect(mockExpenseService.findAll).toHaveBeenCalled();
     });
   });
 
@@ -111,7 +108,7 @@ describe("ExpenseController", () => {
     it("should return one expense", async () => {
       const result = await controller.findOne(1);
       expect(result.expense_id).toBe(1);
-      expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(mockExpenseService.findOne).toHaveBeenCalledWith(1);
     });
 
     it("should throw NotFoundException if expense not found", async () => {
@@ -125,16 +122,18 @@ describe("ExpenseController", () => {
         description: "Updated hotel",
         cost: 600,
       };
+
       const result = await controller.update(1, dto);
-      expect(result).toEqual({ expense_id: 1, ...dto });
-      expect(service.update).toHaveBeenCalledWith(1, dto);
+
+      expect(result).toEqual(Object.assign({ expense_id: 1 }, dto));
+      expect(mockExpenseService.update).toHaveBeenCalledWith(1, dto);
     });
   });
 
   describe("remove", () => {
     it("should remove an expense", async () => {
       await expect(controller.remove(1)).resolves.toBeUndefined();
-      expect(service.remove).toHaveBeenCalledWith(1);
+      expect(mockExpenseService.remove).toHaveBeenCalledWith(1);
     });
 
     it("should throw NotFoundException if expense not found", async () => {

@@ -1,8 +1,11 @@
 import { TripRole } from "@prisma/client";
 
 import { NotFoundException } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
+import type { CreateParticipantDto } from "./dto/create-participant.dto";
+import type { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantController } from "./participant.controller";
 import { ParticipantService } from "./participant.service";
 
@@ -10,10 +13,12 @@ describe("ParticipantController", () => {
   let controller: ParticipantController;
 
   const mockParticipantService = {
-    create: jest.fn((dto) => ({ id: 1, ...dto })),
+    create: jest.fn((dto: CreateParticipantDto) =>
+      Object.assign({ participant_id: 1 }, dto),
+    ),
     findAll: jest.fn(() => [
       {
-        id: 1,
+        participant_id: 1,
         first_name: "Jan",
         last_name: "Kowalski",
         email: "jan@test.com",
@@ -21,10 +26,10 @@ describe("ParticipantController", () => {
         trip_id: 1,
       },
     ]),
-    findOne: jest.fn((id) => {
+    findOne: jest.fn((id: number) => {
       if (id === 1) {
         return {
-          id,
+          participant_id: 1,
           first_name: "Jan",
           last_name: "Kowalski",
           email: "jan@test.com",
@@ -34,10 +39,14 @@ describe("ParticipantController", () => {
       }
       throw new NotFoundException();
     }),
-    update: jest.fn((id, dto) => ({ id, ...dto })),
-    remove: jest.fn((id) => {
-      if (id !== 1) throw new NotFoundException();
-      return { id };
+    update: jest.fn((id: number, dto: UpdateParticipantDto) =>
+      Object.assign({ participant_id: id }, dto),
+    ),
+    remove: jest.fn((id: number) => {
+      if (id !== 1) {
+        throw new NotFoundException();
+      }
+      return { participant_id: id };
     }),
   };
 
@@ -53,71 +62,77 @@ describe("ParticipantController", () => {
     controller = module.get<ParticipantController>(ParticipantController);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  it("should create a participant", async () => {
-    const dto = {
-      first_name: "Jan",
-      last_name: "Kowalski",
-      email: "jan@test.com",
-      TripRole: TripRole.MEMBER,
-      trip_id: 1,
-    };
-
-    expect(await controller.create(dto)).toEqual({ id: 1, ...dto });
-    expect(mockParticipantService.create).toHaveBeenCalledWith(dto);
-  });
-
-  it("should return all participants", async () => {
-    expect(await controller.findAll()).toEqual([
-      {
-        id: 1,
+  describe("create", () => {
+    it("should create a participant", async () => {
+      const dto: CreateParticipantDto = {
         first_name: "Jan",
         last_name: "Kowalski",
         email: "jan@test.com",
         TripRole: TripRole.MEMBER,
         trip_id: 1,
-      },
-    ]);
-    expect(mockParticipantService.findAll).toHaveBeenCalled();
-  });
+      };
 
-  it("should return one participant", async () => {
-    expect(await controller.findOne("1")).toEqual({
-      id: 1,
-      first_name: "Jan",
-      last_name: "Kowalski",
-      email: "jan@test.com",
-      TripRole: TripRole.MEMBER,
-      trip_id: 1,
+      const result = await controller.create(dto);
+
+      expect(result).toEqual(Object.assign({ participant_id: 1 }, dto));
+      expect(mockParticipantService.create).toHaveBeenCalledWith(dto);
     });
-    expect(mockParticipantService.findOne).toHaveBeenCalledWith(1);
   });
 
-  it("should throw NotFoundException if participant not found", async () => {
-    await expect(controller.findOne("99")).rejects.toThrow(NotFoundException);
+  describe("findAll", () => {
+    it("should return all participants", async () => {
+      const result = await controller.findAll();
+
+      expect(result).toHaveLength(1);
+      expect(mockParticipantService.findAll).toHaveBeenCalled();
+    });
   });
 
-  it("should update a participant", async () => {
-    const dto = {
-      first_name: "Adam",
-      last_name: "Nowak",
-      email: "adam@test.com",
-      TripRole: TripRole.ORGANIZER,
-      trip_id: 2,
-    };
-    expect(await controller.update("1", dto)).toEqual({ id: 1, ...dto });
-    expect(mockParticipantService.update).toHaveBeenCalledWith(1, dto);
+  describe("findOne", () => {
+    it("should return one participant", async () => {
+      const result = await controller.findOne(1);
+      expect(result.participant_id).toBe(1);
+      expect(mockParticipantService.findOne).toHaveBeenCalledWith(1);
+    });
+
+    it("should throw NotFoundException if participant not found", async () => {
+      await expect(controller.findOne(999)).rejects.toThrow(NotFoundException);
+    });
   });
 
-  it("should remove a participant", async () => {
-    await controller.remove(1);
-    expect(mockParticipantService.remove).toHaveBeenCalledWith(1);
+  describe("update", () => {
+    it("should update a participant", async () => {
+      const dto: UpdateParticipantDto = {
+        first_name: "Adam",
+        last_name: "Nowak",
+        email: "adam@test.com",
+        TripRole: TripRole.ORGANIZER,
+        trip_id: 2,
+      };
+
+      const result = await controller.update(1, dto);
+
+      expect(result).toEqual(Object.assign({ participant_id: 1 }, dto));
+      expect(mockParticipantService.update).toHaveBeenCalledWith(1, dto);
+    });
   });
 
-  it("should throw NotFoundException if participant to remove not found", async () => {
-    await expect(controller.remove(99)).rejects.toThrow(NotFoundException);
+  describe("remove", () => {
+    it("should remove a participant", async () => {
+      await controller.remove(1);
+      expect(mockParticipantService.remove).toHaveBeenCalledWith(1);
+    });
+
+    it("should throw NotFoundException if participant not found", async () => {
+      await expect(controller.remove(999)).rejects.toThrow(NotFoundException);
+    });
   });
 });

@@ -1,14 +1,16 @@
 import { NotFoundException } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { DatabaseService } from "../database/database.service";
+import type { CreateTripDto } from "./dto/create-trip.dto";
+import type { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
 
 describe("TripService", () => {
   let service: TripService;
-  let db: DatabaseService;
 
-  const mockDb = {
+  const mockDatabase = {
     trip: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -30,14 +32,12 @@ describe("TripService", () => {
         TripService,
         {
           provide: DatabaseService,
-          useValue: mockDb,
+          useValue: mockDatabase,
         },
       ],
     }).compile();
 
     service = module.get<TripService>(TripService);
-    db = module.get<DatabaseService>(DatabaseService);
-
     jest.clearAllMocks();
   });
 
@@ -51,22 +51,30 @@ describe("TripService", () => {
 
   describe("create", () => {
     it("should create a trip", async () => {
-      const dto = {
+      const dto: CreateTripDto = {
         name: "Test Trip",
         destination: "Paris",
-        start_date: new Date("2025-01-01"),
-        end_date: new Date("2025-01-10"),
+        start_date: new Date("2025-01-01").toISOString(),
+        end_date: new Date("2025-01-10").toISOString(),
         budget: 1000,
       };
-      const created = { trip_id: 1, ...dto, expenses: [], participants: [] };
 
-      (mockDb.trip.create as jest.Mock).mockResolvedValue(created);
+      const created = Object.assign(
+        { trip_id: 1, expenses: [], participants: [] },
+        dto,
+      );
 
-      const result = await service.create(dto as any);
+      jest.mocked(mockDatabase.trip.create).mockResolvedValue(created);
+
+      const result = await service.create(dto);
 
       expect(result).toEqual(created);
-      expect(mockDb.trip.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining(dto) }),
+
+      // ✅ jawne typowanie zamiast any
+      const expectedData: { data: CreateTripDto } = { data: dto };
+
+      expect(mockDatabase.trip.create).toHaveBeenCalledWith(
+        expect.objectContaining(expectedData),
       );
     });
   });
@@ -74,26 +82,26 @@ describe("TripService", () => {
   describe("findAll", () => {
     it("should return trips", async () => {
       const trips = [{ trip_id: 1, name: "Trip 1" }];
-      (mockDb.trip.findMany as jest.Mock).mockResolvedValue(trips);
+      jest.mocked(mockDatabase.trip.findMany).mockResolvedValue(trips);
 
       const result = await service.findAll();
 
       expect(result).toEqual(trips);
-      expect(mockDb.trip.findMany).toHaveBeenCalled();
+      expect(mockDatabase.trip.findMany).toHaveBeenCalled();
     });
   });
 
   describe("findOnePublic", () => {
     it("should return a trip if found", async () => {
       const trip = { trip_id: 1, name: "Trip 1" };
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(trip);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(trip);
 
       const result = await service.findOnePublic(1);
       expect(result).toEqual(trip);
     });
 
     it("should throw if not found", async () => {
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(null);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(null);
 
       await expect(service.findOnePublic(1)).rejects.toThrow(NotFoundException);
     });
@@ -107,14 +115,14 @@ describe("TripService", () => {
         budget: 500,
         participants: [],
       };
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(trip);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(trip);
 
       const result = await service.findOnePrivate(1);
       expect(result).toEqual(trip);
     });
 
     it("should throw if not found", async () => {
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(null);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(null);
 
       await expect(service.findOnePrivate(1)).rejects.toThrow(
         NotFoundException,
@@ -125,49 +133,59 @@ describe("TripService", () => {
   describe("update", () => {
     it("should update a trip if found", async () => {
       const existing = { trip_id: 1 };
-      const updated = { trip_id: 1, name: "Updated Trip" };
+      const dto: UpdateTripDto = { name: "Updated Trip" };
+      const updated = Object.assign({ trip_id: 1 }, dto);
 
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(existing);
-      (mockDb.trip.update as jest.Mock).mockResolvedValue(updated);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(existing);
+      jest.mocked(mockDatabase.trip.update).mockResolvedValue(updated);
 
-      const result = await service.update(1, { name: "Updated Trip" } as any);
+      const result = await service.update(1, dto);
 
       expect(result).toEqual(updated);
-      expect(mockDb.trip.update).toHaveBeenCalledWith({
+
+      // ✅ jawne typowanie zamiast any
+      const expectedUpdate: {
+        where: { trip_id: number };
+        data: UpdateTripDto;
+      } = {
         where: { trip_id: 1 },
-        data: expect.objectContaining({ name: "Updated Trip" }),
-      });
+        data: dto,
+      };
+
+      expect(mockDatabase.trip.update).toHaveBeenCalledWith(
+        expect.objectContaining(expectedUpdate),
+      );
     });
 
     it("should throw if trip not found", async () => {
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(null);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(null);
 
-      await expect(service.update(1, { name: "X" } as any)).rejects.toThrow(
-        NotFoundException,
-      );
+      const dto: UpdateTripDto = { name: "X" };
+
+      await expect(service.update(1, dto)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe("remove", () => {
     it("should remove trip if exists", async () => {
       const existing = { trip_id: 1 };
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(existing);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(existing);
 
       await service.remove(1);
 
-      expect(mockDb.expense.deleteMany).toHaveBeenCalledWith({
+      expect(mockDatabase.expense.deleteMany).toHaveBeenCalledWith({
         where: { trip_id: 1 },
       });
-      expect(mockDb.participant.deleteMany).toHaveBeenCalledWith({
+      expect(mockDatabase.participant.deleteMany).toHaveBeenCalledWith({
         where: { trip_id: 1 },
       });
-      expect(mockDb.trip.delete).toHaveBeenCalledWith({
+      expect(mockDatabase.trip.delete).toHaveBeenCalledWith({
         where: { trip_id: 1 },
       });
     });
 
     it("should throw if trip not found", async () => {
-      (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(null);
+      jest.mocked(mockDatabase.trip.findUnique).mockResolvedValue(null);
 
       await expect(service.remove(1)).rejects.toThrow(NotFoundException);
     });

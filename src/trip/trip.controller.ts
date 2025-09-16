@@ -73,7 +73,7 @@ export class TripController {
     description: "Trip not found",
   })
   async findOnePublic(@Param() parameters: IdParameterDto) {
-    return this.tripService.findOnePublic(Number(parameters.id));
+    return this.tripService.findOnePublic(parameters.id);
   }
 
   // PRIVATE

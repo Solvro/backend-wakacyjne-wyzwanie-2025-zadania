@@ -1,7 +1,10 @@
-import { ExecutionContext, ForbiddenException } from "@nestjs/common";
-import { RoleGuard } from "./user-role.guard";
-import { Reflector } from "@nestjs/core";
 import { UserRole } from "@prisma/client";
+
+import type { ExecutionContext } from "@nestjs/common";
+import { ForbiddenException } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+
+import { RoleGuard } from "./user-role.guard";
 
 describe("RoleGuard", () => {
   let guard: RoleGuard;
@@ -13,7 +16,9 @@ describe("RoleGuard", () => {
   });
 
   it("should allow access if user has required role", () => {
-    jest.spyOn(reflector, "getAllAndOverride").mockReturnValue([UserRole.ADMIN]);
+    jest
+      .spyOn(reflector, "getAllAndOverride")
+      .mockReturnValue([UserRole.ADMIN]);
 
     const context = {
       switchToHttp: () => ({
@@ -27,7 +32,9 @@ describe("RoleGuard", () => {
   });
 
   it("should deny access if user lacks required role", () => {
-    jest.spyOn(reflector, "getAllAndOverride").mockReturnValue([UserRole.ADMIN]);
+    jest
+      .spyOn(reflector, "getAllAndOverride")
+      .mockReturnValue([UserRole.ADMIN]);
 
     const context = {
       switchToHttp: () => ({
@@ -42,7 +49,7 @@ describe("RoleGuard", () => {
   });
 
   it("should allow access if no roles are required", () => {
-    jest.spyOn(reflector, "getAllAndOverride").mockReturnValue(undefined);
+    jest.spyOn(reflector, "getAllAndOverride").mockReturnValue();
 
     const context = {
       switchToHttp: () => ({
@@ -56,7 +63,9 @@ describe("RoleGuard", () => {
   });
 
   it("should handle missing user", () => {
-    jest.spyOn(reflector, "getAllAndOverride").mockReturnValue([UserRole.ADMIN]);
+    jest
+      .spyOn(reflector, "getAllAndOverride")
+      .mockReturnValue([UserRole.ADMIN]);
 
     const context = {
       switchToHttp: () => ({
