@@ -55,6 +55,10 @@ export class ExpenseController {
     status: 200,
     description: "Request successful",
   })
+  @ApiResponse({
+    status: 404,
+    description: "Expense with this id does not exist",
+  })
   async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.findOne(+id);
   }

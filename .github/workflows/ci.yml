@@ -8,6 +8,17 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: wakacyjne_test_db
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,6 +52,10 @@ jobs:
 
       - name: Check types
         run: npm run typecheck
+        if: always()
+
+      - name: Prepare tests
+        run: npm run test:prepare
         if: always()
 
       - name: Run tests

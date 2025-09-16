@@ -113,11 +113,14 @@ export class ParticipantController {
     request: {
       participant: ParticipantMetadata;
     },
-    @Body() id: number,
+    @Body() body: { id: number },
   ) {
     if (request.participant.role === "ADMIN") {
-      return await this.participantService.deleteAny(id);
+      return await this.participantService.deleteAny(body.id);
     }
-    return await this.participantService.deleteSelf(id, request.participant.id);
+    return await this.participantService.deleteSelf(
+      body.id,
+      request.participant.id,
+    );
   }
 }

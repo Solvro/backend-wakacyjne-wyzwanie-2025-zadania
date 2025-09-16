@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
@@ -27,7 +27,11 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    return this.database.expense.findUnique({ where: { id } });
+    const response = await this.database.expense.findUnique({ where: { id } });
+    if (response === null) {
+      throw new NotFoundException("Expense with this id does not exist");
+    }
+    return response;
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {

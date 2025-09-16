@@ -1,4 +1,5 @@
 import { AccountType, PrismaClient, Role } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -10,8 +11,7 @@ async function main() {
         surname: "Nowak",
         account_type: AccountType.BASIC,
         email: "JanNowak@example.com",
-        password:
-          "$2b$10$f5pQ/1yvPBt2JeixhxJG4e24MewHrb..j8VcSzPVZIHCfhdt4ny26",
+        password: await hash("test", 10),
         role: Role.COORDINATOR,
       },
       {
@@ -19,8 +19,7 @@ async function main() {
         surname: "Kowalska",
         account_type: AccountType.PREMIUM,
         email: "KatarzynaKowalska@example.com",
-        password:
-          "$2b$10$f5pQ/1yvPBt2JeixhxJG4e24MewHrb..j8VcSzPVZIHCfhdt4ny26",
+        password: await hash("test", 10),
         role: Role.USER,
       },
       {
@@ -28,8 +27,7 @@ async function main() {
         surname: "Kowal",
         account_type: AccountType.TRIAL,
         email: "MarekKowal@example.com",
-        password:
-          "$2b$10$f5pQ/1yvPBt2JeixhxJG4e24MewHrb..j8VcSzPVZIHCfhdt4ny26",
+        password: await hash("test", 10),
         role: Role.ADMIN,
       },
     ],
