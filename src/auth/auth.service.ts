@@ -34,10 +34,16 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const expiryTimeMs = parseInt(process.env.EXPIRY_TIME_MS || "3600000");
+    const expiryTimeSeconds = Math.floor(expiryTimeMs / 1000);
+
     const payload = {
       sub: user.id,
       email: user.email,
       role: user.role,
+      iat: currentTimestamp,
+      exp: currentTimestamp + expiryTimeSeconds,
     };
 
     return {
@@ -65,5 +71,30 @@ export class AuthService {
         role: true,
       },
     });
+  }
+
+  async validateToken(token: string) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      if (payload.exp && currentTimestamp > payload.exp) {
+        throw new UnauthorizedException("Token has expired");
+      }
+
+      const user = await this.findUserById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException("User not found");
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException("Invalid token");
+    }
   }
 }
