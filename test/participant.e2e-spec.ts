@@ -6,6 +6,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import type { LoginResponseDto } from "../src/auth/dto/login-response.dto.js";
+import { TasksService } from "../src/currency/tasks/tasks.service";
 import { ParticipantModule } from "../src/participant/participant.module";
 import { AppModule } from "./../src/app.module";
 import { cleanDatabase } from "./clean-database";
@@ -18,7 +19,10 @@ describe("ParticipantController (e2e)", () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, ParticipantModule],
-    }).compile();
+    })
+      .overrideProvider(TasksService)
+      .useValue({ handleCron: jest.fn() })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
