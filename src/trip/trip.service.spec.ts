@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 // <-- użyj swojego interfejsu
 import { AuthRole, Prisma } from "@prisma/client";
 

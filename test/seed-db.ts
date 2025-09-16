@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable unicorn/prefer-module */
 /* eslint-disable unicorn/no-process-exit */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable unicorn/prevent-abbreviations */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthRole, Prisma, PrismaClient, Type } from "@prisma/client";
 
 const prisma = new PrismaClient();

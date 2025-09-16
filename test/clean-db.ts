@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable unicorn/prevent-abbreviations */
 import { PrismaClient } from "@prisma/client";
 
@@ -16,5 +15,5 @@ export async function cleanDb() {
   await prisma.$executeRaw`ALTER SEQUENCE "Trip_id_seq" RESTART WITH 1`;
   await prisma.$executeRaw`ALTER SEQUENCE "Participant_id_seq" RESTART WITH 1`;
   await prisma.$executeRaw`ALTER SEQUENCE "Expense_id_seq" RESTART WITH 1`;
-  // await prisma.$executeRaw`ALTER SEQUENCE "User_id_seq" RESTART WITH 1`;
+  //await prisma.$executeRaw`ALTER SEQUENCE "User_id_seq" RESTART WITH 1`;
 }
