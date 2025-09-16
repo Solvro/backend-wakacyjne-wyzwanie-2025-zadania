@@ -59,6 +59,6 @@ describe("RolesGuard", () => {
         getRequest: () => ({ user: { email: "a", role: Role.USER } }),
       }),
     } as unknown as ExecutionContext;
-    expect(guard.canActivate(context)).toThrow(ForbiddenException);
+    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
   });
 });
