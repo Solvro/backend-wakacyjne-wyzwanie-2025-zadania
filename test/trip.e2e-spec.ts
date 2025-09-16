@@ -10,6 +10,7 @@ import { Test } from "@nestjs/testing";
 import { DatabaseService } from "../src/database/database.service";
 import { TripModule } from "../src/trip/trip.module";
 import { AppModule } from "./../src/app.module";
+import { authRequest } from "./auth-request";
 import { cleanDatabase } from "./clean-database";
 import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
@@ -97,9 +98,8 @@ describe("TripController (e2e)", () => {
       startDate: "2026-06-10T00:00:00.000Z",
       endDate: "2026-08-11T00:00:00.000Z",
     };
-    return request(app.getHttpServer())
-      .post("/trip")
-      .set("Authorization", `Bearer ${adminToken}`)
+
+    await authRequest(app.getHttpServer(), adminToken)("post", "/trip")
       .send(dto)
       .expect(201)
       .then((trip) => {
@@ -127,9 +127,7 @@ describe("TripController (e2e)", () => {
   });
 
   it("/trip/:id (PATCH)", async () => {
-    return request(app.getHttpServer())
-      .patch("/trip/2")
-      .set("Authorization", `Bearer ${adminToken}`)
+    return authRequest(app.getHttpServer(), adminToken)("patch", "/trip/2")
       .send({
         destination: "New Island",
       })
@@ -155,10 +153,10 @@ describe("TripController (e2e)", () => {
       },
     });
 
-    const response = await request(app.getHttpServer())
-      .delete(`/trip/${String(trip.tripId)}`)
-      .set("Authorization", `Bearer ${adminToken}`)
-      .expect(200);
+    const response = await authRequest(app.getHttpServer(), adminToken)(
+      "delete",
+      `/trip/${String(trip.tripId)}`,
+    ).expect(200);
 
     expect(response.body).toEqual({
       tripId: trip.tripId,

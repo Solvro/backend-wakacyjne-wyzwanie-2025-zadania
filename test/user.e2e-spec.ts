@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Role } from "@prisma/client";
 import request from "supertest";
-import type { App } from "supertest/types";
 
 import { ValidationPipe } from "@nestjs/common";
 import type { INestApplication } from "@nestjs/common";
@@ -10,13 +10,14 @@ import { Test } from "@nestjs/testing";
 import { DatabaseService } from "../src/database/database.service";
 import { UserModule } from "../src/user/user.module";
 import { AppModule } from "./../src/app.module";
+import { authRequest } from "./auth-request";
 import { cleanDatabase } from "./clean-database";
 import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
 
 let prisma: DatabaseService;
 let adminToken: string;
-let app: INestApplication<App>;
+let app: INestApplication;
 
 describe("UserController (e2e)", () => {
   beforeAll(async () => {
@@ -109,10 +110,10 @@ describe("UserController (e2e)", () => {
       },
     });
 
-    const response = await request(app.getHttpServer())
-      .delete(`/user/${userEmail}`)
-      .set("Authorization", `Bearer ${adminToken}`)
-      .expect(200);
+    const response = await authRequest(app.getHttpServer(), adminToken)(
+      "delete",
+      `/user/${userEmail}`,
+    ).expect(200);
 
     expect(response.body).toEqual({
       name: "Alice",

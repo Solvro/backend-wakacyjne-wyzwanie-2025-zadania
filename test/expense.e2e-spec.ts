@@ -11,6 +11,7 @@ import { Test } from "@nestjs/testing";
 import { AppModule } from "../src/app.module";
 import { DatabaseService } from "../src/database/database.service";
 import { ExpenseModule } from "../src/expense/expense.module";
+import { authRequest } from "./auth-request";
 import { cleanDatabase } from "./clean-database";
 import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
@@ -90,9 +91,7 @@ describe("ExpenseController (e2e)", () => {
   it("/expense (POST)", async () => {
     // creating expense with authorization
 
-    return request(app.getHttpServer())
-      .post("/expense")
-      .set("Authorization", `Bearer ${adminToken}`)
+    return authRequest(app.getHttpServer(), adminToken)("post", `/expense`)
       .send({
         tripId: 1,
         expenseAmount: 1234,
@@ -122,9 +121,7 @@ describe("ExpenseController (e2e)", () => {
   });
 
   it("/expense/:id (PATCH)", async () => {
-    return request(app.getHttpServer())
-      .patch("/expense/2")
-      .set("Authorization", `Bearer ${adminToken}`)
+    return authRequest(app.getHttpServer(), adminToken)("patch", `/expense/2`)
       .send({
         expenseAmount: 5444,
       })
@@ -148,10 +145,10 @@ describe("ExpenseController (e2e)", () => {
       },
     });
 
-    const response = await request(app.getHttpServer())
-      .delete(`/expense/${String(expense.expenseId)}`)
-      .set("Authorization", `Bearer ${adminToken}`)
-      .expect(200);
+    const response = await authRequest(app.getHttpServer(), adminToken)(
+      "delete",
+      `/expense/${String(expense.expenseId)}`,
+    ).expect(200);
 
     expect(response.body).toEqual({
       expenseId: expense.expenseId,

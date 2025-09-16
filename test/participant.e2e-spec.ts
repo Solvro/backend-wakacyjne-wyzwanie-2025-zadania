@@ -11,6 +11,7 @@ import { Test } from "@nestjs/testing";
 import { AppModule } from "../src/app.module";
 import { DatabaseService } from "../src/database/database.service";
 import { ParticipantModule } from "../src/participant/participant.module";
+import { authRequest } from "./auth-request";
 import { cleanDatabase } from "./clean-database";
 import { loginAdmin } from "./login-admin";
 import { seedDatabase } from "./seed-database";
@@ -99,9 +100,7 @@ describe("ParticipantController (e2e)", () => {
   it("/participant (POST)", async () => {
     // creating participant with authorization
 
-    return request(app.getHttpServer())
-      .post("/participant")
-      .set("Authorization", `Bearer ${adminToken}`)
+    return authRequest(app.getHttpServer(), adminToken)("post", "/participant")
       .send({
         firstName: "Test",
         lastName: "Participant",
@@ -126,9 +125,7 @@ describe("ParticipantController (e2e)", () => {
 
   // check if custom validator (No spaces) works properly
   it("/participant (POST) validator", async () => {
-    return request(app.getHttpServer())
-      .post("/participant")
-      .set("Authorization", `Bearer ${adminToken}`)
+    return authRequest(app.getHttpServer(), adminToken)("post", "/participant")
       .send({
         firstName: "Test",
         lastName: "Participant",
@@ -156,9 +153,10 @@ describe("ParticipantController (e2e)", () => {
   });
 
   it("/participant/:id (PATCH)", async () => {
-    return request(app.getHttpServer())
-      .patch("/participant/2")
-      .set("Authorization", `Bearer ${adminToken}`)
+    return authRequest(app.getHttpServer(), adminToken)(
+      "patch",
+      "/participant/2",
+    )
       .send({
         phoneNumber: "09867",
       })
@@ -188,10 +186,10 @@ describe("ParticipantController (e2e)", () => {
       },
     });
 
-    const response = await request(app.getHttpServer())
-      .delete(`/participant/${String(participant.participantId)}`)
-      .set("Authorization", `Bearer ${adminToken}`)
-      .expect(200);
+    const response = await authRequest(app.getHttpServer(), adminToken)(
+      "delete",
+      `/participant/${String(participant.participantId)}`,
+    ).expect(200);
 
     expect(response.body).toEqual({
       participantId: participant.participantId,
