@@ -41,6 +41,14 @@ model Expense {
   Participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade)
 }
 
+model currency {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique()
+  rate       Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
+}
+
 model User {
   id         Int      @id @default(autoincrement())
   username   String

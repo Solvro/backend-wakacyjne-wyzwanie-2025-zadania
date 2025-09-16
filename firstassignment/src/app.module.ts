@@ -14,12 +14,16 @@ import { UserController } from './controllers/user.controller';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { ConfigModule } from '@nestjs/config';
+import { CurrnecyService } from './services/currency.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true,
-  }), DatabaseModule],
+  imports: [
+    ConfigModule.forRoot({isGlobal: true}),
+    ScheduleModule.forRoot(), 
+    DatabaseModule
+  ],
   controllers: [AppController, ExpenseController, ParticipantController, TripController, UserController, AuthController],
-  providers: [AppService, ExpensesService, ParticipantsService, TripsService, PrismaService, UserService, AuthService],
+  providers: [AppService, ExpensesService, ParticipantsService, TripsService, PrismaService, UserService, AuthService, CurrnecyService],
 })
 export class AppModule {}

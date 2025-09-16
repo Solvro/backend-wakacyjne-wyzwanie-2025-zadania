@@ -1,15 +1,17 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ExpensesService } from '../services/expense.service';
 import { CreateExpenseDto } from '../Dto/create-expense-dto';
 import { AuthGuard } from '../guards/auth.guard';
+import { CurrnecyService } from 'src/services/currency.service';
 
 @ApiTags('Wydatki')
 @Controller('budzetownik')
 export class ExpenseController {
 
     constructor(
-        private readonly expenseService: ExpensesService, 
+        private readonly expenseService: ExpensesService,
+        private readonly currencyService: CurrnecyService, 
     ) {}
 
     @Get('expenseById/:id')
@@ -60,5 +62,12 @@ export class ExpenseController {
         }
         const parameters = {id: Number.parseInt(id), newData}
         return this.expenseService.updateExpense(parameters);
+    }
+
+    @Get('get')
+    @ApiOperation({description: "pobiera waluty"})
+    @ApiResponse({ status: 200, description: "Sukces!"})
+    async getCurr(){
+        await this.currencyService.downloadCurrencies();
     }
 }
