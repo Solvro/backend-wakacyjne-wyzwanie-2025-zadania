@@ -24,9 +24,9 @@ model Expense {
   amount         Decimal
   date           DateTime
   trip_id        Int
-  trip           Trip        @relation(fields: [trip_id], references: [trip_id])
+  trip           Trip        @relation(fields: [trip_id], references: [trip_id], onDelete: Cascade)
   participant_id Int
-  participant    Participant @relation(fields: [participant_id], references: [participant_id])
+  participant    Participant @relation(fields: [participant_id], references: [participant_id], onDelete: Cascade)
 }
 
 model Participant {
@@ -42,9 +42,9 @@ model Participant {
 
 model TripParticipant {
   id              Int           @id @default(autoincrement())
-  trip            Trip          @relation(fields: [trip_id], references: [trip_id])
+  trip            Trip          @relation(fields: [trip_id], references: [trip_id], onDelete: Cascade)
   trip_id         Int
-  participant     Participant   @relation(fields: [participant_id], references: [participant_id])
+  participant     Participant   @relation(fields: [participant_id], references: [participant_id], onDelete: Cascade)
   participant_id  Int
 
   @@unique([trip_id, participant_id]) 
