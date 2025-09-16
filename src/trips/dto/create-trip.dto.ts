@@ -9,6 +9,8 @@ import {
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { IsFutureDate } from "../../common/validators/is-future-date.validator";
+
 export class CreateTripDto {
   @ApiProperty({ example: "Summer Vacation", description: "Name of the trip" })
   @IsString()
@@ -43,6 +45,7 @@ export class CreateTripDto {
   })
   @IsDateString()
   @IsNotEmpty()
+  @IsFutureDate()
   start_date: string;
 
   @ApiProperty({
@@ -51,5 +54,6 @@ export class CreateTripDto {
   })
   @IsDateString()
   @IsNotEmpty()
+  @IsFutureDate()
   end_date: string;
 }
