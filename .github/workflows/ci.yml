@@ -51,6 +51,12 @@ jobs:
       - name: Run tests
         run: npm test
         if: always()
+        
+      - name: Run migrations
+        run: npx prisma migrate deploy
+        if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne-wyzwanie-test-db"
 
       - name: Run e2e tests
         run: npm run test:e2e
