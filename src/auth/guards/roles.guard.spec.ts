@@ -18,7 +18,7 @@ describe("RolesGuard", () => {
   });
 
   it("returns true when no required roles metadata", () => {
-    reflector.getAllAndOverride = jest.fn().mockRejectedValue(null);
+    reflector.getAllAndOverride = jest.fn().mockReturnValue(null);
     const context = {
       getHandler: () => null,
       getClass: () => null,
