@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
@@ -14,6 +15,13 @@ beforeAll(async () => {
   }).compile();
 
   app = moduleFixture.createNestApplication();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+    }),
+  );
   await app.init();
 
   prisma = app.get(PrismaService);
