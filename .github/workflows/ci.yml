@@ -2,12 +2,22 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "wiktoria-zwolinska-5"]
   pull_request:
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: wakacyjne_test_db
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,13 +52,24 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Apply Prisma migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+
       - name: Run tests
         run: npm test
         if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
 
       - name: Run e2e tests
         run: npm run test:e2e
         if: always()
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+          TOKEN_PREFIX: "token_"
+          EXPIRY_TIME_MS: 600000
 
       - name: Build
         run: npm run build

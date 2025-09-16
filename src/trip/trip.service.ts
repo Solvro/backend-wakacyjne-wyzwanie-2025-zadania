@@ -34,12 +34,18 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    return this.database.trip.findUnique({
+    const trip = await this.database.trip.findUnique({
       where: { tripId: id },
       include: {
         participant: true,
       },
     });
+
+    if (trip == null) {
+      throw new NotFoundException("Trip was not found");
+    }
+
+    return trip;
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {

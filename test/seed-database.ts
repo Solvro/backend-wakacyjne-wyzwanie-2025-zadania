@@ -1,14 +1,9 @@
-import { PrismaClient, Role, Sex } from "@prisma/client";
+import { Role, Sex } from "@prisma/client";
 import { hash } from "bcrypt";
 
-const prisma = new PrismaClient();
+import type { DatabaseService } from "../src/database/database.service";
 
-async function main() {
-  await prisma.expense.deleteMany();
-  await prisma.trip.deleteMany();
-  await prisma.participant.deleteMany();
-  await prisma.user.deleteMany();
-
+export async function seedDatabase(prisma: DatabaseService) {
   const salt = 10;
   const password = "password";
   const hashedPassword = await hash(password, salt);
@@ -29,17 +24,21 @@ async function main() {
         role: Role.COORDINATOR,
         isEnabled: true,
       },
-      {
-        email: "marian@gmail.com",
-        name: "Jaś Melon",
-        password: hashedPassword,
-        role: Role.USER,
-        isEnabled: false,
-      },
     ],
+    skipDuplicates: true,
   });
 
-  const [user1, user2] = await prisma.user.findMany();
+  const user1 = await prisma.user.findFirst({
+    where: { email: "ala.makota@example.com" },
+  });
+
+  const user2 = await prisma.user.findFirst({
+    where: { email: "barka@gmail.com" },
+  });
+
+  if (user1 === null || user2 === null) {
+    throw new Error("Users not found");
+  }
   await prisma.participant.createMany({
     data: [
       {
@@ -57,17 +56,22 @@ async function main() {
         email: user2.email,
         sex: Sex.MALE,
       },
-      {
-        firstName: "Jaś",
-        lastName: "Melon",
-        address: "Zielona 3",
-        email: "marian@gmail.com",
-        phoneNumber: "3123",
-      },
     ],
   });
 
-  const [ala, jan] = await prisma.participant.findMany();
+  const ala = await prisma.participant.findFirst({
+    where: { firstName: "Ala" },
+  });
+
+  const jan = await prisma.participant.findFirst({
+    where: { firstName: "Jan" },
+  });
+
+  if (ala == null || jan == null) {
+    console.warn(ala);
+    console.warn(jan);
+    throw new Error("Participants not found");
+  }
 
   await prisma.trip.createMany({
     data: [
@@ -86,7 +90,14 @@ async function main() {
     ],
   });
 
-  const [trip] = await prisma.trip.findMany();
+  const trip = await prisma.trip.findFirst({
+    where: { destination: "Japonia" },
+  });
+
+  if (trip === null) {
+    throw new Error("Trip not found");
+  }
+
   await prisma.expense.createMany({
     data: [
       {
@@ -102,12 +113,3 @@ async function main() {
     ],
   });
 }
-
-main()
-  .catch((error: unknown) => {
-    console.error(error);
-    throw new Error("Błąd w głównej funkcji");
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
