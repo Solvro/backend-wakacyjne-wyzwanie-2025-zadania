@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -6,15 +8,26 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
 
+@ApiTags("expense")
 @Controller("expense")
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
@@ -30,6 +43,9 @@ export class ExpenseController {
     description: "The expense has been created.",
     type: CreateExpenseDto,
   })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.GUIDE, Role.ADMIN)
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
@@ -59,7 +75,7 @@ export class ExpenseController {
     description: "The expense with the specified ID.",
     type: CreateExpenseDto,
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.findOne(+id);
   }
 
@@ -73,8 +89,11 @@ export class ExpenseController {
     description: "The expense has been updated.",
     type: UpdateExpenseDto,
   })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.GUIDE, Role.ADMIN)
   async update(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: string,
     @Body() updateExpenseDto: UpdateExpenseDto,
   ) {
     return this.expenseService.update(+id, updateExpenseDto);
@@ -91,7 +110,10 @@ export class ExpenseController {
     description: "The expense has been deleted.",
     type: CreateExpenseDto,
   })
-  async remove(@Param("id") id: string) {
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.GUIDE, Role.ADMIN)
+  async remove(@Param("id", ParseIntPipe) id: string) {
     return this.expenseService.remove(+id);
   }
 }

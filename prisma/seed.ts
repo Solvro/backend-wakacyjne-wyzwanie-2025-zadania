@@ -34,19 +34,22 @@ async function main() {
 
   const user = await prisma.user.create({
     data: {
+      email: "ab",
       name: "Kamil",
       middleName: "Paweł",
       lastName: "Kajta",
       sex: Sex.MALE,
-      email: "dghe",
+      password: "$2a$12$lliHLJzDGts2MbtPuy8Ovu66QCl0YASC5zv3n4JIr4z5e/x185xcK",
+      isEnabled: true,
+
+      role: Role.ADMIN,
     },
   });
 
   await prisma.participant.create({
     data: {
-      userId: user.id,
+      userEmail: user.email,
       tripId: trip.id,
-      role: Role.GUIDE,
     },
   });
 }
