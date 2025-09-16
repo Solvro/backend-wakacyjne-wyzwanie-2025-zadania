@@ -56,7 +56,7 @@ jobs:
         run: npx prisma migrate deploy
         if: always()
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne-wyzwanie-test-db"
+          DATABASE_URL: "postgresql://postgres:5314@localhost:5432/wakacyjne-wyzwanie-test-db"
 
       - name: Run e2e tests
         run: npm run test:e2e
