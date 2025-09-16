@@ -1,8 +1,10 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ParticipantService } from "../participant/participant.service"; 
-import { DatabaseService } from "../database/database.service";
-import { NotFoundException } from "@nestjs/common";
 import { TripRole } from "@prisma/client";
+
+import { NotFoundException } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+
+import { DatabaseService } from "../database/database.service";
+import { ParticipantService } from "../participant/participant.service";
 
 describe("ParticipantService", () => {
   let service: ParticipantService;
@@ -54,7 +56,9 @@ describe("ParticipantService", () => {
       const participants = [
         { participant_id: 1, first_name: "Jan", last_name: "Kowalski" },
       ];
-      (mockDb.participant.findMany as jest.Mock).mockResolvedValue(participants);
+      (mockDb.participant.findMany as jest.Mock).mockResolvedValue(
+        participants,
+      );
 
       const result = await service.findAll();
 
@@ -66,7 +70,9 @@ describe("ParticipantService", () => {
   describe("findOne", () => {
     it("should return a participant if found", async () => {
       const participant = { participant_id: 1, first_name: "Jan" };
-      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(participant);
+      (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(
+        participant,
+      );
 
       const result = await service.findOne(1);
       expect(result).toEqual(participant);
@@ -104,7 +110,11 @@ describe("ParticipantService", () => {
   describe("update", () => {
     it("should update a participant if found", async () => {
       const existing = { participant_id: 1 };
-      const updated = { participant_id: 1, first_name: "Adam", last_name: "Nowak" };
+      const updated = {
+        participant_id: 1,
+        first_name: "Adam",
+        last_name: "Nowak",
+      };
 
       (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(existing);
       (mockDb.participant.update as jest.Mock).mockResolvedValue(updated);
@@ -118,7 +128,10 @@ describe("ParticipantService", () => {
       expect(result).toEqual(updated);
       expect(mockDb.participant.update).toHaveBeenCalledWith({
         where: { participant_id: 1 },
-        data: expect.objectContaining({ first_name: "Adam", last_name: "Nowak" }),
+        data: expect.objectContaining({
+          first_name: "Adam",
+          last_name: "Nowak",
+        }),
         include: { trip: true },
       });
     });
@@ -127,7 +140,11 @@ describe("ParticipantService", () => {
       (mockDb.participant.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(
-        service.update(1, { first_name: "X", last_name: "Y", TripRole: TripRole.MEMBER } as any),
+        service.update(1, {
+          first_name: "X",
+          last_name: "Y",
+          TripRole: TripRole.MEMBER,
+        } as any),
       ).rejects.toThrow(NotFoundException);
     });
   });

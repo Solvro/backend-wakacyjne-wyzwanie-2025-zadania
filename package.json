@@ -14,77 +14,94 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "test": "jest",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch",
-    "typecheck": "tsc --noEmit"
+    "test": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest",
+    "test:cov": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --coverage",
+    "test:e2e": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles --forceExit",
+    "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --config ./test/jest-e2e.json --watch --runInBand",
+    "test:prepare": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public\" npx prisma db push",
+    "test:watch": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --watch"
   },
   "prettier": "@solvro/config/prettier",
-"jest": {
-  "collectCoverageFrom": [
-    "**/*.(t|j)s"
-  ],
-  "coverageDirectory": "coverage",
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "ts"
-  ],
-  "rootDir": ".",
-  "testEnvironment": "node",
-  "testRegex": ".*\\.spec\\.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  },
-  "moduleNameMapper": {
-    "^src/(.*)$": "<rootDir>/src/$1"
-  }
-},
-  "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/mapped-types": "*",
-    "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/swagger": "^11.2.0",
-    "@prisma/client": "^6.13.0",
-    "bcrypt": "^6.0.0",
-    "class-transformer": "^0.5.1",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
-    "@solvro/config": "^2.0.2",
-    "@swc/cli": "^0.6.0",
-    "@swc/core": "^1.10.7",
-    "@types/bcrypt": "^6.0.0",
-    "@types/express": "^5.0.0",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.10.7",
-    "@types/supertest": "^6.0.2",
-    "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.2",
-    "globals": "^16.0.0",
-    "jest": "^29.7.0",
-    "prettier": "^3.4.2",
-    "prisma": "^6.13.0",
-    "source-map-support": "^0.5.21",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.2",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "coverage",
+    "dependencies": {
+      "@nestjs/common": "^11.0.1",
+      "@nestjs/core": "^11.0.1",
+      "@nestjs/mapped-types": "*",
+      "@nestjs/platform-express": "^11.0.1",
+      "@nestjs/swagger": "^11.2.0",
+      "@prisma/client": "^6.13.0",
+      "bcrypt": "^6.0.0",
+      "class-transformer": "^0.5.1",
+      "reflect-metadata": "^0.2.2",
+      "rxjs": "^7.8.1"
+    },
+    "devDependencies": {
+      "@eslint/eslintrc": "^3.2.0",
+      "@eslint/js": "^9.18.0",
+      "@nestjs/cli": "^11.0.0",
+      "@nestjs/schematics": "^11.0.0",
+      "@nestjs/testing": "^11.0.1",
+      "@solvro/config": "^2.0.2",
+      "@swc/cli": "^0.6.0",
+      "@swc/core": "^1.10.7",
+      "@types/bcrypt": "^6.0.0",
+      "@types/express": "^5.0.0",
+      "@types/jest": "^29.5.14",
+      "@types/node": "^22.10.7",
+      "@types/supertest": "^6.0.2",
+      "cross-env": "^10.0.0",
+      "eslint": "^9.18.0",
+      "eslint-config-prettier": "^10.0.1",
+      "eslint-plugin-prettier": "^5.2.2",
+      "globals": "^16.0.0",
+      "jest": "^29.7.0",
+      "prettier": "^3.4.2",
+      "prisma": "^6.13.0",
+      "source-map-support": "^0.5.21",
+      "supertest": "^7.0.0",
+      "ts-jest": "^29.2.5",
+      "ts-loader": "^9.5.2",
+      "ts-node": "^10.9.2",
+      "tsconfig-paths": "^4.2.0",
+      "typescript": "^5.7.3",
+      "typescript-eslint": "^8.20.0"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "prisma": {
+      "seed": "ts-node prisma/seed.ts"
+    },
+    "rootDir": ".",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ],
+    "testEnvironment": "node",
+    "testRegex": ".*\\.spec\\.ts$",
+    "testTimeout": 30000,
+    "transform": {
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "module": "commonjs",
+            "moduleResolution": "node",
+            "resolvePackageJsonExports": false,
+            "esModuleInterop": true,
+            "allowSyntheticDefaultImports": true
+          }
+        }
+      ]
+    }
   }
 }

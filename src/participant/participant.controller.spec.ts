@@ -1,25 +1,41 @@
+import { TripRole } from "@prisma/client";
+
+import { NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
+
 import { ParticipantController } from "./participant.controller";
 import { ParticipantService } from "./participant.service";
-import { NotFoundException } from "@nestjs/common";
-import { TripRole } from "@prisma/client";
 
 describe("ParticipantController", () => {
   let controller: ParticipantController;
 
   const mockParticipantService = {
-    create: jest.fn(dto => ({ id: 1, ...dto })),
+    create: jest.fn((dto) => ({ id: 1, ...dto })),
     findAll: jest.fn(() => [
-      { id: 1, first_name: "Jan", last_name: "Kowalski", email: "jan@test.com", TripRole: TripRole.MEMBER, trip_id: 1 },
+      {
+        id: 1,
+        first_name: "Jan",
+        last_name: "Kowalski",
+        email: "jan@test.com",
+        TripRole: TripRole.MEMBER,
+        trip_id: 1,
+      },
     ]),
-    findOne: jest.fn(id => {
+    findOne: jest.fn((id) => {
       if (id === 1) {
-        return { id, first_name: "Jan", last_name: "Kowalski", email: "jan@test.com", TripRole: TripRole.MEMBER, trip_id: 1 };
+        return {
+          id,
+          first_name: "Jan",
+          last_name: "Kowalski",
+          email: "jan@test.com",
+          TripRole: TripRole.MEMBER,
+          trip_id: 1,
+        };
       }
       throw new NotFoundException();
     }),
     update: jest.fn((id, dto) => ({ id, ...dto })),
-    remove: jest.fn(id => {
+    remove: jest.fn((id) => {
       if (id !== 1) throw new NotFoundException();
       return { id };
     }),
@@ -56,7 +72,14 @@ describe("ParticipantController", () => {
 
   it("should return all participants", async () => {
     expect(await controller.findAll()).toEqual([
-      { id: 1, first_name: "Jan", last_name: "Kowalski", email: "jan@test.com", TripRole: TripRole.MEMBER, trip_id: 1 },
+      {
+        id: 1,
+        first_name: "Jan",
+        last_name: "Kowalski",
+        email: "jan@test.com",
+        TripRole: TripRole.MEMBER,
+        trip_id: 1,
+      },
     ]);
     expect(mockParticipantService.findAll).toHaveBeenCalled();
   });
@@ -78,7 +101,13 @@ describe("ParticipantController", () => {
   });
 
   it("should update a participant", async () => {
-    const dto = { first_name: "Adam", last_name: "Nowak", email: "adam@test.com", TripRole: TripRole.ORGANIZER, trip_id: 2 };
+    const dto = {
+      first_name: "Adam",
+      last_name: "Nowak",
+      email: "adam@test.com",
+      TripRole: TripRole.ORGANIZER,
+      trip_id: 2,
+    };
     expect(await controller.update("1", dto)).toEqual({ id: 1, ...dto });
     expect(mockParticipantService.update).toHaveBeenCalledWith(1, dto);
   });

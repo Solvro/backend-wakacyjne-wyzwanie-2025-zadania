@@ -1,7 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ExpenseService } from "./expense.service";
-import { DatabaseService } from "../database/database.service";
 import { NotFoundException } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+
+import { DatabaseService } from "../database/database.service";
+import { ExpenseService } from "./expense.service";
 
 describe("ExpenseService", () => {
   let service: ExpenseService;
@@ -62,7 +63,9 @@ describe("ExpenseService", () => {
       const result = await service.create(dto as any);
 
       expect(result).toEqual(created);
-      expect(mockDb.trip.findUnique).toHaveBeenCalledWith({ where: { trip_id: 1 } });
+      expect(mockDb.trip.findUnique).toHaveBeenCalledWith({
+        where: { trip_id: 1 },
+      });
       expect(mockDb.expense.create).toHaveBeenCalled();
     });
 
@@ -126,9 +129,9 @@ describe("ExpenseService", () => {
     it("should throw if expense not found", async () => {
       (mockDb.expense.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.update(1, { description: "x" } as any)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update(1, { description: "x" } as any),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it("should throw if trip_id does not exist", async () => {
@@ -149,7 +152,9 @@ describe("ExpenseService", () => {
 
       await service.remove(1);
 
-      expect(mockDb.expense.delete).toHaveBeenCalledWith({ where: { expense_id: 1 } });
+      expect(mockDb.expense.delete).toHaveBeenCalledWith({
+        where: { expense_id: 1 },
+      });
     });
 
     it("should throw if expense not found", async () => {

@@ -1,24 +1,33 @@
+import { NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
+
+import { AuthGuard } from "../auth/auth.guard";
+import { TripRoleGuard } from "../auth/roles/trip-role.guard";
+import { RoleGuard } from "../auth/roles/user-role.guard";
 import { TripController } from "./trip.controller";
 import { TripService } from "./trip.service";
-import { NotFoundException } from "@nestjs/common";
-import { AuthGuard } from "../auth/auth.guard";
-import { RoleGuard } from "../auth/roles/user-role.guard";
-import { TripRoleGuard } from "../auth/roles/trip-role.guard";
 
 describe("TripController", () => {
   let controller: TripController;
 
   const mockTripService = {
-    findAll: jest.fn(() => [{ trip_id: 1, name: "Test trip", destination: "Kraków" }]),
-    findOnePublic: jest.fn(id => {
-      if (id === 1) return { trip_id: 1, name: "Test trip", destination: "Kraków" };
+    findAll: jest.fn(() => [
+      { trip_id: 1, name: "Test trip", destination: "Kraków" },
+    ]),
+    findOnePublic: jest.fn((id) => {
+      if (id === 1)
+        return { trip_id: 1, name: "Test trip", destination: "Kraków" };
       throw new NotFoundException();
     }),
-    findOnePrivate: jest.fn(id => ({ trip_id: id, name: "Secret trip", destination: "Wrocław", budget: 1000 })),
-    create: jest.fn(dto => ({ trip_id: 2, ...dto })),
+    findOnePrivate: jest.fn((id) => ({
+      trip_id: id,
+      name: "Secret trip",
+      destination: "Wrocław",
+      budget: 1000,
+    })),
+    create: jest.fn((dto) => ({ trip_id: 2, ...dto })),
     update: jest.fn((id, dto) => ({ trip_id: id, ...dto })),
-    remove: jest.fn(id => {
+    remove: jest.fn((id) => {
       if (id !== 1) throw new NotFoundException();
       return;
     }),
@@ -63,7 +72,9 @@ describe("TripController", () => {
   });
 
   it("should throw NotFoundException if public trip not found", async () => {
-    await expect(controller.findOnePublic({ id: 99 })).rejects.toThrow(NotFoundException);
+    await expect(controller.findOnePublic({ id: 99 })).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it("should return one trip (private)", async () => {
@@ -77,14 +88,21 @@ describe("TripController", () => {
   });
 
   it("should create a trip", async () => {
-    const dto = { name: "Nowa wycieczka", destination: "Warszawa", start_date: new Date() };
+    const dto = {
+      name: "Nowa wycieczka",
+      destination: "Warszawa",
+      start_date: new Date(),
+    };
     expect(await controller.create(dto as any)).toEqual({ trip_id: 2, ...dto });
     expect(mockTripService.create).toHaveBeenCalledWith(dto);
   });
 
   it("should update a trip", async () => {
     const dto = { name: "Zmieniona wycieczka", destination: "Gdańsk" };
-    expect(await controller.update({ id: 1 }, dto as any)).toEqual({ trip_id: 1, ...dto });
+    expect(await controller.update({ id: 1 }, dto as any)).toEqual({
+      trip_id: 1,
+      ...dto,
+    });
     expect(mockTripService.update).toHaveBeenCalledWith(1, dto);
   });
 
@@ -94,6 +112,8 @@ describe("TripController", () => {
   });
 
   it("should throw NotFoundException if trip to remove not found", async () => {
-    await expect(controller.remove({ id: 99 })).rejects.toThrow(NotFoundException);
+    await expect(controller.remove({ id: 99 })).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

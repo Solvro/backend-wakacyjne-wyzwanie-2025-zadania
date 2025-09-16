@@ -1,7 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { TripService } from "./trip.service";
-import { DatabaseService } from "../database/database.service";
 import { NotFoundException } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+
+import { DatabaseService } from "../database/database.service";
+import { TripService } from "./trip.service";
 
 describe("TripService", () => {
   let service: TripService;
@@ -100,7 +101,12 @@ describe("TripService", () => {
 
   describe("findOnePrivate", () => {
     it("should return a private trip if found", async () => {
-      const trip = { trip_id: 1, name: "Trip 1", budget: 500, participants: [] };
+      const trip = {
+        trip_id: 1,
+        name: "Trip 1",
+        budget: 500,
+        participants: [],
+      };
       (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(trip);
 
       const result = await service.findOnePrivate(1);
@@ -110,7 +116,9 @@ describe("TripService", () => {
     it("should throw if not found", async () => {
       (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.findOnePrivate(1)).rejects.toThrow(NotFoundException);
+      await expect(service.findOnePrivate(1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -134,7 +142,9 @@ describe("TripService", () => {
     it("should throw if trip not found", async () => {
       (mockDb.trip.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.update(1, { name: "X" } as any)).rejects.toThrow(NotFoundException);
+      await expect(service.update(1, { name: "X" } as any)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -145,9 +155,15 @@ describe("TripService", () => {
 
       await service.remove(1);
 
-      expect(mockDb.expense.deleteMany).toHaveBeenCalledWith({ where: { trip_id: 1 } });
-      expect(mockDb.participant.deleteMany).toHaveBeenCalledWith({ where: { trip_id: 1 } });
-      expect(mockDb.trip.delete).toHaveBeenCalledWith({ where: { trip_id: 1 } });
+      expect(mockDb.expense.deleteMany).toHaveBeenCalledWith({
+        where: { trip_id: 1 },
+      });
+      expect(mockDb.participant.deleteMany).toHaveBeenCalledWith({
+        where: { trip_id: 1 },
+      });
+      expect(mockDb.trip.delete).toHaveBeenCalledWith({
+        where: { trip_id: 1 },
+      });
     });
 
     it("should throw if trip not found", async () => {

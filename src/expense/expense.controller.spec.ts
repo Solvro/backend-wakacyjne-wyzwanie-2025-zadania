@@ -1,11 +1,12 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { NotFoundException } from "@nestjs/common";
 import { ExpenseType } from "@prisma/client";
 
-import { ExpenseController } from "./expense.controller";
-import { ExpenseService } from "./expense.service";
+import { NotFoundException } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
+import { ExpenseController } from "./expense.controller";
+import { ExpenseService } from "./expense.service";
 
 describe("ExpenseController", () => {
   let controller: ExpenseController;
