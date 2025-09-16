@@ -30,7 +30,7 @@ describe("Trip E2E", () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideGuard(AuthGuard) // Wyłącz JWT guard
+      .overrideGuard(AuthGuard)
       .useValue({
         canActivate: (context) => {
           const req = context.switchToHttp().getRequest();
