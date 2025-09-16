@@ -3,17 +3,27 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
-import { QueryParser } from "../parser";
-import { CreateExpenseResponseDto } from "./dto/create-expense-response.dto";
+import { AuthGuard } from "../auth/auth.guard";
+import { QueryParser } from "../parsers/parser";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
+import { ExpenseResponseDto } from "./dto/expense-response.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
 
@@ -23,6 +33,7 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a new expense",
     description: "Add an expense to which you supply trip and participant",
@@ -30,13 +41,16 @@ export class ExpenseController {
   @ApiResponse({
     status: 201,
     description: "Expense created",
-    type: CreateExpenseResponseDto,
+    type: ExpenseResponseDto,
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get all expenses",
     description: "Retrieve a list of expenses",
@@ -44,7 +58,7 @@ export class ExpenseController {
   @ApiResponse({
     status: 200,
     description: "List of expenses retrieved successfully",
-    type: [CreateExpenseResponseDto],
+    type: [ExpenseResponseDto],
   })
   @ApiQuery({ name: "skip", required: false, type: Number })
   @ApiQuery({ name: "take", required: false, type: Number })
@@ -72,6 +86,7 @@ export class ExpenseController {
   }
 
   @Get(":id")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get expense by ID",
     description: "Retrieve detailed information about an expense",
@@ -79,7 +94,7 @@ export class ExpenseController {
   @ApiResponse({
     status: 200,
     description: "Expense details retrieved successfully",
-    type: CreateExpenseResponseDto,
+    type: ExpenseResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -90,6 +105,7 @@ export class ExpenseController {
   }
 
   @Patch(":id")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update expense details",
     description: "Change information for an existing expense",
@@ -97,12 +113,14 @@ export class ExpenseController {
   @ApiResponse({
     status: 200,
     description: "Expense updated successfully",
-    type: CreateExpenseResponseDto,
+    type: ExpenseResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: "Expense not found",
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateExpenseDto: UpdateExpenseDto,
@@ -111,6 +129,7 @@ export class ExpenseController {
   }
 
   @Delete(":id")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Delete an expense",
     description: "Remove an expense and its data",
@@ -123,6 +142,8 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth("access-token")
   async remove(@Param("id", ParseIntPipe) id: number) {
     return this.expenseService.remove(id);
   }

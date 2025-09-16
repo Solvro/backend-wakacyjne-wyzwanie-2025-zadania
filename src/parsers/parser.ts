@@ -15,7 +15,6 @@ export const QueryParser = {
     if (value == null) {
       return undefined;
     }
-
     const parsed = Number.parseInt(value, 10);
     return parsed;
   },
@@ -25,7 +24,6 @@ export const QueryParser = {
   ): Record<string, string> | undefined {
     if (orderBy !== undefined) {
       const [field, direction] = orderBy.split(":");
-
       return {
         [field]: direction.toLowerCase() || "asc",
       };

@@ -19,8 +19,23 @@ export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
+    const { tripsIds, expensesIds, ...participantData } = createParticipantDto;
     return this.database.participant.create({
-      data: createParticipantDto,
+      data: {
+        ...participantData,
+        ...(tripsIds !== undefined &&
+          tripsIds.length > 0 && {
+            trips: {
+              connect: tripsIds.map((id) => ({ id })),
+            },
+          }),
+        ...(expensesIds !== undefined &&
+          expensesIds.length > 0 && {
+            expenses: {
+              connect: expensesIds.map((id) => ({ id })),
+            },
+          }),
+      },
     });
   }
 
@@ -39,9 +54,32 @@ export class ParticipantService {
   }
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
+    const { tripsIds, expensesIds, ...participantData } = updateParticipantDto;
     return this.database.participant.update({
       where: { id },
-      data: updateParticipantDto,
+      data: {
+        ...participantData,
+        ...(tripsIds !== undefined && {
+          trips:
+            tripsIds.length > 0
+              ? {
+                  set: tripsIds.map((tripId) => ({ id: tripId })),
+                }
+              : {
+                  set: [],
+                },
+        }),
+        ...(expensesIds !== undefined && {
+          expenses:
+            expensesIds.length > 0
+              ? {
+                  set: expensesIds.map((expenseId) => ({ id: expenseId })),
+                }
+              : {
+                  set: [],
+                },
+        }),
+      },
     });
   }
 

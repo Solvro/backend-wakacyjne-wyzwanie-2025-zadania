@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
+import { Expense, Prisma } from "@prisma/client";
 
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
@@ -17,33 +17,50 @@ interface ExpenseOptions {
 export class ExpenseService {
   constructor(private database: DatabaseService) {}
 
+  private transformExpense(expense: Expense) {
+    return {
+      ...expense,
+      amount: expense.amount === null ? null : Number(expense.amount),
+      budgetLeft:
+        expense.budgetLeft === null ? null : Number(expense.budgetLeft),
+    };
+  }
+
   async create(createExpenseDto: CreateExpenseDto) {
-    return this.database.expense.create({
+    const expense = await this.database.expense.create({
       data: createExpenseDto,
     });
+    return this.transformExpense(expense);
   }
 
   async findAll(options?: ExpenseOptions) {
-    return this.database.expense.findMany({
+    const expenses = await this.database.expense.findMany({
       where: options?.where,
       orderBy: options?.orderBy,
       skip: options?.skip,
       take: options?.take,
     });
+    return expenses.map((expense) => this.transformExpense(expense));
   }
 
   async findOne(id: number) {
-    return this.database.expense.findUnique({ where: { id } });
+    const expense = await this.database.expense.findUnique({ where: { id } });
+    if (expense === null) {
+      throw new NotFoundException(`Expense with id ${String(id)} not found`);
+    }
+    return this.transformExpense(expense);
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return this.database.expense.update({
+    const expense = await this.database.expense.update({
       where: { id },
       data: updateExpenseDto,
     });
+    return this.transformExpense(expense);
   }
 
   async remove(id: number) {
-    return this.database.expense.delete({ where: { id } });
+    const expense = await this.database.expense.delete({ where: { id } });
+    return this.transformExpense(expense);
   }
 }
