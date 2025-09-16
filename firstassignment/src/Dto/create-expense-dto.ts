@@ -16,4 +16,9 @@ export class CreateExpenseDto{
     @IsNotEmpty()
     @ApiProperty({description: 'Id uczestnika'})
     participantId: number;
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({description: "Waluta"})
+    currency: string;
 }

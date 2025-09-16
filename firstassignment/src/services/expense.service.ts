@@ -4,10 +4,11 @@ import { Expense } from "../../generated/prisma";
 import { CreateExpenseDto } from "../Dto/create-expense-dto";
 import { ParticipantsService } from "./participant.service";
 import { UpdateExpenseDto } from "../Dto/update-expense-dto";
+import { CurrnecyService } from "./currency.service";
 
 @Injectable()
 export class ExpensesService{
-    constructor(private prisma: PrismaService, private participantService: ParticipantsService){}
+    constructor(private prisma: PrismaService, private participantService: ParticipantsService, private currencyService: CurrnecyService){}
 
     async expenseById(id: number){
         return this.prisma.expense.findUnique({where: {id}});
@@ -23,9 +24,20 @@ export class ExpensesService{
             throw new NotFoundException(`Uczestnik z ID ${data.participantId.toString()} nie istnieje`);
         }
         else{
-            return this.prisma.expense.create({
-                data,
-            })
+            const currency = await this.currencyService.currencyByName(data.currency);
+            if(currency === null){
+                throw new NotFoundException('Nie znaleziono waluty');
+            }
+            else{
+                return this.prisma.expense.create({
+                    data: {
+                        amount: data.amount * currency.rate,
+                        location: data.location,
+                        participantId: data.participantId,
+                    }
+                })
+            }
+            
         }
     }
     
