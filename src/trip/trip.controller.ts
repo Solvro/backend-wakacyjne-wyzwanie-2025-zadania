@@ -102,7 +102,7 @@ export class TripController {
     status: 203,
     description: "Insufficient permissions",
   })
-  async emove(@Param("id") id: string) {
+  async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);
   }
 }

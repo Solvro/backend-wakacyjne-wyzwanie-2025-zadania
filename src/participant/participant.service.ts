@@ -51,7 +51,10 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    return this.database.participant.findUnique({ where: { id } });
+    return this.database.participant.findUnique({
+      where: { id },
+      omit: { password: true },
+    });
   }
 
   async findByEmail(email: string) {
@@ -82,6 +85,9 @@ export class ParticipantService {
         surname: updateParticipantDto.surname,
         account_type: updateParticipantDto.account_type,
       },
+      omit: {
+        password: true,
+      },
     });
   }
 
@@ -95,6 +101,9 @@ export class ParticipantService {
         name: updateParticipantDto.name,
         surname: updateParticipantDto.surname,
         account_type: updateParticipantDto.account_type,
+      },
+      omit: {
+        password: true,
       },
     });
   }

@@ -19,7 +19,7 @@ datasource db {
     description           String?     @db.Text
     value                 Decimal
     date                  DateTime    @db.Date
-    trip_participant      TripParticipant     @relation(fields: [trip_participant_id], references: [id])     
+    trip_participant      TripParticipant     @relation(fields: [trip_participant_id], references: [id], onDelete: Cascade)     
     trip_participant_id   Int
   }
 
@@ -45,9 +45,9 @@ datasource db {
 
   model TripParticipant {
     id              Int     @id @default(autoincrement())
-    trip            Trip    @relation(fields: [trip_id], references: [id])
+    trip            Trip    @relation(fields: [trip_id], references: [id], onDelete: Cascade)
     trip_id         Int
-    participant     Participant @relation(fields: [participant_id], references: [id])
+    participant     Participant @relation(fields: [participant_id], references: [id], onDelete: Cascade)
     participant_id  Int
     expense         Expense[]
   }
