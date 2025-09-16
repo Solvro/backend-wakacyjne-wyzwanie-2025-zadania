@@ -9,12 +9,11 @@ export class ParticipantsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
-    // Dla uczestników dodawanych przez organizatora generujemy tymczasowe hasło
     const tempPassword = Math.random().toString(36).slice(-8);
     return this.prisma.user.create({
       data: {
         ...createParticipantDto,
-        password: tempPassword, // Tymczasowe hasło - uczestnik będzie mógł je zmienić
+        password: tempPassword,
       },
     });
   }
@@ -25,7 +24,6 @@ export class ParticipantsService {
         id: true,
         name: true,
         email: true,
-        // Nie zwracamy hasła w odpowiedzi
       },
     });
   }
@@ -37,7 +35,6 @@ export class ParticipantsService {
         id: true,
         name: true,
         email: true,
-        // Nie zwracamy hasła w odpowiedzi
       },
     });
   }
@@ -50,7 +47,6 @@ export class ParticipantsService {
         id: true,
         name: true,
         email: true,
-        // Nie zwracamy hasła w odpowiedzi
       },
     });
   }

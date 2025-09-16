@@ -1,8 +1,10 @@
-﻿import { Test, TestingModule } from '@nestjs/testing';
-import { ExpensesController } from './expenses.controller';
-import { ExpensesService } from './expenses.service';
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
-describe('ExpensesController', () => {
+import { ExpensesController } from "./expenses.controller";
+import { ExpensesService } from "./expenses.service";
+
+describe("ExpensesController", () => {
   let controller: ExpensesController;
 
   beforeEach(async () => {

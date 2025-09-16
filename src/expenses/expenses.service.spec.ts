@@ -1,8 +1,10 @@
-﻿import { Test, TestingModule } from '@nestjs/testing';
-import { ExpensesService } from './expenses.service';
-import { PrismaService } from '../prisma/prisma.service';
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
-describe('ExpensesService', () => {
+import { PrismaService } from "../prisma/prisma.service";
+import { ExpensesService } from "./expenses.service";
+
+describe("ExpensesService", () => {
   let service: ExpensesService;
 
   beforeEach(async () => {

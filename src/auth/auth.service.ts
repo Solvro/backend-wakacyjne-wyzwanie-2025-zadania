@@ -35,7 +35,9 @@ export class AuthService {
     }
 
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    const expiryTimeMs = parseInt(process.env.EXPIRY_TIME_MS || "3600000");
+    const expiryTimeMs = Number.parseInt(
+      process.env.EXPIRY_TIME_MS || "3600000",
+    );
     const expiryTimeSeconds = Math.floor(expiryTimeMs / 1000);
 
     const payload = {
