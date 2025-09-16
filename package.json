@@ -7,7 +7,7 @@
   "author": "",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/seed.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/seed.ts\" \".github/workflows/ci.yml\"",
     "format:check": "prettier --check .",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prepare": "husky || true",
@@ -16,13 +16,13 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "test": "cross-env DATABASE_URL=\"postgresql://postgres:root@localhost:5432/db_test\" jest",
-    "test:cov": "cross-env DATABASE_URL=\"postgresql://postgres:root@localhost:5432/db_test\" jest --coverage",
+    "test": "cross-env DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/db_test\" jest",
+    "test:cov": "cross-env DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/db_test\" jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env DATABASE_URL=\"postgresql://postgres:root@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --runInBand",
-    "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://postgres:root@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --watch --runInBand",
-    "test:prepare": "cross-env DATABASE_URL=\"postgresql://postgres:root@localhost:5432/db_test?schema=public\" npx prisma db push",
-    "test:watch": "cross-env DATABASE_URL=\"postgresql://postgres:root@localhost:5432/db_test\" jest --watch",
+    "test:e2e": "cross-env DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --runInBand",
+    "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --watch --runInBand",
+    "test:prepare": "cross-env DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/db_test?schema=public\" npx prisma db push",
+    "test:watch": "cross-env DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/db_test\" jest --watch",
     "typecheck": "tsc --noEmit"
   },
   "lint-staged": {

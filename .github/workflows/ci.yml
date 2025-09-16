@@ -54,6 +54,10 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Prepare tests
+        run: npm run test:prepare
+        if: always()
+
       - name: Run tests
         run: npm test
         if: always()
