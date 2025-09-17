@@ -40,7 +40,6 @@ describe("ParticipantService", () => {
     }).compile();
 
     service = module.get<ParticipantService>(ParticipantService);
-    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -103,17 +102,81 @@ describe("ParticipantService", () => {
       const created: { participant_id: number } & CreateParticipantDto =
         Object.assign({ participant_id: 1 }, dto);
 
+      mockDatabase.user.findUnique.mockResolvedValue({
+        email: dto.email,
+        password: "hashed",
+        UserRole: "USER",
+        isEnabled: true,
+        name: "Jan K.",
+      });
+      mockDatabase.trip.findUnique.mockResolvedValue({
+        trip_id: dto.trip_id,
+        name: "Trip 1",
+        destination: "Paris",
+        start_date: new Date(),
+        end_date: null,
+        budget: null,
+      });
+
       mockDatabase.participant.create.mockResolvedValue(created);
 
       const result = await service.create(dto);
 
       expect(result).toEqual(created);
 
-      const expectedCreate: { data: CreateParticipantDto } = { data: dto };
+      expect(mockDatabase.participant.create).toHaveBeenCalledWith({
+        data: {
+          first_name: dto.first_name,
+          last_name: dto.last_name,
+          TripRole: dto.TripRole,
+          User: { connect: { email: dto.email } },
+          trip: { connect: { trip_id: dto.trip_id } },
+        },
+        include: { trip: true },
+      });
+    });
 
-      expect(mockDatabase.participant.create).toHaveBeenCalledWith(
-        expect.objectContaining(expectedCreate),
-      );
+    it("should throw if the trip with given id does not exist", async () => {
+      const dto: CreateParticipantDto = {
+        first_name: "Jan",
+        last_name: "Kowalski",
+        email: "jan@example.com",
+        TripRole: TripRole.MEMBER,
+        trip_id: 999,
+      };
+
+      mockDatabase.trip.findUnique.mockResolvedValue(null);
+      mockDatabase.user.findUnique.mockResolvedValue({
+        email: dto.email,
+        password: "hashed",
+        UserRole: "USER",
+        isEnabled: true,
+        name: "Jan K.",
+      });
+
+      await expect(service.create(dto)).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw if the user with given email does not exist", async () => {
+      const dto: CreateParticipantDto = {
+        first_name: "Jan",
+        last_name: "Kowalski",
+        email: "ghost@example.com",
+        TripRole: TripRole.MEMBER,
+        trip_id: 1,
+      };
+
+      mockDatabase.user.findUnique.mockResolvedValue(null);
+      mockDatabase.trip.findUnique.mockResolvedValue({
+        trip_id: dto.trip_id,
+        name: "Trip 1",
+        destination: "Paris",
+        start_date: new Date(),
+        end_date: null,
+        budget: null,
+      });
+
+      await expect(service.create(dto)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -134,12 +197,19 @@ describe("ParticipantService", () => {
 
       mockDatabase.participant.findUnique.mockResolvedValue(existing);
       mockDatabase.user.findUnique.mockResolvedValue({
-        user_id: 99,
-        email: "adam@example.com",
+        email: dto.email,
+        password: "hashed",
+        UserRole: "USER",
+        isEnabled: true,
+        name: "Adam N.",
       });
       mockDatabase.trip.findUnique.mockResolvedValue({
         trip_id: 2,
         name: "Trip 2",
+        destination: "Rome",
+        start_date: new Date(),
+        end_date: null,
+        budget: null,
       });
 
       mockDatabase.participant.update.mockResolvedValue(updated);
@@ -148,7 +218,7 @@ describe("ParticipantService", () => {
 
       expect(result).toEqual(updated);
 
-      const expectedUpdate = {
+      expect(mockDatabase.participant.update).toHaveBeenCalledWith({
         where: { participant_id: 1 },
         data: {
           first_name: dto.first_name,
@@ -158,11 +228,7 @@ describe("ParticipantService", () => {
           trip: { connect: { trip_id: dto.trip_id } },
         },
         include: { trip: true },
-      } as const;
-
-      expect(mockDatabase.participant.update).toHaveBeenCalledWith(
-        expect.objectContaining(expectedUpdate),
-      );
+      });
     });
 
     it("should throw if participant not found", async () => {
@@ -175,6 +241,55 @@ describe("ParticipantService", () => {
         TripRole: TripRole.MEMBER,
         trip_id: 99,
       };
+
+      await expect(service.update(1, dto)).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw if the user with given email does not exist", async () => {
+      const existing = { participant_id: 1 };
+
+      const dto: UpdateParticipantDto = {
+        first_name: "Adam",
+        last_name: "Nowak",
+        email: "ghost@example.com",
+        TripRole: TripRole.ORGANIZER,
+        trip_id: 2,
+      };
+
+      mockDatabase.participant.findUnique.mockResolvedValue(existing);
+      mockDatabase.user.findUnique.mockResolvedValue(null);
+      mockDatabase.trip.findUnique.mockResolvedValue({
+        trip_id: 2,
+        name: "Trip 2",
+        destination: "Rome",
+        start_date: new Date(),
+        end_date: null,
+        budget: null,
+      });
+
+      await expect(service.update(1, dto)).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw if the trip with given id does not exist", async () => {
+      const existing = { participant_id: 1 };
+
+      const dto: UpdateParticipantDto = {
+        first_name: "Adam",
+        last_name: "Nowak",
+        email: "adam@example.com",
+        TripRole: TripRole.ORGANIZER,
+        trip_id: 999,
+      };
+
+      mockDatabase.participant.findUnique.mockResolvedValue(existing);
+      mockDatabase.user.findUnique.mockResolvedValue({
+        email: dto.email,
+        password: "hashed",
+        UserRole: "USER",
+        isEnabled: true,
+        name: "Adam N.",
+      });
+      mockDatabase.trip.findUnique.mockResolvedValue(null);
 
       await expect(service.update(1, dto)).rejects.toThrow(NotFoundException);
     });

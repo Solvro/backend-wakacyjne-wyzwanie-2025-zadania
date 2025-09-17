@@ -18,7 +18,8 @@ jobs:
           POSTGRES_DB: db_test
         ports:
           - 5432:5432
-
+    env:
+      DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,9 +39,7 @@ jobs:
         run: npx prisma generate
 
       - name: Run migrations
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
+        run: npx prisma db push --skip-generate
 
       - name: Check commit name
         if: github.event_name == 'pull_request'
@@ -61,14 +60,10 @@ jobs:
       - name: Run tests
         run: npm test
         if: always()
-        env:
-          DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
 
       - name: Run e2e tests
         run: npm run test:e2e
         if: always()
-        env:
-          DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
 
       - name: Build
         run: npm run build

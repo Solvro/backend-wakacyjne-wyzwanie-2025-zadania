@@ -1,5 +1,6 @@
 import type { Participant, Trip } from "@prisma/client";
 import { PrismaClient, TripRole } from "@prisma/client";
+import type { Server } from "node:http";
 import request from "supertest";
 
 import type { INestApplication } from "@nestjs/common";
@@ -50,9 +51,7 @@ describe("ParticipantController (e2e)", () => {
   });
 
   it("/participant (GET) → should return a list of participants", async () => {
-    const response = await request(
-      app.getHttpServer() as unknown as import("http").Server,
-    )
+    const response = await request(app.getHttpServer() as unknown as Server)
       .get("/participant")
       .expect(200);
 
@@ -76,9 +75,7 @@ describe("ParticipantController (e2e)", () => {
       throw new Error("No participant seeded");
     }
 
-    const response = await request(
-      app.getHttpServer() as unknown as import("http").Server,
-    )
+    const response = await request(app.getHttpServer() as unknown as Server)
       .get(`/participant/${String(seededParticipant.participant_id)}`)
       .expect(200);
 
@@ -107,9 +104,7 @@ describe("ParticipantController (e2e)", () => {
       trip_id: trip.trip_id,
     };
 
-    const response = await request(
-      app.getHttpServer() as unknown as import("http").Server,
-    )
+    const response = await request(app.getHttpServer() as unknown as Server)
       .post("/participant")
       .send(participantData)
       .expect(201);
@@ -126,6 +121,27 @@ describe("ParticipantController (e2e)", () => {
     );
   });
 
+  it("/participant (POST) → should fail if trip does not exist", async () => {
+    const invalidTripId = 999;
+
+    const participantData = {
+      first_name: "Ghost",
+      last_name: "User",
+      email: "ghost@example.com",
+      TripRole: TripRole.MEMBER,
+      trip_id: invalidTripId,
+    };
+
+    const response = await request(app.getHttpServer() as unknown as Server)
+      .post("/participant")
+      .send(participantData)
+      .expect(404);
+
+    const body = response.body as unknown as { message: string | string[] };
+
+    expect(body.message).toEqual(expect.stringContaining("Trip with ID"));
+  });
+
   it("/participant/:id (PATCH) → should update a participant", async () => {
     const seededParticipant: Participant | null =
       await prisma.participant.findFirst();
@@ -139,9 +155,7 @@ describe("ParticipantController (e2e)", () => {
       TripRole: TripRole.ORGANIZER,
     };
 
-    const response = await request(
-      app.getHttpServer() as unknown as import("http").Server,
-    )
+    const response = await request(app.getHttpServer() as unknown as Server)
       .patch(`/participant/${String(seededParticipant.participant_id)}`)
       .send(updateData)
       .expect(200);
@@ -164,11 +178,11 @@ describe("ParticipantController (e2e)", () => {
       throw new Error("No participant seeded");
     }
 
-    await request(app.getHttpServer() as unknown as import("http").Server)
+    await request(app.getHttpServer() as unknown as Server)
       .delete(`/participant/${String(seededParticipant.participant_id)}`)
       .expect(204);
 
-    await request(app.getHttpServer() as unknown as import("http").Server)
+    await request(app.getHttpServer() as unknown as Server)
       .get(`/participant/${String(seededParticipant.participant_id)}`)
       .expect(404);
   });

@@ -4,7 +4,7 @@ import { IsFutureDate } from "./future-date.validator";
 
 class TestDto {
   @IsFutureDate()
-  date!: string;
+  date: string;
 }
 
 describe("IsFutureDate validator", () => {

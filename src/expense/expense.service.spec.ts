@@ -44,7 +44,7 @@ describe("ExpenseService", () => {
     it("should create expense if trip exists", async () => {
       const dto: CreateExpenseDto = {
         trip_id: 1,
-        expense_type: ExpenseType.FOOD, // ✅ enum zamiast any
+        expense_type: ExpenseType.FOOD,
         expense_date: new Date("2025-01-01"),
         cost: 100,
         description: "Lunch",
@@ -68,7 +68,7 @@ describe("ExpenseService", () => {
 
       const dto: CreateExpenseDto = {
         trip_id: 1,
-        expense_type: ExpenseType.FOOD, // ✅ enum zamiast any
+        expense_type: ExpenseType.FOOD,
         expense_date: new Date(),
         cost: 10,
         description: "x",

@@ -44,13 +44,16 @@ export class ParticipantService {
   }
 
   async create(createDto: CreateParticipantDto) {
+    await this.getTripOrThrow(createDto.trip_id);
+    await this.getUserOrThrow(createDto.email);
+
     return this.database.participant.create({
       data: {
         first_name: createDto.first_name,
         last_name: createDto.last_name,
         TripRole: createDto.TripRole,
-        email: createDto.email,
-        trip_id: createDto.trip_id,
+        User: { connect: { email: createDto.email } },
+        trip: { connect: { trip_id: createDto.trip_id } },
       },
       include: { trip: true },
     });

@@ -70,7 +70,6 @@ describe("TripService", () => {
 
       expect(result).toEqual(created);
 
-      // ✅ jawne typowanie zamiast any
       const expectedData: { data: CreateTripDto } = { data: dto };
 
       expect(mockDatabase.trip.create).toHaveBeenCalledWith(
@@ -143,7 +142,6 @@ describe("TripService", () => {
 
       expect(result).toEqual(updated);
 
-      // ✅ jawne typowanie zamiast any
       const expectedUpdate: {
         where: { trip_id: number };
         data: UpdateTripDto;
