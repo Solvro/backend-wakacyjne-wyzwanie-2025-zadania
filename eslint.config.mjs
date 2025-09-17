@@ -1,7 +1,7 @@
 import { solvro } from "@solvro/config/eslint";
 
 export default [
-  solvro(),
+  ...solvro(),
 
   {
     files: ["**/*.spec.ts", "**/*.test.ts", "test/**/*.{ts,tsx}"],
