@@ -65,7 +65,7 @@ export class ExpenseController {
   @ApiOperation({ summary: "Delete expense by ID" })
   @ApiResponse({ status: 204, description: "Expense deleted successfully" })
   @ApiResponse({ status: 404, description: "Expense not found" })
-  async remove(@Param("id") id: number): Promise<void> {
+  async remove(@Param("id", ParseIntPipe) id: number): Promise<void> {
     await this.expenseService.remove(id);
   }
 }

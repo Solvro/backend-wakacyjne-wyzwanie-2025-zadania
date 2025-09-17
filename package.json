@@ -16,8 +16,13 @@
     "start:prod": "node dist/main",
     "test": "jest",
     "test:cov": "jest --coverage",
+    "test:cov:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles --forceExit",
+    "test:e2e:watch:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --config ./test/jest-e2e.json --watch --runInBand",
+    "test:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest",
+    "test:prepare": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public\" npx prisma db push",
     "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit"
   },
@@ -26,17 +31,36 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "coverage",
     "moduleFileExtensions": [
       "js",
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "rootDir": ".",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ],
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",
+    "testTimeout": 30000,
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "module": "commonjs",
+            "moduleResolution": "node",
+            "resolvePackageJsonExports": false,
+            "esModuleInterop": true,
+            "allowSyntheticDefaultImports": true
+          }
+        }
+      ]
     }
   },
   "dependencies": {
@@ -65,6 +89,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "cross-env": "^10.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

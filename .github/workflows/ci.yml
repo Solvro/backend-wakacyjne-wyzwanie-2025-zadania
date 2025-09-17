@@ -8,6 +8,18 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: budzetownik
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: db_test
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,6 +34,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run migrations
+        run: npx prisma db push --skip-generate
 
       - name: Check commit name
         if: github.event_name == 'pull_request'
