@@ -13,9 +13,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: wakacyjne_test_db
+          POSTGRES_USER: budzetownik
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: db_test
         ports:
           - 5432:5432
 
@@ -38,10 +38,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-      - name: Generate prisma
-        run: npx prisma generate
-        if: always()
-
       - name: Run prettier
         run: npm run format:check
         if: always()
@@ -54,17 +50,17 @@ jobs:
         run: npm run typecheck
         if: always()
 
-      - name: Prepare tests
-        run: npm run test:prepare
-        if: always()
-
       - name: Run tests
         run: npm test
         if: always()
+        env:
+          DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
 
       - name: Run e2e tests
         run: npm run test:e2e
         if: always()
+        env:
+          DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
 
       - name: Build
         run: npm run build
