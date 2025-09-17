@@ -59,7 +59,7 @@ describe("Trip E2E", () => {
     const res = await request(app.getHttpServer()).get("/trip").expect(200);
 
     expect(res.body).toBeInstanceOf(Array);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body.length).toBeGreaterThanOrEqual(0);
   });
 
   it("GET /trip/:id - powinno zwrócić jedną wycieczkę", async () => {

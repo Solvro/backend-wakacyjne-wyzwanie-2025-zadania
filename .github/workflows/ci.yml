@@ -51,7 +51,7 @@ jobs:
       - name: Run tests
         run: npm test
         if: always()
-        
+
       - name: Run migrations
         run: npx prisma migrate deploy
         if: always()
