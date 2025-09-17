@@ -4,7 +4,7 @@ import { IsFutureDate } from "./is-future-date.validator";
 
 class Dto {
   @IsFutureDate({ message: "must be future" })
-  date?: string | null;
+  date: string | null;
 }
 
 describe("IsFutureDate validator", () => {

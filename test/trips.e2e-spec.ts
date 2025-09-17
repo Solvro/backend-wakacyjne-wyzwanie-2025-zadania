@@ -6,10 +6,7 @@ import request from "supertest";
 import { ValidationPipe } from "@nestjs/common";
 
 import { app, prisma } from "./setup";
-import {
-  registerAndLogin,
-  registerAndLoginAsRole,
-} from "./utils/register-login";
+import { createTestUserWithToken } from "./utils/test-helper";
 
 describe("Trips (e2e)", () => {
   beforeAll(() => {
@@ -34,7 +31,7 @@ describe("Trips (e2e)", () => {
   });
 
   it("POST /trips should be forbidden for regular USER (RolesGuard)", async () => {
-    const token = await registerAndLogin("user_trips@ex.com", "password123");
+    const { token } = await createTestUserWithToken("user_trips@ex.com");
     const server = app.getHttpServer() as unknown as Server;
 
     await request(server)
@@ -48,9 +45,8 @@ describe("Trips (e2e)", () => {
   });
 
   it("POST /trips should validate future date (IsFutureDate) -> 400 with past date", async () => {
-    const token = await registerAndLoginAsRole(
+    const { token } = await createTestUserWithToken(
       "coord_validate@ex.com",
-      "password123",
       Role.COORDINATOR,
     );
     const server = app.getHttpServer() as unknown as Server;
@@ -66,9 +62,8 @@ describe("Trips (e2e)", () => {
   });
 
   it("POST /trips should allow COORDINATOR to create and PATCH should update", async () => {
-    const token = await registerAndLoginAsRole(
-      "coord_create@ex.com",
-      "password123",
+    const { token } = await createTestUserWithToken(
+      "coord_validate@ex.com",
       Role.COORDINATOR,
     );
     const server = app.getHttpServer() as unknown as Server;

@@ -4,7 +4,7 @@ import request from "supertest";
 import { ValidationPipe } from "@nestjs/common";
 
 import { app, prisma } from "./setup";
-import { registerAndLogin } from "./utils/register-login";
+import { createTestUserWithToken } from "./utils/test-helper";
 
 describe("Participants (e2e)", () => {
   let tripId: number;
@@ -40,10 +40,7 @@ describe("Participants (e2e)", () => {
 
   it("POST /participants should create when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
-    const token = await registerAndLogin(
-      "participant_user@ex.com",
-      "password123",
-    );
+    const { token } = await createTestUserWithToken("user_trips@ex.com");
 
     const response = await request(server)
       .post("/participants")
@@ -75,10 +72,7 @@ describe("Participants (e2e)", () => {
       },
     });
 
-    const token = await registerAndLogin(
-      "participant_update@ex.com",
-      "password123",
-    );
+    const { token } = await createTestUserWithToken("user_trips@ex.com");
 
     const response = await request(server)
       .patch(`/participants/${participant.id.toString()}`)
@@ -106,10 +100,7 @@ describe("Participants (e2e)", () => {
       },
     });
 
-    const token = await registerAndLogin(
-      "participant_delete@ex.com",
-      "password123",
-    );
+    const { token } = await createTestUserWithToken("user_trips@ex.com");
 
     const response = await request(server)
       .delete(`/participants/${participant.id.toString()}`)
