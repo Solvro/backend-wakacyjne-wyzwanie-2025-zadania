@@ -62,8 +62,13 @@ jobs:
             sleep 2
           done
 
-      - name: Prepare database schema
-        run: npx prisma db push --skip-generate
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
         env:
           DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
 

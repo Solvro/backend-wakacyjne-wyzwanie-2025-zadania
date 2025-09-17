@@ -16,17 +16,15 @@
     "start:prod": "node dist/main",
     "test": "jest",
     "test:cov": "jest --coverage",
+    "test:cov:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch",
-    "typecheck": "tsc --noEmit",
-
-    "test:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest",
-    "test:cov:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --coverage",
     "test:e2e:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles --forceExit",
     "test:e2e:watch:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest --config ./test/jest-e2e.json --watch --runInBand",
-    "test:prepare": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public\" npx prisma db push"
-
+    "test:local": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public&connection_limit=1\" jest",
+    "test:prepare": "cross-env DATABASE_URL=\"postgresql://budzetownik:admin@localhost:5432/db_test?schema=public\" npx prisma db push",
+    "test:watch": "jest --watch",
+    "typecheck": "tsc --noEmit"
   },
   "prettier": "@solvro/config/prettier",
   "jest": {
