@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "public"."Gender" AS ENUM ('M', 'F');
 
+-- CreateEnum
+CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN', 'ORGANISER', 'TOURIST');
+
 -- CreateTable
 CREATE TABLE "public"."Participant" (
     "id" SERIAL NOT NULL,
@@ -9,6 +12,7 @@ CREATE TABLE "public"."Participant" (
     "age" INTEGER NOT NULL,
     "tripId" INTEGER NOT NULL,
     "gender" "public"."Gender",
+    "userEmail" TEXT,
 
     CONSTRAINT "Participant_pkey" PRIMARY KEY ("id")
 );
@@ -33,8 +37,24 @@ CREATE TABLE "public"."Expense" (
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."User" (
+    "email" TEXT NOT NULL,
+    "login" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
+    "description" TEXT,
+    "role" "public"."Role"[],
+    "isEnabled" BOOLEAN NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("email")
+);
+
 -- AddForeignKey
 ALTER TABLE "public"."Participant" ADD CONSTRAINT "Participant_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Participant" ADD CONSTRAINT "Participant_userEmail_fkey" FOREIGN KEY ("userEmail") REFERENCES "public"."User"("email") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Expense" ADD CONSTRAINT "Expense_tripId_fkey" FOREIGN KEY ("tripId") REFERENCES "public"."Trip"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

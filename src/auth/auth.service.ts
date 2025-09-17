@@ -1,27 +1,80 @@
-import { Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { compare, hash } from "bcrypt";
+import { RegisterUserDto } from "src/user/dto/register-user.dto";
 
-import { CreateAuthDto } from "./dto/create-auth.dto";
-import { UpdateAuthDto } from "./dto/update-auth.dto";
+import { UserMetadata, userToMetadata } from "../user/dto/user-metadata";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return "This action adds a new auth";
+  private readonly tokenPrefix = "TOKEN";
+
+  constructor(private userService: UserService) {}
+
+  private expiryTime = 2000000000;
+
+  async validateToken(token: string): Promise<UserMetadata> {
+    if (!token.startsWith(this.tokenPrefix)) {
+      throw new Error("Invalid token");
+    }
+
+    const parts = token.split("__");
+    const email = parts[2];
+    const createdAt = Number(parts[3]);
+
+    if (createdAt + this.expiryTime < Date.now()) {
+      throw new Error("Token expired");
+    }
+    const metaDataReturn = await this.userService.findOneOrFail(email);
+    return userToMetadata(metaDataReturn);
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async signIn(email: string, password: string) {
+    const usr = await this.userService.findOneOrFail(email);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const isValid = (await compare(password, usr.password)) === true;
+
+    if (!usr.isEnabled || !isValid) {
+      throw new UnauthorizedException();
+    }
+
+    const currentTime = Date.now().toString();
+
+    return { token: `${this.tokenPrefix}__${email}__${currentTime}` };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+  async registerAuth(registerUserDto: RegisterUserDto) {
+    let userExists = false;
+    try {
+      await this.userService.findOneOrFail(registerUserDto.email);
+    } catch {
+      userExists = true;
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    if (userExists) {
+      throw new ConflictException("User already exists");
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const salt = 10;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const hashedPassword: string = await hash(registerUserDto.password, salt);
+
+    try {
+      await this.userService.registerUser({
+        email: registerUserDto.email,
+        login: registerUserDto.login,
+        password: hashedPassword,
+        age: registerUserDto.age,
+        description: registerUserDto.description,
+      });
+    } catch {
+      throw new InternalServerErrorException("User could not be created");
+    }
   }
 }
