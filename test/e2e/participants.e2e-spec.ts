@@ -1,20 +1,21 @@
+import type { Participant } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
+import type * as http from "node:http";
 import request from "supertest";
 
 import type { INestApplication } from "@nestjs/common";
 
-import {
-  buildParticipantsApp,
-  resetDb as resetDatabase,
-} from "../utils/test-app.factory";
+import { buildParticipantsApp, resetDatabase } from "../utils/test-app.factory";
 
 describe("Participants (e2e)", () => {
   let app: INestApplication;
   let prisma: PrismaClient;
+  let server: http.Server;
 
   beforeAll(async () => {
     prisma = new PrismaClient();
     app = await buildParticipantsApp();
+    server = app.getHttpServer() as http.Server;
   });
 
   beforeEach(async () => {
@@ -35,13 +36,13 @@ describe("Participants (e2e)", () => {
       },
     });
 
-    const res = await request(app.getHttpServer())
+    const response = await request(server)
       .post("/participants")
       .send({ tripId: trip.id, name: "Jan", role: "MEMBER", share: "100.00" })
       .expect(201);
-
-    expect(res.body.name).toBe("Jan");
-    expect(res.body.tripId).toBe(trip.id);
+    const body = response.body as Participant;
+    expect(body.name).toBe("Jan");
+    expect(body.tripId).toBe(trip.id);
   });
 
   it("GET /participants -> 200 (lista)", async () => {
@@ -61,11 +62,10 @@ describe("Participants (e2e)", () => {
       },
     });
 
-    const res = await request(app.getHttpServer())
-      .get("/participants")
-      .expect(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThan(0);
+    const response = await request(server).get("/participants").expect(200);
+    const body = response.body as Participant[];
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBeGreaterThan(0);
   });
 
   it("GET /participants/:id -> 200", async () => {
@@ -80,10 +80,11 @@ describe("Participants (e2e)", () => {
       data: { tripId: trip.id, name: "Ola", role: "MEMBER", share: "10.00" },
     });
 
-    const res = await request(app.getHttpServer())
-      .get(`/participants/${p.id}`)
+    const response = await request(server)
+      .get(`/participants/${String(p.id)}`)
       .expect(200);
-    expect(res.body.id).toBe(p.id);
+    const body = response.body as Participant;
+    expect(body.id).toBe(p.id);
   });
 
   it("PATCH /participants/:id -> 200", async () => {
@@ -98,11 +99,12 @@ describe("Participants (e2e)", () => {
       data: { tripId: trip.id, name: "Ola", role: "MEMBER", share: "10.00" },
     });
 
-    const res = await request(app.getHttpServer())
-      .patch(`/participants/${p.id}`)
-      .send({ name: "Andrzej" });
-
-    expect(res.body.name).toBe("Andrzej");
+    const response = await request(server)
+      .patch(`/participants/${String(p.id)}`)
+      .send({ name: "Andrzej" })
+      .expect(200);
+    const body = response.body as Participant;
+    expect(body.name).toBe("Andrzej");
   });
 
   it("DELETE /participants/:id -> 204", async () => {
@@ -117,8 +119,8 @@ describe("Participants (e2e)", () => {
       data: { tripId: trip.id, name: "Jan", role: "MEMBER", share: "99.00" },
     });
 
-    await request(app.getHttpServer())
-      .delete(`/participants/${p.id}`)
+    await request(server)
+      .delete(`/participants/${String(p.id)}`)
       .expect(204);
     const exists = await prisma.participant.findUnique({ where: { id: p.id } });
     expect(exists).toBeNull();

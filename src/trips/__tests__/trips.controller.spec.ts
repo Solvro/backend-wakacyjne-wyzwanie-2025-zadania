@@ -1,8 +1,15 @@
+import type { Request } from "express";
+
 import { Test } from "@nestjs/testing";
 
+import type { JwtPayload } from "../../common/types";
+import { UserRole } from "../../common/types";
+import type { UpdateTripDto } from "../dto/update-trip.dto";
 import { TripAccessService } from "../trip-access.service";
 import { TripsController } from "../trips.controller";
 import { TripsService } from "../trips.service";
+
+type RequestWithUser = Request & { user: JwtPayload };
 
 describe("TripsController (unit)", () => {
   let controller: TripsController;
@@ -26,12 +33,18 @@ describe("TripsController (unit)", () => {
 
   it("PATCH /trips/:tripId", async () => {
     tripsServiceMock.updateAs.mockResolvedValue({ id: 1, name: "X" });
-    const request = { user: { sub: 123, role: "USER" } } as any;
-    await expect(
-      controller.update(1, { name: "X" } as any, request),
-    ).resolves.toEqual({ id: 1, name: "X" });
+    const request = {
+      user: { sub: 123, role: UserRole.USER }, // <-- Używamy enuma
+    } as RequestWithUser;
+    const updateDto: UpdateTripDto = { name: "X" };
+
+    await expect(controller.update(1, updateDto, request)).resolves.toEqual({
+      id: 1,
+      name: "X",
+    });
+
     expect(tripsServiceMock.updateAs).toHaveBeenCalledWith(
-      { sub: 123, role: "USER" },
+      { sub: 123, role: UserRole.USER }, // <-- Używamy enuma
       1,
       { name: "X" },
     );

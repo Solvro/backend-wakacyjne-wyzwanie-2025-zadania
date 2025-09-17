@@ -29,7 +29,7 @@ export async function buildTripsApp(): Promise<INestApplication> {
     .overrideGuard(JwtAuthGuard)
     .useClass(MockJwtAuthGuard)
     .overrideProvider(TripAccessService)
-    .useValue({ assertCoordinatorOrAdmin: async () => {} })
+    .useValue({ assertCoordinatorOrAdmin: jest.fn() })
     .compile();
 
   const app = moduleRef.createNestApplication();
@@ -37,11 +37,11 @@ export async function buildTripsApp(): Promise<INestApplication> {
   return app;
 }
 
-export async function resetDb() {
+export async function resetDatabase(): Promise<void> {
   const prisma = new PrismaClient();
-  await prisma.expense.deleteMany().catch(() => {});
-  await prisma.participant.deleteMany().catch(() => {});
-  await prisma.trip.deleteMany().catch(() => {});
-  await prisma.user.deleteMany().catch(() => {});
+  await prisma.expense.deleteMany().catch(() => null);
+  await prisma.participant.deleteMany().catch(() => null);
+  await prisma.trip.deleteMany().catch(() => null);
+  await prisma.user.deleteMany().catch(() => null);
   await prisma.$disconnect();
 }

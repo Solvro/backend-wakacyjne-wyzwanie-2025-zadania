@@ -18,7 +18,7 @@ describe("IsAfter validator", () => {
     const dto = new DummyDto();
     dto.startDate = "2025-01-01T10:00:00Z";
     dto.endDate = "2025-01-01T10:00:01Z";
-    const errors = await validate(dto as any);
+    const errors = await validate(dto);
     expect(errors.length).toBe(0);
   });
 
@@ -26,7 +26,7 @@ describe("IsAfter validator", () => {
     const dto = new DummyDto();
     dto.startDate = "2025-01-01T10:00:00Z";
     dto.endDate = "2025-01-01T10:00:00Z";
-    const errors = await validate(dto as any);
+    const errors = await validate(dto);
     expect(errors.length).toBe(0);
   });
 
@@ -34,7 +34,7 @@ describe("IsAfter validator", () => {
     const dto = new DummyDto();
     dto.startDate = "2025-01-01T10:00:00Z";
     dto.endDate = "2025-01-01T09:59:59Z";
-    const errors = await validate(dto as any);
+    const errors = await validate(dto);
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].constraints).toBeDefined();
   });
@@ -43,7 +43,7 @@ describe("IsAfter validator", () => {
     const dto = new DummyDto();
     dto.startDate = "lol";
     dto.endDate = "kek";
-    const errors = await validate(dto as any);
+    const errors = await validate(dto);
     expect(errors.length).toBeGreaterThan(0);
   });
 });

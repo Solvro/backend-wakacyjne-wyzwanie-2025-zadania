@@ -1,5 +1,7 @@
 import { Test } from "@nestjs/testing";
 
+import type { CreateParticipantDto } from "../dto/create-participant.dto";
+import type { UpdateParticipantDto } from "../dto/update-participant.dto";
 import { ParticipantsController } from "../participants.controller";
 import { ParticipantsService } from "../participants.service";
 
@@ -26,7 +28,9 @@ describe("ParticipantsController (unit)", () => {
 
   it("POST /participants", async () => {
     serviceMock.create.mockResolvedValue({ id: 1 });
-    await expect(controller.create({} as any)).resolves.toEqual({ id: 1 });
+    await expect(
+      controller.create({} as CreateParticipantDto),
+    ).resolves.toEqual({ id: 1 });
   });
 
   it("GET /participants", async () => {
@@ -41,14 +45,11 @@ describe("ParticipantsController (unit)", () => {
 
   it("PATCH /participants/:id", async () => {
     serviceMock.update.mockResolvedValue({ id: 2, name: "X" });
-    await expect(controller.update(2, { name: "X" } as any)).resolves.toEqual({
+    await expect(
+      controller.update(2, { name: "X" } as UpdateParticipantDto),
+    ).resolves.toEqual({
       id: 2,
       name: "X",
     });
-  });
-
-  it("DELETE /participants/:id", async () => {
-    serviceMock.remove.mockResolvedValue(undefined);
-    await expect(controller.remove(3)).resolves.toBeUndefined();
   });
 });

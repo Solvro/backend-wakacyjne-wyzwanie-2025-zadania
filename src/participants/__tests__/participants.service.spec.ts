@@ -2,6 +2,8 @@ import { NotFoundException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 
 import { PrismaService } from "../../../prisma/prisma.service";
+import type { CreateParticipantDto } from "../dto/create-participant.dto";
+import type { UpdateParticipantDto } from "../dto/update-participant.dto";
 import { ParticipantsService } from "../participants.service";
 
 const prismaMock = {
@@ -13,8 +15,6 @@ const prismaMock = {
     delete: jest.fn(),
   },
 };
-
-// wiem że w angielskim byłoby it('should do sth'), ale że reszta apki jest po polsku to testy dla spójności też zrobię po polsku
 
 describe("ParticipantsService (unit)", () => {
   let service: ParticipantsService;
@@ -34,19 +34,21 @@ describe("ParticipantsService (unit)", () => {
 
   it("create() tworzy uczestnika", async () => {
     prismaMock.participant.create.mockResolvedValue({ id: 1, name: "Jan" });
-    await expect(
-      service.create({
-        tripId: 10,
-        name: "Jan",
-        role: "MEMBER",
-        share: "100.00",
-      } as any),
-    ).resolves.toEqual({ id: 1, name: "Jan" });
+    const createDto: CreateParticipantDto = {
+      tripId: 10,
+      name: "Jan",
+      role: "MEMBER",
+      share: 100,
+    };
+    await expect(service.create(createDto)).resolves.toEqual({
+      id: 1,
+      name: "Jan",
+    });
     expect(prismaMock.participant.create).toHaveBeenCalledWith({
       data: {
         name: "Jan",
         role: "MEMBER",
-        share: "100.00",
+        share: 100,
         trip: { connect: { id: 10 } },
       },
     });
@@ -70,7 +72,8 @@ describe("ParticipantsService (unit)", () => {
   it("update() aktualizuje użytkownika", async () => {
     prismaMock.participant.findUnique.mockResolvedValue({ id: 3 });
     prismaMock.participant.update.mockResolvedValue({ id: 3, name: "Nowe" });
-    await expect(service.update(3, { name: "Nowe" } as any)).resolves.toEqual({
+    const updateDto: UpdateParticipantDto = { name: "Nowe" };
+    await expect(service.update(3, updateDto)).resolves.toEqual({
       id: 3,
       name: "Nowe",
     });

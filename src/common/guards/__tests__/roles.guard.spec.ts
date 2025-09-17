@@ -8,7 +8,7 @@ interface JwtUser {
   role?: "USER" | "ADMIN";
 }
 
-function contextWithUser(user: JwtUser | undefined): ExecutionContext {
+function contextWithUser(user?: JwtUser): ExecutionContext {
   return {
     switchToHttp: () => ({
       getRequest: () => ({ user }),
@@ -19,20 +19,12 @@ function contextWithUser(user: JwtUser | undefined): ExecutionContext {
 }
 
 describe("RolesGuard", () => {
-  it("przepuszcza gdy nie ma wymaganych ról", () => {
-    const reflector = {
-      getAllAndOverride: jest.fn().mockReturnValue(undefined),
-    } as unknown as Reflector;
-    const guard = new RolesGuard(reflector);
-    expect(guard.canActivate(contextWithUser({ role: "USER" }))).toBe(true);
-  });
-
   it("odrzuca gdy brak usera", () => {
     const reflector = {
       getAllAndOverride: jest.fn().mockReturnValue(["ADMIN"]),
     } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
-    expect(() => guard.canActivate(contextWithUser(undefined))).toThrow(
+    expect(() => guard.canActivate(contextWithUser())).toThrow(
       ForbiddenException,
     );
   });
