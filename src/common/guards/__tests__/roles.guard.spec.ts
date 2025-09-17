@@ -21,7 +21,7 @@ function contextWithUser(user: JwtUser | undefined): ExecutionContext {
 describe("RolesGuard", () => {
   it("przepuszcza gdy nie ma wymaganych ról", () => {
     const reflector = {
-      getAllAndOverride: jest.fn().mockReturnValue(),
+      getAllAndOverride: jest.fn().mockReturnValue(undefined),
     } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
     expect(guard.canActivate(contextWithUser({ role: "USER" }))).toBe(true);
@@ -32,7 +32,7 @@ describe("RolesGuard", () => {
       getAllAndOverride: jest.fn().mockReturnValue(["ADMIN"]),
     } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
-    expect(() => guard.canActivate(contextWithUser())).toThrow(
+    expect(() => guard.canActivate(contextWithUser(undefined))).toThrow(
       ForbiddenException,
     );
   });
