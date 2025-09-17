@@ -21,4 +21,4 @@ import { UserModule } from "./user/user.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export abstract class AppModule {}
+export class AppModule {}

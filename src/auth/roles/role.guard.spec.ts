@@ -49,7 +49,7 @@ describe("RoleGuard", () => {
   });
 
   it("should allow access if no roles are required", () => {
-    jest.spyOn(reflector, "getAllAndOverride").mockReturnValue();
+    jest.spyOn(reflector, "getAllAndOverride")
 
     const context = {
       switchToHttp: () => ({

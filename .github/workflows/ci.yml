@@ -55,11 +55,17 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -p 5432 -U budzetownik; do
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+
       - name: Prepare database schema
-        run: npx prisma db push
+        run: npx prisma db push --skip-generate
         env:
           DATABASE_URL: "postgresql://budzetownik:admin@localhost:5432/db_test?schema=public"
-
 
       - name: Run tests
         run: npm test
