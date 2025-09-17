@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { Public, Roles } from "../auth/roles";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 import { ParticipantService } from "./participant.service";
@@ -30,6 +31,7 @@ export class ParticipantController {
     status: 201,
     description: "Participant created",
   })
+  @Roles("ADMIN", "COORDINATOR")
   async create(@Body() createParticipantDto: CreateParticipantDto) {
     return this.participantService.create(createParticipantDto);
   }
@@ -43,6 +45,7 @@ export class ParticipantController {
     status: 200,
     description: "List of participants retrieved successfully",
   })
+  @Public()
   async findAll() {
     return this.participantService.findAll();
   }
@@ -60,6 +63,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
+  @Public()
   async findOne(@Param("id") id: string) {
     return this.participantService.findOne(+id);
   }
@@ -77,6 +81,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
+  @Roles("ADMIN", "COORDINATOR")
   async update(
     @Param("id") id: string,
     @Body() updateParticipantDto: UpdateParticipantDto,
@@ -98,6 +103,7 @@ export class ParticipantController {
     status: 404,
     description: "Participant not found",
   })
+  @Roles("ADMIN", "COORDINATOR")
   async remove(@Param("id") id: string) {
     return this.participantService.remove(+id);
   }

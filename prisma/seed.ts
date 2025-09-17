@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -11,12 +11,20 @@ async function main() {
     },
   });
 
+  const user = await prisma.user.create({
+    data: {
+      email: "szymon.stepien@example.com",
+      password: "Solvro",
+      role: Role.ADMIN,
+    },
+  });
+
   const participant = await prisma.participant.create({
     data: {
       name: "Szymon",
       surname: "Stępień",
       age: 30,
-      email: "szymon.stepien@example.com",
+      email: user.email,
     },
   });
 
