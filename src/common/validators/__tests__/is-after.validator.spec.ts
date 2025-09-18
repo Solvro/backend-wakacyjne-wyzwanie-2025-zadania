@@ -4,13 +4,13 @@ import "reflect-metadata";
 import { IsAfter } from "../is-after-validator";
 
 class DummyDto {
-  startDate!: string;
+  startDate = "2025-01-01T10:00:00Z";
 
   @IsAfter("startDate", {
     allowEqual: true,
     message: "endDate must be on/after startDate",
   })
-  endDate?: string;
+  endDate = "2025-01-02T10:00:00Z";
 }
 
 describe("IsAfter validator", () => {

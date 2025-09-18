@@ -125,4 +125,19 @@ describe("Participants (e2e)", () => {
     const exists = await prisma.participant.findUnique({ where: { id: p.id } });
     expect(exists).toBeNull();
   });
+  it("POST /participants zwraca 404 gdy wycieczka nie istnieje", async () => {
+    const nonExistingTripId = 999_999;
+
+    const response = await request(server)
+      .post("/participants")
+      .send({
+        tripId: nonExistingTripId,
+        name: "Jakiś ziutek",
+        role: "MEMBER",
+        share: "200.00",
+      })
+      .expect(404);
+    expect(response.body).toHaveProperty("statusCode", 404);
+    expect(response.body).toHaveProperty("message");
+  });
 });

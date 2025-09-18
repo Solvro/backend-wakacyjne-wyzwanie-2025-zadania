@@ -39,9 +39,9 @@ export async function buildTripsApp(): Promise<INestApplication> {
 
 export async function resetDatabase(): Promise<void> {
   const prisma = new PrismaClient();
-  await prisma.expense.deleteMany().catch(() => null);
-  await prisma.participant.deleteMany().catch(() => null);
-  await prisma.trip.deleteMany().catch(() => null);
-  await prisma.user.deleteMany().catch(() => null);
+  await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE "Expense", "Participant", "Trip"
+    RESTART IDENTITY CASCADE;
+  `);
   await prisma.$disconnect();
 }

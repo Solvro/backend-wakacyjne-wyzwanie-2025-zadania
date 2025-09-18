@@ -14,6 +14,9 @@ const prismaMock = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+  trip: {
+    findUnique: jest.fn(),
+  },
 };
 
 describe("ParticipantsService (unit)", () => {
@@ -28,6 +31,11 @@ describe("ParticipantsService (unit)", () => {
     }).compile();
 
     service = moduleRef.get(ParticipantsService);
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    prismaMock.trip.findUnique.mockResolvedValue({ id: 10 });
   });
 
   afterEach(() => jest.clearAllMocks());
@@ -83,5 +91,29 @@ describe("ParticipantsService (unit)", () => {
     prismaMock.participant.findUnique.mockResolvedValue({ id: 5 });
     prismaMock.participant.delete.mockResolvedValue({ id: 5 });
     await expect(service.remove(5)).resolves.toEqual({ id: 5 });
+  });
+  it("create() zwraca 404 gdy wycieczka nie istnieje", async () => {
+    const createDto: CreateParticipantDto = {
+      tripId: 232_913,
+      name: "Jan",
+      role: "MEMBER",
+      share: 215,
+    };
+
+    const fakePrismaErrored = Object.assign(new Error("Record not found"), {
+      code: "P2025" as const,
+    });
+    prismaMock.participant.create.mockRejectedValue(fakePrismaErrored);
+
+    await expect(service.create(createDto)).rejects.toBeInstanceOf(Error);
+
+    expect(prismaMock.participant.create).toHaveBeenCalledWith({
+      data: {
+        name: "Jan",
+        role: "MEMBER",
+        share: 215,
+        trip: { connect: { id: 232_913 } },
+      },
+    });
   });
 });

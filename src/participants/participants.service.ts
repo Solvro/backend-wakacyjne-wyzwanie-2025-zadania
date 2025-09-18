@@ -1,4 +1,4 @@
-import { Participant } from "@prisma/client";
+import { Participant, Prisma } from "@prisma/client";
 
 import { Injectable, NotFoundException } from "@nestjs/common";
 
@@ -12,12 +12,35 @@ export class ParticipantsService {
 
   async create(dto: CreateParticipantDto): Promise<Participant> {
     const { tripId, ...rest } = dto;
-    return this.prisma.participant.create({
-      data: {
-        ...rest,
-        trip: { connect: { id: tripId } },
-      },
+
+    const trip = await this.prisma.trip.findUnique({
+      where: { id: tripId },
+      select: { id: true },
     });
+    if (trip === null) {
+      throw new NotFoundException(
+        `Nie odnaleziono wycieczki o numerze ${String(tripId)}`,
+      );
+    }
+
+    try {
+      return await this.prisma.participant.create({
+        data: {
+          ...rest,
+          trip: { connect: { id: tripId } },
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new NotFoundException(
+          `Nie znaleziono wycieczki o numerze ${String(tripId)}`,
+        );
+      }
+      throw error;
+    }
   }
 
   async findAll(): Promise<Participant[]> {
@@ -30,7 +53,7 @@ export class ParticipantsService {
     });
     if (participant == null) {
       throw new NotFoundException(
-        `Participant with ID ${String(id)} hasn't been found`,
+        `Nie znaleziono wycieczkowicza o numerze ${String(id)}`,
       );
     }
     return participant;
@@ -43,16 +66,40 @@ export class ParticipantsService {
       tripId?: number;
     };
 
-    return this.prisma.participant.update({
-      where: { id },
-      data:
-        tripId == null
-          ? { ...rest }
-          : {
-              ...rest,
-              trip: { connect: { id: tripId } },
-            },
-    });
+    if (tripId != null) {
+      const trip = await this.prisma.trip.findUnique({
+        where: { id: tripId },
+        select: { id: true },
+      });
+      if (trip === null) {
+        throw new NotFoundException(
+          `Nie znaleziono wycieczki o numerze ${String(tripId)}`,
+        );
+      }
+    }
+
+    try {
+      return await this.prisma.participant.update({
+        where: { id },
+        data:
+          tripId == null
+            ? { ...rest }
+            : {
+                ...rest,
+                trip: { connect: { id: tripId } },
+              },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        throw new NotFoundException(
+          `Podczas aktualizacji wystąpił błąd w odnalezieniu użytkownika bądź przypisanej mu wycieczki`,
+        );
+      }
+      throw error;
+    }
   }
 
   async remove(id: number): Promise<Participant> {
