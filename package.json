@@ -18,10 +18,12 @@
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "test": "jest",
-    "test:cov": "jest --coverage",
+    "test": "jest --runInBand",
+    "test:cov": "jest --coverage --runInBand",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json  --passWithNoTests",
+    "test:e2e": "cross-env DATABASE_URL=\"postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik_test\" jest --config ./test/jest-e2e.json --runInBand",
+    "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik_test\" jest --config ./test/jest-e2e.json --watch --runInBand",
+    "test:prepare": "cross-env DATABASE_URL=\"postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik_test?schema=public\" npx prisma db push",
     "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit"
   },
@@ -39,6 +41,7 @@
       "json",
       "ts"
     ],
+    "preset": "ts-jest",
     "rootDir": "src",
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",

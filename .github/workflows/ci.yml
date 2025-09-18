@@ -26,6 +26,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik
+      DATABASE_URL_TEST: postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik_test
 
     steps:
       - name: Checkout
@@ -60,12 +61,21 @@ jobs:
 
       - name: Generate Prisma client
         run: npx prisma generate
+        if: always()
 
-      - name: Apply Prisma schema
+      - name: Apply Prisma schema to database
         run: npx prisma migrate deploy
+        if: always()
 
       - name: Seed database
         run: npm run seed
+        if: always()
+
+      - name: Create test database
+        run: PGPASSWORD=budzetownik_password createdb -h localhost -U budzetownik_user budzetownik_test
+
+      - name: Apply Prisma schema to test database
+        run: npm run test:prepare
         if: always()
 
       - name: Run tests
