@@ -1,3 +1,4 @@
+import { Currency } from "@prisma/client";
 import * as request from "supertest";
 import type { App } from "supertest/types";
 
@@ -36,9 +37,10 @@ describe("ExpenseController (e2e)", () => {
           id: expect.any(Number) as unknown,
           name: "testExpense",
           date: expect.any(String) as unknown,
-          value: "13.25",
+          value: "1.9875",
           description: null,
           trip_participant_id: expect.any(Number) as unknown,
+          currency: Currency.PLN,
         });
       });
   });
@@ -56,6 +58,7 @@ describe("ExpenseController (e2e)", () => {
           date: expect.any(String) as unknown,
           value: "11",
           trip_participant_id: expect.any(Number) as unknown,
+          currency: Currency.PLN,
         }),
         expect.objectContaining({
           name: "Expense2",
@@ -63,6 +66,7 @@ describe("ExpenseController (e2e)", () => {
           date: expect.any(String) as unknown,
           value: "22",
           trip_participant_id: expect.any(Number) as unknown,
+          currency: Currency.PLN,
         }),
       ]),
     );
@@ -80,6 +84,7 @@ describe("ExpenseController (e2e)", () => {
       name: "Expense1",
       value: "11",
       trip_participant_id: 1,
+      currency: Currency.PLN,
     });
   });
   it("/expense/:id (PATCH)", async () => {
@@ -97,6 +102,7 @@ describe("ExpenseController (e2e)", () => {
       name: "Expense2",
       trip_participant_id: 1,
       value: "22",
+      currency: Currency.PLN,
     });
   });
 
@@ -112,6 +118,7 @@ describe("ExpenseController (e2e)", () => {
       description: null,
       name: "Expense2",
       trip_participant_id: 1,
+      currency: Currency.PLN,
     });
   });
 });

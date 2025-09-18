@@ -1,23 +1,33 @@
+import { Currency } from "@prisma/client";
+
 import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { CurrencyService } from "../currency/currency.service";
 import { DatabaseService } from "../database/database.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
 export class ExpenseService {
-  constructor(private database: DatabaseService) {}
+  constructor(
+    private database: DatabaseService,
+    private currencyService: CurrencyService,
+  ) {}
 
   async create(createExpenseDto: CreateExpenseDto) {
+    const exchangedCurrency =
+      createExpenseDto.value *
+      (await this.currencyService.findByCurrency(createExpenseDto.currency));
     return this.database.expense.create({
       data: {
         name: createExpenseDto.name,
         description: createExpenseDto.description,
-        value: createExpenseDto.value,
+        value: exchangedCurrency,
         date: createExpenseDto.date,
         trip_participant: {
           connect: { id: createExpenseDto.trip_participant_id },
         },
+        currency: Currency.PLN,
       },
     });
   }
