@@ -9,6 +9,12 @@ export class CurrencySchedulerService {
 
   constructor(private currencyScraperService: CurrencyScraperService) {}
 
+  // @Cron(CronExpression.EVERY_10_SECONDS)
+  // async handleTestUpdate() {
+  //   this.logger.log("Scraping currencies data for test...");
+  //   await this.currencyScraperService.createCurrencies();
+  // }
+
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handleFrequentUpdate() {
     this.logger.log("Scraping currencies data...");

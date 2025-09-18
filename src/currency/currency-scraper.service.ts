@@ -51,8 +51,6 @@ export class CurrencyScraperService {
 
     await browser.close();
 
-    console.warn(currencies);
-
     return currencies;
   }
 
@@ -64,7 +62,5 @@ export class CurrencyScraperService {
         await this.currencyService.create(currency);
       }
     }
-
-    console.warn(currencies);
   }
 }
