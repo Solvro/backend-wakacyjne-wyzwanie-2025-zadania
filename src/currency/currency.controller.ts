@@ -66,9 +66,9 @@ export class CurrencyController {
     return this.currencyService.findAll();
   }
 
-  @Get(":id")
+  @Get(":currencyCode")
   @ApiOperation({
-    summary: "Get currency by ID",
+    summary: "Get currency by currencyCode",
     description: "Retrieve detailed information about a specific currency",
   })
   @ApiResponse({
@@ -80,11 +80,11 @@ export class CurrencyController {
     status: HttpStatus.NOT_FOUND,
     description: "Currency not found",
   })
-  async findOne(@Param("id", ParseIntPipe) id: number) {
-    return this.currencyService.findOne(id);
+  async findOne(@Param("currencyCode") currencyCode: string) {
+    return this.currencyService.findOne(currencyCode);
   }
 
-  @Patch(":id")
+  @Patch(":currencyCode")
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.COORDINATOR)
   @ApiBearerAuth("access-token")
@@ -102,13 +102,13 @@ export class CurrencyController {
     description: "Currency not found",
   })
   async update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("currencyCode") currencyCode: string,
     @Body() updateCurrencyDto: UpdateCurrencyDto,
   ) {
-    return this.currencyService.update(id, updateCurrencyDto);
+    return this.currencyService.update(currencyCode, updateCurrencyDto);
   }
 
-  @Delete(":id")
+  @Delete(":currencyCode")
   @UseGuards(AuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.COORDINATOR)
   @ApiBearerAuth("access-token")
@@ -125,7 +125,7 @@ export class CurrencyController {
     status: HttpStatus.NOT_FOUND,
     description: "Currency not found",
   })
-  async remove(@Param("id", ParseIntPipe) id: number) {
-    return this.currencyService.remove(id);
+  async remove(@Param("currencyCode") currencyCode: string) {
+    return this.currencyService.remove(currencyCode);
   }
 }

@@ -1,6 +1,6 @@
 export class CreateCurrencyResponseDto {
   id!: number;
   currencyCode!: string;
-  value!: number;
+  rate!: number;
   updatedAt!: Date;
 }

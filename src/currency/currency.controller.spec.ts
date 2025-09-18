@@ -13,20 +13,20 @@ describe("CurrencyController", () => {
   let currenciesInMemory: {
     id: number;
     currencyCode: string;
-    value: number;
+    rate: number;
     updatedAt: Date;
   }[] = [];
 
   const initialCurrencies = [
     {
       id: 1,
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     },
     {
       id: 2,
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     },
@@ -35,7 +35,7 @@ describe("CurrencyController", () => {
   interface Currency {
     data: {
       currencyCode: string;
-      value: number;
+      rate: number;
       updatedAt: Date;
     };
   }
@@ -78,7 +78,7 @@ describe("CurrencyController", () => {
 
   it("should create a currency", async () => {
     const dto = {
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     };
@@ -107,7 +107,7 @@ describe("CurrencyController", () => {
   it("should return one currency", async () => {
     const currencyMock = {
       id: 1,
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     };
@@ -121,7 +121,7 @@ describe("CurrencyController", () => {
 
   it("should update a currency", async () => {
     const dto = {
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     };
@@ -129,13 +129,13 @@ describe("CurrencyController", () => {
 
     const currencyUpdated = {
       currencyId: currencyMock.id,
-      value: 1123,
+      rate: 1123,
       currencyCode: "NON",
       updatedAt: new Date(),
     };
 
     const dtoUpdate = {
-      value: 1123,
+      rate: 1123,
     };
 
     mockCurrencyService.update.mockResolvedValue(currencyUpdated);
@@ -150,7 +150,7 @@ describe("CurrencyController", () => {
   it("should delete a currency", async () => {
     const currencyMock = {
       currencyId: 1,
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     };

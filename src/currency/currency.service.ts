@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
 import { CreateCurrencyDto } from "./dto/create-currency.dto";
@@ -9,39 +9,40 @@ export class CurrencyService {
   constructor(private database: DatabaseService) {}
 
   async create(createCurrencyDto: CreateCurrencyDto) {
-    return this.database.currency.create({
-      data: {
-        currencyCode: createCurrencyDto.currencyCode,
-        value: createCurrencyDto.value,
-      },
-    });
+    const currencyInBase = await this.findOne(createCurrencyDto.currencyCode);
+
+    return currencyInBase === null
+      ? this.database.currency.create({
+          data: {
+            currencyCode: createCurrencyDto.currencyCode,
+            rate: createCurrencyDto.rate,
+          },
+        })
+      : this.update(createCurrencyDto.currencyCode, createCurrencyDto);
   }
 
   async findAll() {
     return this.database.currency.findMany();
   }
 
-  async findOne(id: number) {
+  async findOne(currencyCode: string) {
     const currency = await this.database.currency.findUnique({
-      where: { id },
+      where: { currencyCode },
     });
 
-    if (currency == null) {
-      throw new NotFoundException("Currency was not found");
-    }
     return currency;
   }
 
-  async update(id: number, updateCurrencyDto: UpdateCurrencyDto) {
+  async update(currencyCode: string, updateCurrencyDto: UpdateCurrencyDto) {
     return this.database.currency.update({
-      where: { id },
+      where: { currencyCode },
       data: {
-        value: updateCurrencyDto.value,
+        rate: updateCurrencyDto.rate,
       },
     });
   }
 
-  async remove(id: number) {
-    return this.database.currency.delete({ where: { id } });
+  async remove(currencyCode: string) {
+    return this.database.currency.delete({ where: { currencyCode } });
   }
 }

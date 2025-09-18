@@ -1,3 +1,3 @@
 export class UpdateCurrencyDto {
-  value?: number;
+  rate?: number;
 }

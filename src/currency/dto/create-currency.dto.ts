@@ -9,5 +9,5 @@ export class CreateCurrencyDto {
 
   @ApiProperty()
   @IsNumber()
-  value!: number;
+  rate!: number;
 }

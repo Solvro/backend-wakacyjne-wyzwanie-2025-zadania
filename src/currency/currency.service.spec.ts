@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { NotFoundException } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
@@ -9,26 +7,21 @@ import { CurrencyService } from "./currency.service";
 describe("CurrencyService", () => {
   let service: CurrencyService;
 
-  let currencyCounter = 1;
-
   let currenciesInMemory: {
-    id: number;
     currencyCode: string;
-    value: number;
+    rate: number;
     updatedAt: Date;
   }[] = [];
 
   const initialCurrencies = [
     {
-      id: 1,
-      value: 12,
+      rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     },
     {
-      id: 2,
-      value: 12,
-      currencyCode: "NON",
+      rate: 12,
+      currencyCode: "AU",
       updatedAt: new Date(),
     },
   ];
@@ -36,7 +29,7 @@ describe("CurrencyService", () => {
   interface Currency {
     data: {
       currencyCode: string;
-      value: number;
+      rate: number;
       updatedAt: Date;
     };
   }
@@ -46,7 +39,7 @@ describe("CurrencyService", () => {
       findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(({ data }: Currency) => {
-        const newCurrency = { id: currencyCounter++, ...data };
+        const newCurrency = { ...data };
         currenciesInMemory.push(newCurrency);
         return newCurrency;
       }),
@@ -64,7 +57,6 @@ describe("CurrencyService", () => {
       .compile();
 
     currenciesInMemory = [...initialCurrencies];
-    currencyCounter = initialCurrencies.length + 1;
 
     service = module.get<CurrencyService>(CurrencyService);
   });
@@ -79,27 +71,27 @@ describe("CurrencyService", () => {
 
   it("should create a new currency", async () => {
     const dto = {
-      value: 12,
-      currencyCode: "NON",
+      rate: 12,
+      currencyCode: "VE",
       updatedAt: new Date(),
     };
+
+    mockDatabaseService.currency.findUnique.mockResolvedValue(null);
+
     const result = await service.create(dto);
 
-    expect(result).toHaveProperty("id");
-
-    expect(result.currencyCode).toBe("NON");
+    expect(result.currencyCode).toBe("VE");
 
     expect(mockDatabaseService.currency.create).toHaveBeenCalledWith({
       data: {
-        value: dto.value,
+        rate: dto.rate,
         currencyCode: dto.currencyCode,
       },
     });
 
     expect(result).toEqual({
-      id: expect.any(Number),
-      value: 12,
-      currencyCode: "NON",
+      rate: 12,
+      currencyCode: "VE",
     });
   });
 
@@ -114,13 +106,12 @@ describe("CurrencyService", () => {
 
   it("should return one currency", async () => {
     const currencyMock = {
-      id: 1,
-      value: 12,
-      currencyCode: "NON",
+      rate: 12,
+      currencyCode: "VE",
     };
 
     mockDatabaseService.currency.findUnique.mockResolvedValue(currencyMock);
-    const result = await service.findOne(1);
+    const result = await service.findOne("VE");
 
     expect(result).toEqual(currencyMock);
     expect(mockDatabaseService.currency.findUnique).toHaveBeenCalledTimes(1);
@@ -128,54 +119,51 @@ describe("CurrencyService", () => {
 
   it("should update a currency", async () => {
     const dto = {
-      value: 12,
-      currencyCode: "NON",
+      rate: 12,
+      currencyCode: "VE",
     };
+
+    mockDatabaseService.currency.findUnique.mockResolvedValue(null);
+
     const currencyMock = await service.create(dto);
 
+    console.warn(currencyMock);
+
     const currencyUpdated = {
-      currencyId: currencyMock.id,
-      value: 1123,
-      currencyCode: "NON",
+      rate: 1123,
+      currencyCode: "VE",
     };
 
     const dtoUpdate = {
-      value: 1123,
+      rate: 1123,
     };
 
     mockDatabaseService.currency.update.mockResolvedValue(currencyUpdated);
 
-    const result = await service.update(currencyMock.id, dtoUpdate);
+    const result = await service.update(currencyMock.currencyCode, dtoUpdate);
 
     expect(mockDatabaseService.currency.update).toHaveBeenCalledTimes(1);
     expect(result).toEqual(currencyUpdated);
     expect(mockDatabaseService.currency.update).toHaveBeenCalledWith({
-      where: { id: currencyMock.id },
+      where: { currencyCode: currencyMock.currencyCode },
       data: dtoUpdate,
     });
   });
 
   it("should delete a currency", async () => {
     const currencyMock = {
-      currencyId: 1,
-      value: 12,
-      currencyCode: "NON",
+      rate: 12,
+      currencyCode: "VE",
     };
 
     mockDatabaseService.currency.delete.mockResolvedValue(currencyMock);
 
-    const result = await service.remove(1);
+    const result = await service.remove("VE");
 
     expect(result).toEqual(currencyMock);
     expect(mockDatabaseService.currency.delete).toHaveBeenCalled();
     expect(mockDatabaseService.currency.delete).toHaveBeenCalledWith({
-      where: { id: 1 },
+      where: { currencyCode: currencyMock.currencyCode },
     });
-  });
-
-  it("should throw NotFoundException when currency not found", async () => {
-    mockDatabaseService.currency.findUnique.mockResolvedValue(null);
-
-    await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
   });
 });

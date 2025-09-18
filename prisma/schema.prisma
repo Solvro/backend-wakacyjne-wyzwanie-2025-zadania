@@ -61,9 +61,8 @@ model User {
 }
 
 model Currency {
-  id           Int          @id @default(autoincrement())
-  currencyCode String       @unique
-  value        Float
+  currencyCode String       @unique @id
+  rate        Float
   updatedAt    DateTime     @updatedAt
 }
 

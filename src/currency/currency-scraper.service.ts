@@ -2,8 +2,11 @@ import puppeteer from "puppeteer";
 
 import { Injectable } from "@nestjs/common";
 
+import { CurrencyService } from "./currency.service";
+
 @Injectable()
 export class CurrencyScraperService {
+  constructor(private currencyService: CurrencyService) {}
   async scrape() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -22,21 +25,46 @@ export class CurrencyScraperService {
             return null;
           }
           return {
-            name: nameElement.textContent.trim(),
-            rate: rateElement.textContent.trim(),
+            currencyCode: nameElement.textContent.trim(),
+            rate: Number(
+              rateElement.textContent
+                .replace("PLN", "")
+                .replace(",", ".")
+                .trim(),
+            ),
           };
         })
         .filter(Boolean)
         .filter((c) =>
           ["EUR / PLN", "USD / PLN", "CHF / PLN", "GBP / PLN"].includes(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            c!.name.replaceAll("\u00A0", " "),
+            c!.currencyCode.replaceAll("\u00A0", " "),
           ),
         );
     });
 
-    console.warn(currencies);
+    for (const currency of currencies) {
+      if (currency != null) {
+        currency.currencyCode = currency.currencyCode.split("\u00A0/\u00A0")[0];
+      }
+    }
 
     await browser.close();
+
+    console.warn(currencies);
+
+    return currencies;
+  }
+
+  async createCurrencies() {
+    const currencies = await this.scrape();
+
+    for (const currency of currencies) {
+      if (currency != null) {
+        await this.currencyService.create(currency);
+      }
+    }
+
+    console.warn(currencies);
   }
 }
