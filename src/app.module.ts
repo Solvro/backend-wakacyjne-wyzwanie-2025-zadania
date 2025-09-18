@@ -3,6 +3,7 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { CurrencyModule } from "./currency/currency.module";
 import { DatabaseModule } from "./database/database.module";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
@@ -17,6 +18,7 @@ import { UserModule } from "./user/user.module";
     ParticipantModule,
     UserModule,
     AuthModule,
+    CurrencyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

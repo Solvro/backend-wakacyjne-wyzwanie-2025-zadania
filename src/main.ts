@@ -5,9 +5,11 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
+import { CurrencyScraperService } from "./currency/currency-scraper.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const currencyScraper = app.get(CurrencyScraperService);
 
   configDotenv();
 
@@ -38,6 +40,8 @@ async function bootstrap() {
   };
 
   app.useGlobalPipes(new ValidationPipe(validationOptions));
+
+  await currencyScraper.scrape();
 
   await app.listen(process.env.PORT ?? 3000);
 }
