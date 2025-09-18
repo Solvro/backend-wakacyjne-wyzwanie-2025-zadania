@@ -9,11 +9,12 @@ export class ParticipantsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createParticipantDto: CreateParticipantDto) {
-    const tempPassword = Math.random().toString(36).slice(-8);
+    const temporaryPassword = Math.random().toString(36).slice(-8);
     return this.prisma.user.create({
       data: {
-        ...createParticipantDto,
-        password: tempPassword,
+        name: createParticipantDto.name,
+        email: createParticipantDto.email,
+        password: temporaryPassword,
       },
     });
   }

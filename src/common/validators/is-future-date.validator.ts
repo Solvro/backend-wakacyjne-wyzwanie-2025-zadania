@@ -1,15 +1,17 @@
-import {
+import type {
   ValidationArguments,
   ValidationOptions,
-  ValidatorConstraint,
   ValidatorConstraintInterface,
+} from "class-validator";
+import {
+  ValidatorConstraint,
   registerDecorator,
 } from "class-validator";
 
 @ValidatorConstraint({ name: "isFutureDate", async: false })
 export class IsFutureDateConstraint implements ValidatorConstraintInterface {
   validate(value: unknown, _arguments: ValidationArguments): boolean {
-    if (!value) {
+    if (value === null || value === undefined) {
       return false;
     }
 

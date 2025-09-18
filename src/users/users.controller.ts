@@ -1,3 +1,5 @@
+import type { Request as ExpressRequest } from "express";
+
 import {
   Body,
   Controller,
@@ -20,6 +22,10 @@ import { AuthGuard } from "../auth/guards/auth.guard";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
 import { UsersService } from "./users.service";
+
+interface AuthenticatedRequest extends ExpressRequest {
+  user: UserResponseDto;
+}
 
 @Controller("user")
 @ApiTags("users")
@@ -63,15 +69,15 @@ export class UsersController {
     description: "User not found",
   })
   async updateUser(
-    @Request() req: any,
+    @Request() request: AuthenticatedRequest,
     @Query("email") targetEmail?: string,
-    @Body() updateUserDto?: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto = {},
   ): Promise<UserResponseDto> {
     return this.usersService.updateUser(
-      req.user.email,
-      req.user.role,
+      request.user.email,
+      request.user.role,
       targetEmail,
-      updateUserDto || {},
+      updateUserDto,
     );
   }
 }

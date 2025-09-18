@@ -17,7 +17,8 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
     return this.prisma.user.create({
       data: {
-        ...registerDto,
+        email: registerDto.email,
+        name: registerDto.name,
         password: hashedPassword,
       },
     });
@@ -25,7 +26,7 @@ export class AuthService {
 
   async login(email: string, password: string) {
     const user = await this.findUserByEmail(email);
-    if (!user) {
+    if (user == null) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
@@ -36,7 +37,7 @@ export class AuthService {
 
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const expiryTimeMs = Number.parseInt(
-      process.env.EXPIRY_TIME_MS || "3600000",
+      process.env.EXPIRY_TIME_MS ?? "3600000",
     );
     const expiryTimeSeconds = Math.floor(expiryTimeMs / 1000);
 
@@ -77,7 +78,13 @@ export class AuthService {
 
   async validateToken(token: string) {
     try {
-      const payload = this.jwtService.verify(token, {
+      const payload = this.jwtService.verify<{
+        sub: number;
+        email: string;
+        role: string;
+        iat: number;
+        exp: number;
+      }>(token, {
         secret: process.env.JWT_SECRET,
       });
 
@@ -87,7 +94,7 @@ export class AuthService {
       }
 
       const user = await this.findUserById(payload.sub);
-      if (!user) {
+      if (user === null) {
         throw new UnauthorizedException("User not found");
       }
 

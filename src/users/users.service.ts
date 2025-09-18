@@ -20,7 +20,7 @@ export class UsersService {
     targetEmail: string | undefined,
     updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const emailToUpdate = targetEmail || currentUserEmail;
+    const emailToUpdate = targetEmail ?? currentUserEmail;
 
     if (
       emailToUpdate !== currentUserEmail &&
@@ -33,7 +33,7 @@ export class UsersService {
       where: { email: emailToUpdate },
     });
 
-    if (!targetUser) {
+    if (targetUser === null) {
       throw new NotFoundException("User not found");
     }
 

@@ -23,6 +23,7 @@ import { AuthGuard } from "../auth/guards/auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { TripsService } from "./trips.service";
+import type { UserResponseDto } from "../users/dto/user-response.dto";
 
 @ApiTags("trips")
 @Controller("trips")
@@ -55,7 +56,7 @@ export class TripsController {
   })
   @ApiResponse({ status: 400, description: "Bad Request." })
   @ApiResponse({ status: 401, description: "Unauthorized." })
-  async create(@Body() createTripDto: CreateTripDto, @CurrentUser() user: any) {
+  async create(@Body() createTripDto: CreateTripDto, @CurrentUser() user: UserResponseDto) {
     return this.tripsService.create(createTripDto, user.id);
   }
 
@@ -74,7 +75,7 @@ export class TripsController {
   async update(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateTripDto: Partial<CreateTripDto>,
-    @CurrentUser() user: any,
+    @CurrentUser() user: UserResponseDto,
   ) {
     const isCoordinator = await this.tripsService.isCoordinator(id, user.id);
     const isAdmin = user.role === "ADMIN";
@@ -102,7 +103,7 @@ export class TripsController {
   @ApiResponse({ status: 404, description: "Trip not found." })
   async remove(
     @Param("id", ParseIntPipe) id: number,
-    @CurrentUser() user: any,
+    @CurrentUser() user: UserResponseDto,
   ) {
     const isCoordinator = await this.tripsService.isCoordinator(id, user.id);
     const isAdmin = user.role === "ADMIN";

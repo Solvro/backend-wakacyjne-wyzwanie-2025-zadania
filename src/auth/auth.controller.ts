@@ -75,7 +75,7 @@ export class AuthController {
     const existingUser = await this.authService.findUserByEmail(
       registerDto.email,
     );
-    if (existingUser) {
+    if (existingUser !== null) {
       throw new ConflictException("User with this email already exists");
     }
     const { password, ...result } =

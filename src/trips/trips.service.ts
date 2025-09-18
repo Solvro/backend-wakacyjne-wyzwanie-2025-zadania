@@ -31,7 +31,10 @@ export class TripsService {
   async create(createTripDto: CreateTripDto, coordinatorId: number) {
     return this.prisma.trip.create({
       data: {
-        ...createTripDto,
+        name: createTripDto.name,
+        description: createTripDto.description,
+        destination: createTripDto.destination,
+        travel_type: createTripDto.travel_type,
         start_date: new Date(createTripDto.start_date),
         end_date: new Date(createTripDto.end_date),
         coordinator_id: coordinatorId,
@@ -79,10 +82,12 @@ export class TripsService {
       where: { id },
       data: {
         ...updateData,
-        ...(updateData.start_date && {
+        ...(updateData.start_date != null && updateData.start_date !== "" && {
           start_date: new Date(updateData.start_date),
         }),
-        ...(updateData.end_date && { end_date: new Date(updateData.end_date) }),
+        ...(updateData.end_date != null && updateData.end_date !== "" && {
+          end_date: new Date(updateData.end_date),
+        }),
       },
       include: {
         coordinator: {
