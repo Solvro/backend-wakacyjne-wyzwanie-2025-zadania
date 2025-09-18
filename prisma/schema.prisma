@@ -13,31 +13,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Trip {
-  id          Int        @id @default(autoincrement())
-  name        String
-  description String?
-  destination String
-  travel_type TravelType
-  start_date  DateTime
-  end_date    DateTime
-  expenses    Expense[]
+model User {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  name              String?
+  role              UserRole  @default(USER)
+  expenses          Expense[]
+  coordinatedTrips  Trip[]    @relation("TripCoordinator")
 }
 
-model Participant {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  expenses Expense[]
+model Trip {
+  id            Int        @id @default(autoincrement())
+  name          String
+  description   String?
+  destination   String
+  travel_type   TravelType
+  start_date    DateTime
+  end_date      DateTime
+  coordinator   User       @relation("TripCoordinator", fields: [coordinator_id], references: [id])
+  coordinator_id Int
+  expenses      Expense[]
 }
 
 model Expense {
-  id             Int         @id @default(autoincrement())
-  price          Float
-  trip           Trip        @relation(fields: [trip_id], references: [id])
-  trip_id        Int
-  participant    Participant @relation(fields: [participant_id], references: [id])
-  participant_id Int
+  id      Int   @id @default(autoincrement())
+  price   Float
+  trip    Trip  @relation(fields: [trip_id], references: [id])
+  trip_id Int
+  user    User  @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
 
 enum TravelType {

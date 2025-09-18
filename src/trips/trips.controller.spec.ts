@@ -1,6 +1,8 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { AuthService } from "../auth/auth.service";
+import { AuthGuard } from "../auth/guards/auth.guard";
 import { TripsController } from "./trips.controller";
 import { TripsService } from "./trips.service";
 
@@ -15,6 +17,13 @@ describe("TripsController", () => {
           provide: TripsService,
           useValue: {},
         },
+        {
+          provide: AuthService,
+          useValue: {
+            validateToken: jest.fn(),
+          },
+        },
+        AuthGuard,
       ],
     }).compile();
 

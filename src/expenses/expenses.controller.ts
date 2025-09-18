@@ -51,7 +51,10 @@ export class ExpensesController {
     description: "The expense has been successfully updated.",
   })
   @ApiResponse({ status: 404, description: "Expense not found." })
-  async update(@Param("id") id: string, @Body() updateExpenseDto: UpdateExpenseDto) {
+  async update(
+    @Param("id") id: string,
+    @Body() updateExpenseDto: UpdateExpenseDto,
+  ) {
     return this.expensesService.update(+id, updateExpenseDto);
   }
 

@@ -1,32 +1,37 @@
+import { JwtService } from "@nestjs/jwt";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { PrismaService } from "../prisma/prisma.service";
-import { ParticipantsService } from "./participants.service";
+import { AuthService } from "./auth.service";
 
-describe("ParticipantsService", () => {
-  let service: ParticipantsService;
+describe("AuthService", () => {
+  let service: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ParticipantsService,
+        AuthService,
         {
           provide: PrismaService,
           useValue: {
-            participant: {
-              create: jest.fn(),
-              findMany: jest.fn(),
+            user: {
               findUnique: jest.fn(),
-              update: jest.fn(),
-              delete: jest.fn(),
+              create: jest.fn(),
             },
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn(),
+            verify: jest.fn(),
           },
         },
       ],
     }).compile();
 
-    service = module.get<ParticipantsService>(ParticipantsService);
+    service = module.get<AuthService>(AuthService);
   });
 
   it("should be defined", () => {
