@@ -3,10 +3,7 @@ import type {
   ValidationOptions,
   ValidatorConstraintInterface,
 } from "class-validator";
-import {
-  ValidatorConstraint,
-  registerDecorator,
-} from "class-validator";
+import { ValidatorConstraint, registerDecorator } from "class-validator";
 
 @ValidatorConstraint({ name: "isFutureDate", async: false })
 export class IsFutureDateConstraint implements ValidatorConstraintInterface {

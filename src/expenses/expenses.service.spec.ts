@@ -29,7 +29,7 @@ describe("ExpensesService", () => {
     service = module.get<ExpensesService>(ExpensesService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

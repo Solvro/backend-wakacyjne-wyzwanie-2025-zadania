@@ -82,12 +82,14 @@ export class TripsService {
       where: { id },
       data: {
         ...updateData,
-        ...(updateData.start_date != null && updateData.start_date !== "" && {
-          start_date: new Date(updateData.start_date),
-        }),
-        ...(updateData.end_date != null && updateData.end_date !== "" && {
-          end_date: new Date(updateData.end_date),
-        }),
+        ...(updateData.start_date != null &&
+          updateData.start_date !== "" && {
+            start_date: new Date(updateData.start_date),
+          }),
+        ...(updateData.end_date != null &&
+          updateData.end_date !== "" && {
+            end_date: new Date(updateData.end_date),
+          }),
       },
       include: {
         coordinator: {
