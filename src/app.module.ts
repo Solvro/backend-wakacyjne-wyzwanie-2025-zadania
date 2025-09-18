@@ -3,9 +3,12 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { CurrencyModule } from "./currency/currency.module";
 import { DatabaseModule } from "./database/database.module";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
+import { SchedulerModule } from "./scheduler/scheduler.module";
+import { ScrapperModule } from "./scrapper/scrapper.module";
 import { TripModule } from "./trip/trip.module";
 import { UserModule } from "./user/user.module";
 
@@ -17,6 +20,9 @@ import { UserModule } from "./user/user.module";
     TripModule,
     UserModule,
     AuthModule,
+    CurrencyModule,
+    SchedulerModule,
+    ScrapperModule,
   ],
   controllers: [AppController],
   providers: [AppService],

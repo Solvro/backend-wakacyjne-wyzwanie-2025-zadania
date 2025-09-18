@@ -59,6 +59,8 @@ model expense {
   category       expense_category
   trip           trip                    @relation(fields: [trip_id], references: [id])
   participants   expense_participant[]
+  original_currency String?
+  original_amount Float? 
 }
 
 model trip_participant {
@@ -92,9 +94,17 @@ model User {
   updatedAt  DateTime @updatedAt
   participant participant? 
 }
-
 enum Role {
   USER
   COORDINATOR
   ADMIN
 }
+model currency{
+  id  Int  @id @default(autoincrement())
+  name  String  
+  timestamp DateTime 
+  value Float
+  @@unique([name, timestamp])
+}
+
+
