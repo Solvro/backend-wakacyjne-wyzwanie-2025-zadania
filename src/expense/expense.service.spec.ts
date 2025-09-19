@@ -4,6 +4,7 @@ import { expense_category } from "@prisma/client";
 import { Test } from "@nestjs/testing";
 import type { TestingModule } from "@nestjs/testing";
 
+import { CurrencyService } from "../currency/currency.service";
 import { DatabaseService } from "../database/database.service";
 import type { CreateExpenseDto } from "./dto/create-expense.dto";
 import type { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -13,6 +14,11 @@ describe("ExpenseService", () => {
   let service: ExpenseService;
   let database: DatabaseService;
 
+  let _currency: CurrencyService;
+
+  const mockCurrency = {
+    find_most_recent_rate: jest.fn(),
+  };
   // Bazowe mocki wydatków
   const mockExpenseBase = {
     trip_id: expect.any(Number),
@@ -65,11 +71,13 @@ describe("ExpenseService", () => {
       providers: [
         ExpenseService,
         { provide: DatabaseService, useValue: mockDatabase },
+        { provide: CurrencyService, useValue: mockCurrency },
       ],
     }).compile();
 
     service = module.get<ExpenseService>(ExpenseService);
     database = module.get<DatabaseService>(DatabaseService);
+    _currency = module.get<CurrencyService>(CurrencyService);
   });
 
   afterEach(() => {

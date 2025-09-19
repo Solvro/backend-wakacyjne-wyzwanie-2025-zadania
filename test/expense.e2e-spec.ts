@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/restrict-template-expressions */
-// Ignoruje tylko konkretne reguły w całym pliku
-// Twój kod...
-import { expense_category } from "@prisma/client";
+import { expense_category, trip_type } from "@prisma/client";
 import request from "supertest";
 
 import type { INestApplication } from "@nestjs/common";
@@ -43,7 +41,7 @@ describe("ExpensesController (e2e)", () => {
     const trip = await prisma.trip.create({
       data: {
         destination: "Kraków",
-        type: "city_break",
+        type: trip_type.city_break,
         start_date: new Date(),
         end_date: new Date(),
       },
@@ -54,7 +52,7 @@ describe("ExpensesController (e2e)", () => {
       .send({
         trip_id: trip.id,
         amount: 500,
-        category: "accommodation",
+        category: expense_category.food,
       })
       .expect(201);
 
@@ -65,7 +63,7 @@ describe("ExpensesController (e2e)", () => {
     const trip = await prisma.trip.create({
       data: {
         destination: "Warszawa",
-        type: "business",
+        type: trip_type.business,
         start_date: new Date(),
         end_date: new Date(),
       },
@@ -75,7 +73,7 @@ describe("ExpensesController (e2e)", () => {
       data: {
         trip_id: trip.id,
         amount: 200,
-        category: "food",
+        category: expense_category.food,
       },
     });
 
@@ -88,7 +86,7 @@ describe("ExpensesController (e2e)", () => {
     const trip = await prisma.trip.create({
       data: {
         destination: "Gdańsk",
-        type: "leisure",
+        type: trip_type.city_break,
         start_date: new Date(),
         end_date: new Date(),
       },
@@ -98,7 +96,7 @@ describe("ExpensesController (e2e)", () => {
       data: {
         trip_id: trip.id,
         amount: 300,
-        category: "transport",
+        category: expense_category.transport,
       },
     });
 
@@ -114,7 +112,7 @@ describe("ExpensesController (e2e)", () => {
     const trip = await prisma.trip.create({
       data: {
         destination: "Wrocław",
-        type: "sightseeing",
+        type: trip_type.city_break,
         start_date: new Date(),
         end_date: new Date(),
       },
@@ -137,14 +135,14 @@ describe("ExpensesController (e2e)", () => {
       .expect(200);
 
     expect(response.body.amount).toBe(200);
-    expect(response.body.category).toBe("other");
+    expect(response.body.category).toBe(expense_category.other);
     expect(response.body.id).toBe(expense.id);
   });
   it("DELETE /expense/:id - usuwa wydatek", async () => {
     const trip = await prisma.trip.create({
       data: {
         destination: "Zakopane",
-        type: "adventure",
+        type: trip_type.leisure,
         start_date: new Date(),
         end_date: new Date(),
       },
@@ -154,7 +152,7 @@ describe("ExpensesController (e2e)", () => {
       data: {
         trip_id: trip.id,
         amount: 400,
-        category: "accommodation",
+        category: expense_category.accommodation,
       },
     });
 

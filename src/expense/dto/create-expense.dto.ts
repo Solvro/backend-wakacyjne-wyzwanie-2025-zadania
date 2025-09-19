@@ -1,7 +1,14 @@
 import { expense_category } from "@prisma/client";
-import { IsEnum, IsNumber, IsPositive, Max } from "class-validator";
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Max,
+} from "class-validator";
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateExpenseDto {
   @ApiProperty()
@@ -19,4 +26,14 @@ export class CreateExpenseDto {
     message: "Pole category musi być typu expense_category",
   })
   category: expense_category;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  original_currency?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  original_amount?: number;
 }
