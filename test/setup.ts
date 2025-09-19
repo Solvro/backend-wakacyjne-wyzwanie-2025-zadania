@@ -25,9 +25,6 @@ beforeAll(async () => {
   await app.init();
 
   prisma = app.get(PrismaService);
-  await prisma.$executeRawUnsafe(
-    `TRUNCATE "User", "Trip", "Participant", "Expense" RESTART IDENTITY CASCADE;`,
-  );
 });
 
 afterAll(async () => {
