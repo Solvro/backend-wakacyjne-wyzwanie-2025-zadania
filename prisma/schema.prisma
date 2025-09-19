@@ -106,3 +106,10 @@ model UserToken {
   @@index([token], map: "user_token_token_index")
   @@map("user_token")
 }
+
+model CurrencyRate {
+  id        Int      @id @default(autoincrement())
+  currency  String
+  rate      Float
+  createdAt DateTime @default(now())
+}

@@ -1,6 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { ExchangeService } from "../exchange/exchange.service";
 import { PrismaService } from "../prisma/prisma.service";
 import type { CreateExpenseDto } from "./dto/create-expense.dto";
 import type { UpdateExpenseDto } from "./dto/update-expense.dto";
@@ -8,6 +9,10 @@ import { ExpenseService } from "./expense.service";
 
 describe("ExpenseService", () => {
   let service: ExpenseService;
+
+  const mockExchangeService = {
+    getRate: jest.fn(),
+  };
 
   const mockPrismaService = {
     expense: {
@@ -23,13 +28,14 @@ describe("ExpenseService", () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+    mockExchangeService.getRate.mockReset();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExpenseService,
-        {
-          provide: PrismaService,
-          useValue: mockPrismaService,
-        },
+        { provide: PrismaService, useValue: mockPrismaService },
+        { provide: ExchangeService, useValue: mockExchangeService },
       ],
     }).compile();
 
@@ -48,6 +54,7 @@ describe("ExpenseService", () => {
       const createExpenseDto: CreateExpenseDto = {
         trip_id: 1,
         amount: 100.5,
+        currency: "PLN",
         description: "Hotel accommodation",
         date: new Date("2025-07-01T00:00:00.000Z"),
       };
@@ -65,7 +72,12 @@ describe("ExpenseService", () => {
 
       expect(result).toEqual(expectedExpense);
       expect(mockPrismaService.expense.create).toHaveBeenCalledWith({
-        data: createExpenseDto,
+        data: {
+          trip_id: createExpenseDto.trip_id,
+          amount: createExpenseDto.amount,
+          description: createExpenseDto.description,
+          date: createExpenseDto.date,
+        },
       });
       expect(mockPrismaService.expense.create).toHaveBeenCalledTimes(1);
     });
@@ -74,6 +86,7 @@ describe("ExpenseService", () => {
       const createExpenseDto: CreateExpenseDto = {
         trip_id: 1,
         amount: 50,
+        currency: "PLN",
       };
       const expectedExpense = { id: 1, trip_id: 1, amount: 50 };
 
@@ -83,7 +96,12 @@ describe("ExpenseService", () => {
 
       expect(result).toEqual(expectedExpense);
       expect(mockPrismaService.expense.create).toHaveBeenCalledWith({
-        data: createExpenseDto,
+        data: {
+          trip_id: 1,
+          amount: 50,
+          description: undefined,
+          date: undefined,
+        },
       });
     });
   });
@@ -166,6 +184,7 @@ describe("ExpenseService", () => {
       const expenseId = 1;
       const updateExpenseDto: UpdateExpenseDto = {
         amount: 120.75,
+        currency: "PLN",
         description: "Updated hotel accommodation",
       };
       const existingExpense = {
@@ -191,7 +210,12 @@ describe("ExpenseService", () => {
       expect(result).toEqual(updatedExpense);
       expect(mockPrismaService.expense.update).toHaveBeenCalledWith({
         where: { id: expenseId },
-        data: updateExpenseDto,
+        data: {
+          trip_id: updateExpenseDto.trip_id,
+          amount: updateExpenseDto.amount,
+          description: updateExpenseDto.description,
+          date: updateExpenseDto.date,
+        },
       });
       expect(mockPrismaService.expense.update).toHaveBeenCalledTimes(1);
     });
@@ -200,6 +224,7 @@ describe("ExpenseService", () => {
       const expenseId = 1;
       const updateExpenseDto: UpdateExpenseDto = {
         amount: 150,
+        currency: "PLN",
       };
       const existingExpense = {
         id: expenseId,
@@ -224,7 +249,12 @@ describe("ExpenseService", () => {
       expect(result).toEqual(updatedExpense);
       expect(mockPrismaService.expense.update).toHaveBeenCalledWith({
         where: { id: expenseId },
-        data: updateExpenseDto,
+        data: {
+          trip_id: updateExpenseDto.trip_id,
+          amount: updateExpenseDto.amount,
+          description: updateExpenseDto.description,
+          date: updateExpenseDto.date,
+        },
       });
     });
   });
