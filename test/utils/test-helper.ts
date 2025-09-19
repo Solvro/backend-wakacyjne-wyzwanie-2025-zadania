@@ -11,8 +11,10 @@ export async function createTestUserWithToken(
   email: string,
   role: Role = Role.USER,
 ) {
-  const user = await prisma.user.create({
-    data: {
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: {},
+    create: {
       email,
       password: "hashed_password",
       role,

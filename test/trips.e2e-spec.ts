@@ -22,6 +22,7 @@ describe("Trips (e2e)", () => {
 
   afterAll(async () => {
     await prisma.trip.deleteMany({});
+    await prisma.user.deleteMany({});
   });
 
   it("/GET /trips should return 200 and an array", async () => {

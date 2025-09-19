@@ -9,8 +9,9 @@ import { createTestUserWithToken } from "./utils/test-helper";
 describe("Expenses (e2e)", () => {
   let tripId: number;
   let participantId: number;
+  let tokenForExpense: string;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -18,7 +19,9 @@ describe("Expenses (e2e)", () => {
         transform: true,
       }),
     );
+  });
 
+  beforeEach(async () => {
     const trip = await prisma.trip.create({
       data: {
         name: "Expenses Trip",
@@ -26,6 +29,9 @@ describe("Expenses (e2e)", () => {
       },
     });
     tripId = trip.id;
+
+    const { token } = await createTestUserWithToken("payer@example.com");
+    tokenForExpense = token;
 
     const participant = await prisma.participant.create({
       data: {
@@ -42,6 +48,7 @@ describe("Expenses (e2e)", () => {
     await prisma.expense.deleteMany({});
     await prisma.participant.deleteMany({});
     await prisma.trip.deleteMany({});
+    await prisma.user.deleteMany({});
   });
 
   it("/GET /expenses should return 200 and an array", async () => {
@@ -52,11 +59,10 @@ describe("Expenses (e2e)", () => {
 
   it("POST /expenses should create when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
-    const { token } = await createTestUserWithToken("user_trips@ex.com");
 
     const response = await request(server)
       .post("/expenses")
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${tokenForExpense}`)
       .send({
         participantId,
         amount: 42.5,
@@ -83,11 +89,9 @@ describe("Expenses (e2e)", () => {
       },
     });
 
-    const { token } = await createTestUserWithToken("user_trips@ex.com");
-
     const response = await request(server)
       .patch(`/expenses/${expense.id.toString()}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${tokenForExpense}`)
       .send({ amount: 15, note: "Updated note" })
       .expect(200);
 
@@ -110,11 +114,9 @@ describe("Expenses (e2e)", () => {
       },
     });
 
-    const { token } = await createTestUserWithToken("user_trips@ex.com");
-
     const response = await request(server)
       .delete(`/expenses/${expense.id.toString()}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${tokenForExpense}`)
       .expect(200);
 
     expect(response.body).toEqual({ deleted: true });
