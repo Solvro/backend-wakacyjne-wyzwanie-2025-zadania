@@ -1,6 +1,8 @@
+import { Currency } from "@prisma/client";
 import { Type } from "class-transformer";
 import {
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -35,4 +37,8 @@ export class CreateExpenseDto {
   @IsNumber()
   @IsPositive()
   trip_participant_id: number;
+
+  @ApiProperty()
+  @IsEnum(Currency)
+  currency: Currency;
 }

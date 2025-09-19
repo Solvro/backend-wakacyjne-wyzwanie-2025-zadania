@@ -69,12 +69,14 @@ async function main() {
         name: "Jedzenie",
         date: new Date("2025-08-23"),
         description: "Obiad w restauracji",
+        currency: "USD",
       },
       {
         value: 99.99,
         trip_participant_id: tparticipant2.id,
         date: new Date("2025-08-29"),
         name: "Zakupy",
+        currency: "PLN",
       },
     ],
   });

@@ -21,6 +21,7 @@ datasource db {
     date                  DateTime    @db.Date
     trip_participant      TripParticipant     @relation(fields: [trip_participant_id], references: [id], onDelete: Cascade)     
     trip_participant_id   Int
+    currency              Currency
   }
 
   model Trip {
@@ -52,6 +53,19 @@ datasource db {
     expense         Expense[]
   }
 
+  model ExchangeRate {
+    id              Int @id @default(autoincrement())
+    currency        Currency
+    exchange_rate   Decimal
+    timestamp       DateTime  @default(now())
+  }
+
+  enum Currency {
+    USD
+    EUR
+    CZK
+    PLN
+  }
   enum AccountType {
     BASIC
     TRIAL

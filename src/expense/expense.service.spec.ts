@@ -1,8 +1,11 @@
+import { Currency } from "@prisma/client";
+
 import { NotFoundException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import type { TestingModule } from "@nestjs/testing";
 
 import { validExpense } from "../../test/test-utils";
+import { CurrencyService } from "../currency/currency.service";
 import { DatabaseService } from "../database/database.service";
 import { ExpenseService } from "./expense.service";
 
@@ -17,11 +20,18 @@ describe("ExpenseService", () => {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    exchangeRate: {
+      findFirst: jest.fn().mockResolvedValue({
+        currency: Currency.USD,
+        exchange_rate: 3.6,
+        timestamp: new Date(),
+      }),
+    },
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ExpenseService, DatabaseService],
+      providers: [ExpenseService, DatabaseService, CurrencyService],
     })
       .overrideProvider(DatabaseService)
       .useValue(mockDatabaseService)
@@ -52,8 +62,9 @@ describe("ExpenseService", () => {
     expect(mockDatabaseService.expense.create).toHaveBeenCalledWith({
       data: {
         name: dto.name,
-        value: dto.value,
+        value: dto.value * 3.6,
         date: dto.date,
+        currency: Currency.PLN,
         trip_participant: {
           connect: { id: 1 },
         },

@@ -1,4 +1,4 @@
-import { AccountType, Role } from "@prisma/client";
+import { AccountType, Currency, Role } from "@prisma/client";
 import { hash } from "bcrypt";
 
 export function validExpense() {
@@ -7,6 +7,7 @@ export function validExpense() {
     value: 13.25,
     date: new Date(),
     trip_participant_id: 1,
+    currency: Currency.CZK,
   };
 }
 
