@@ -16,6 +16,7 @@ describe("ExpenseService", () => {
     trip: { connect: { tripId: number } };
     expenseAmount: number;
     expenseDescription: string;
+    currencyCode: string;
   }[] = [];
 
   const initialExpenses = [
@@ -24,12 +25,14 @@ describe("ExpenseService", () => {
       trip: { connect: { tripId: 1 } },
       expenseAmount: 4,
       expenseDescription: "Absolute",
+      currencyCode: "PLN",
     },
     {
       expenseId: 2,
       trip: { connect: { tripId: 1 } },
       expenseAmount: 20,
       expenseDescription: "Cinema",
+      currencyCode: "PLN",
     },
   ];
 
@@ -40,6 +43,7 @@ describe("ExpenseService", () => {
       };
       expenseAmount: number;
       expenseDescription: string;
+      currencyCode: string;
     };
   }
 
@@ -92,6 +96,7 @@ describe("ExpenseService", () => {
       tripId: 1,
       expenseAmount: 213,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
     const result = await service.create(dto);
 
@@ -134,6 +139,7 @@ describe("ExpenseService", () => {
       trip: { connect: { tripId: 1 } },
       expenseAmount: 213,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
 
     mockDatabaseService.expense.findUnique.mockResolvedValue(expenseMock);
@@ -148,6 +154,7 @@ describe("ExpenseService", () => {
       tripId: 1,
       expenseAmount: 213,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
     const expenseMock = await service.create(dto);
 
@@ -156,6 +163,7 @@ describe("ExpenseService", () => {
       tripId: 1,
       expenseAmount: 2000,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
 
     const dtoUpdate = {
@@ -180,6 +188,7 @@ describe("ExpenseService", () => {
       trip: { connect: { tripId: 1 } },
       expenseAmount: 213,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
 
     mockDatabaseService.expense.delete.mockResolvedValue(expenseMock);

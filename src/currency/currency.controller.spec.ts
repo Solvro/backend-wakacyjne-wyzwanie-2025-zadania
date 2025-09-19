@@ -106,14 +106,13 @@ describe("CurrencyController", () => {
 
   it("should return one currency", async () => {
     const currencyMock = {
-      id: 1,
       rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
     };
 
     mockCurrencyService.findOne.mockResolvedValue(currencyMock);
-    const result = await controller.findOne(1);
+    const result = await controller.findOne("NON");
 
     expect(result).toEqual(currencyMock);
     expect(mockCurrencyService.findOne).toHaveBeenCalledTimes(1);
@@ -128,7 +127,6 @@ describe("CurrencyController", () => {
     const currencyMock = await controller.create(dto);
 
     const currencyUpdated = {
-      currencyId: currencyMock.id,
       rate: 1123,
       currencyCode: "NON",
       updatedAt: new Date(),
@@ -140,16 +138,17 @@ describe("CurrencyController", () => {
 
     mockCurrencyService.update.mockResolvedValue(currencyUpdated);
 
-    const result = await controller.update(currencyMock.id, dtoUpdate);
+    const result = await controller.update(
+      currencyMock.currencyCode,
+      dtoUpdate,
+    );
 
     expect(mockCurrencyService.update).toHaveBeenCalledTimes(1);
     expect(result).toEqual(currencyUpdated);
-    expect(mockCurrencyService.update).toHaveBeenCalledWith(3, dtoUpdate);
   });
 
   it("should delete a currency", async () => {
     const currencyMock = {
-      currencyId: 1,
       rate: 12,
       currencyCode: "NON",
       updatedAt: new Date(),
@@ -157,10 +156,10 @@ describe("CurrencyController", () => {
 
     mockCurrencyService.remove.mockResolvedValue(currencyMock);
 
-    const result = await controller.remove(1);
+    const result = await controller.remove("NON");
 
     expect(result).toEqual(currencyMock);
     expect(mockCurrencyService.remove).toHaveBeenCalled();
-    expect(mockCurrencyService.remove).toHaveBeenCalledWith(1);
+    expect(mockCurrencyService.remove).toHaveBeenCalledWith("NON");
   });
 });

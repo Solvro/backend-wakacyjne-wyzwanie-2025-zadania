@@ -13,7 +13,7 @@ import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    ...(process.env.NODE_ENV === "test" ? [] : [ScheduleModule.forRoot()]),
     DatabaseModule,
     TripModule,
     ExpenseModule,

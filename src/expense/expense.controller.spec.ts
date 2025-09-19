@@ -83,6 +83,7 @@ describe("ExpenseController", () => {
       tripId: 1,
       expenseAmount: 213,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
 
     const expectedValue = { expenseId: expenseCounter, ...dto };
@@ -126,6 +127,7 @@ describe("ExpenseController", () => {
       tripId: 1,
       expenseAmount: 213,
       expenseDescription: "Test Value",
+      currencyCode: "PLN",
     };
     const expenseMock = await controller.create(dto); // id == 3
 

@@ -127,8 +127,6 @@ describe("CurrencyService", () => {
 
     const currencyMock = await service.create(dto);
 
-    console.warn(currencyMock);
-
     const currencyUpdated = {
       rate: 1123,
       currencyCode: "VE",
