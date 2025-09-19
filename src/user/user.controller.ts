@@ -18,7 +18,7 @@ import { Public, Roles } from "../auth/roles";
 import { RolesGuard } from "../auth/roles.guard";
 import { RegisterDto } from "./dto/register.dto";
 import { UpdateRoleDto } from "./dto/update-role.dto";
-import { UpdateUserDto } from "./dto/update-user";
+import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserMetadata } from "./dto/user-metadata";
 import { UserService } from "./user.service";
 

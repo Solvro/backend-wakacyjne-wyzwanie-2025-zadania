@@ -4,7 +4,7 @@ import * as bcrypt from "bcrypt";
 import { Injectable } from "@nestjs/common";
 
 import { DatabaseService } from "../database/database.service";
-import { UpdateUserDto } from "./dto/update-user";
+import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserMetadata, userToMetadata } from "./dto/user-metadata";
 
 @Injectable()
