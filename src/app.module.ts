@@ -5,8 +5,11 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
+import { CurrencyModule } from "./currency/currency.module";
 import { ExpensesModule } from "./expenses/expenses.module";
 import { ParticipantsModule } from "./participants/participants.module";
+import { PaymentsModule } from "./payments/payments.module";
+import { TripsModule } from "./trips/trips.module";
 import { UsersModule } from "./users/users.module";
 
 @Module({
@@ -17,6 +20,9 @@ import { UsersModule } from "./users/users.module";
     ExpensesModule,
     AuthModule,
     UsersModule,
+    CurrencyModule,
+    PaymentsModule,
+    TripsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
