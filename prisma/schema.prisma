@@ -59,3 +59,18 @@ model User {
   name        String?
   participant Participant[]
 }
+
+model Currency {
+  currencyCode String       @unique @id
+  rate        Float
+  updatedAt    DateTime     @updatedAt
+}
+
+// model CurrencyRate {
+//   id          Int          @id @default(autoincrement())
+//   value       Float
+//   createdAt   DateTime     @default(now())
+//   currency    Currency     @relation(fields: [currencyId], references: [id]) 
+//   currencyId  Int
+
+// }

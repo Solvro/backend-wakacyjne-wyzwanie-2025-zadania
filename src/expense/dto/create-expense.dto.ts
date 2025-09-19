@@ -15,4 +15,8 @@ export class CreateExpenseDto {
   @IsOptional()
   @IsString()
   expenseDescription?: string;
+
+  @ApiProperty()
+  @IsString()
+  currencyCode!: string;
 }

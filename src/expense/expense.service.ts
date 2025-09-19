@@ -17,12 +17,29 @@ export class ExpenseService {
       throw new NotFoundException("Trip not found");
     }
 
+    let amountPLN = createExpenseDto.expenseAmount;
+
+    if (createExpenseDto.currencyCode !== "PLN") {
+      const currency = await this.database.currency.findUnique({
+        where: { currencyCode: createExpenseDto.currencyCode },
+      });
+
+      if (currency === null) {
+        throw new NotFoundException("Given currency wasn't found");
+      }
+
+      amountPLN = currency.rate * createExpenseDto.expenseAmount;
+
+      if (!amountPLN) {
+        throw new Error("Something went wrong");
+      }
+    }
     return this.database.expense.create({
       data: {
         trip: {
           connect: { tripId: createExpenseDto.tripId },
         },
-        expenseAmount: createExpenseDto.expenseAmount,
+        expenseAmount: amountPLN,
         expenseDescription: createExpenseDto.expenseDescription,
       },
     });
