@@ -7,9 +7,6 @@ export class UpdateTripParticipantDto extends PartialType(
   CreateTripParticipantDto,
 ) {
   @ApiProperty()
-  id: number;
-
-  @ApiProperty()
   tripId: number;
 
   @ApiProperty()

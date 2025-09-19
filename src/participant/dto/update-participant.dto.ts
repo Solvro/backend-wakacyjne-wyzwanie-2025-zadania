@@ -7,8 +7,6 @@ import { CreateParticipantDto } from "./create-participant.dto";
 
 export class UpdateParticipantDto extends PartialType(CreateParticipantDto) {
   @ApiProperty()
-  id: number;
-  @ApiProperty()
   name: string;
   @ApiProperty()
   surname: string;

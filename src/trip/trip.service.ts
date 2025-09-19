@@ -11,7 +11,6 @@ export class TripService {
   async create(createTripDto: CreateTripDto) {
     await this.database.trip.create({
       data: {
-        id: createTripDto.id,
         name: createTripDto.name,
         start: createTripDto.start,
         end: createTripDto.end,
@@ -31,7 +30,6 @@ export class TripService {
     await this.database.trip.update({
       where: { id },
       data: {
-        id: updateTripDto.id,
         name: updateTripDto.name,
         start: updateTripDto.start,
         end: updateTripDto.end,

@@ -4,9 +4,6 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class CreateParticipantDto {
   @ApiProperty()
-  id: number;
-
-  @ApiProperty()
   name: string;
 
   @ApiProperty()

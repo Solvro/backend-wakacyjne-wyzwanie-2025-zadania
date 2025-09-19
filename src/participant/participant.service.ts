@@ -11,7 +11,6 @@ export class ParticipantService {
   async create(createParticipantDto: CreateParticipantDto) {
     await this.database.participant.create({
       data: {
-        id: createParticipantDto.id,
         name: createParticipantDto.name,
         surname: createParticipantDto.surname,
         sex: createParticipantDto.sex ?? null,
@@ -33,7 +32,6 @@ export class ParticipantService {
     return this.database.participant.update({
       where: { id },
       data: {
-        id: updateParticipantDto.id,
         name: updateParticipantDto.name,
         surname: updateParticipantDto.surname,
         sex: updateParticipantDto.sex ?? null,

@@ -5,8 +5,6 @@ import { CreateExpenseDto } from "./create-expense.dto";
 
 export class UpdateExpenseDto extends PartialType(CreateExpenseDto) {
   @ApiProperty()
-  id: number;
-  @ApiProperty()
   amount: number;
   @ApiProperty()
   tripParticipantId: number;
