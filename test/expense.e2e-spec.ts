@@ -4,6 +4,7 @@ import request from "supertest";
 import { ValidationPipe } from "@nestjs/common";
 
 import { app, prisma } from "./setup";
+import { truncateAll } from "./utils/database-helper-trunc";
 import { createTestUserWithToken } from "./utils/test-helper";
 
 describe("Expenses (e2e)", () => {
@@ -22,6 +23,8 @@ describe("Expenses (e2e)", () => {
   });
 
   beforeEach(async () => {
+    await truncateAll();
+
     const trip = await prisma.trip.create({
       data: {
         name: "Expenses Trip",
@@ -42,13 +45,6 @@ describe("Expenses (e2e)", () => {
       },
     });
     participantId = participant.id;
-  });
-
-  afterAll(async () => {
-    await prisma.expense.deleteMany({});
-    await prisma.participant.deleteMany({});
-    await prisma.trip.deleteMany({});
-    await prisma.user.deleteMany({});
   });
 
   it("/GET /expenses should return 200 and an array", async () => {
