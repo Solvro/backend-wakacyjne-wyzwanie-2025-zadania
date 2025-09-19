@@ -1,3 +1,6 @@
+import { AuthModule } from "src/auth/auth.module";
+import { RolesGuard } from "src/auth/roles.guard";
+
 import { Module } from "@nestjs/common";
 
 import { DatabaseModule } from "../database/database.module";
@@ -6,7 +9,7 @@ import { TripService } from "./trip.service";
 
 @Module({
   controllers: [TripController],
-  providers: [TripService],
-  imports: [DatabaseModule],
+  providers: [TripService, RolesGuard],
+  imports: [DatabaseModule, AuthModule],
 })
 export class TripModule {}
