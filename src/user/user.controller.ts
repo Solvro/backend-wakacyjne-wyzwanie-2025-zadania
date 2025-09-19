@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   ConflictException,
@@ -13,6 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { AuthGuard } from "../auth/auth.guard";
 import { Public, Roles } from "../auth/roles";
+import { RolesGuard } from "../auth/roles.guard";
 import { RegisterDto } from "./dto/register.dto";
 import { UpdateRoleDto } from "./dto/update-role.dto";
 import { UpdateUserDto } from "./dto/update-user";
@@ -56,7 +59,8 @@ export class UserController {
   }
 
   @Patch("role")
-  @Roles("ADMIN")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: "Update user role" })
   @ApiResponse({
     status: 201,
@@ -79,7 +83,8 @@ export class UserController {
     status: 200,
     description: "User updated",
   })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.USER)
   @HttpCode(HttpStatus.OK)
   async update(
     @Request() request: { user: UserMetadata },

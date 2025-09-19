@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -8,10 +10,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
 import { Roles } from "../auth/roles";
+import { RolesGuard } from "../auth/roles.guard";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 import { ExpenseService } from "./expense.service";
@@ -31,7 +36,8 @@ export class ExpenseController {
     status: 201,
     description: "Expense created",
   })
-  @Roles("USER")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.USER)
   async create(@Body() createExpenseDto: CreateExpenseDto) {
     return this.expenseService.create(createExpenseDto);
   }
@@ -45,7 +51,8 @@ export class ExpenseController {
     status: 200,
     description: "List of expenses retrieved successfully",
   })
-  @Roles("USER")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.USER)
   async findAll() {
     return this.expenseService.findAll();
   }
@@ -63,7 +70,8 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  @Roles("USER")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.USER)
   async findOne(@Param("id") id: string) {
     return this.expenseService.findOne(+id);
   }
@@ -81,7 +89,8 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  @Roles("USER")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.USER)
   async update(
     @Param("id") id: string,
     @Body() updateExpenseDto: UpdateExpenseDto,
@@ -102,7 +111,8 @@ export class ExpenseController {
     status: 404,
     description: "Expense not found",
   })
-  @Roles("USER")
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.USER)
   async remove(@Param("id") id: string) {
     return this.expenseService.remove(+id);
   }
