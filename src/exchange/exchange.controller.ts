@@ -1,7 +1,6 @@
 import { Controller, Get, Logger, Param, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { ExchangeScheduler } from "./exchange.scheduler";
 import { ExchangeService } from "./exchange.service";
 
 @ApiTags("exchange")
@@ -9,10 +8,7 @@ import { ExchangeService } from "./exchange.service";
 export class ExchangeController {
   private readonly logger = new Logger(ExchangeController.name);
 
-  constructor(
-    private readonly exchangeService: ExchangeService,
-    private readonly exchangeScheduler: ExchangeScheduler,
-  ) {}
+  constructor(private readonly exchangeService: ExchangeService) {}
 
   @Get("rates")
   @ApiOperation({ summary: "Get latest exchange rates" })
@@ -26,7 +22,9 @@ export class ExchangeController {
     description: "Number of recent rates to return per currency",
   })
   async getLatestRates(@Query("limit") limit?: string) {
-    const limitNumber = limit ? Number.parseInt(limit, 10) : 1;
+    const hasLimit = typeof limit === "string" && limit.trim() !== "";
+    const parsed = hasLimit ? Number.parseInt(limit, 10) : Number.NaN;
+    const limitNumber = Number.isNaN(parsed) ? 1 : parsed;
     return this.exchangeService.getLatestRates(limitNumber);
   }
 
@@ -45,7 +43,9 @@ export class ExchangeController {
     @Param("currency") currency: string,
     @Query("limit") limit?: string,
   ) {
-    const limitNumber = limit ? Number.parseInt(limit, 10) : 10;
+    const hasLimit = typeof limit === "string" && limit.trim() !== "";
+    const parsed = hasLimit ? Number.parseInt(limit, 10) : Number.NaN;
+    const limitNumber = Number.isNaN(parsed) ? 10 : parsed;
     return this.exchangeService.getRatesForCurrency(currency, limitNumber);
   }
 
@@ -55,7 +55,7 @@ export class ExchangeController {
     status: 200,
     description: "Supported currencies retrieved successfully",
   })
-  async getSupportedCurrencies() {
+  getSupportedCurrencies() {
     return {
       currencies: this.exchangeService.getSupportedCurrencies(),
     };

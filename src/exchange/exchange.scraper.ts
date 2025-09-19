@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { Injectable, Logger } from "@nestjs/common";
 
 export interface CurrencyRate {
@@ -22,7 +20,7 @@ export class ExchangeScraper {
     for (const currency of this.currencies) {
       try {
         const rate = await this.fetchCurrencyRate(currency);
-        if (rate) {
+        if (rate !== null) {
           rates.push(rate);
         }
       } catch (error) {
@@ -30,7 +28,9 @@ export class ExchangeScraper {
       }
     }
 
-    this.logger.log(`Successfully fetched ${rates.length} currency rates`);
+    this.logger.log(
+      `Successfully fetched ${String(rates.length)} currency rates`,
+    );
     return rates;
   }
 
@@ -41,35 +41,49 @@ export class ExchangeScraper {
       const url = `${this.nbpApiBaseUrl}/${currency.toLowerCase()}/?format=json`;
       this.logger.debug(`Fetching rate for ${currency} from: ${url}`);
 
-      const response = await axios.get(url, {
-        timeout: 10_000,
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 10_000);
+      const response = await fetch(url, {
+        method: "GET",
         headers: {
           "User-Agent": "ExchangeRateScraper/1.0",
         },
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
-      if (response.status === 200 && response.data?.rates?.length > 0) {
-        const rateData = response.data.rates[0];
-        return {
-          currency: currency.toUpperCase(),
-          rate: rateData.mid,
-          effectiveDate: rateData.effectiveDate,
-        };
+      if (response.ok) {
+        const data: unknown = await response.json();
+        const rates = (
+          data as { rates?: { mid?: number; effectiveDate?: string }[] }
+        ).rates;
+        if (Array.isArray(rates) && rates.length > 0) {
+          const rateData = rates[0] as { mid?: number; effectiveDate?: string };
+          if (
+            typeof rateData.mid === "number" &&
+            typeof rateData.effectiveDate === "string"
+          ) {
+            return {
+              currency: currency.toUpperCase(),
+              rate: rateData.mid,
+              effectiveDate: rateData.effectiveDate,
+            };
+          }
+        }
       }
 
       this.logger.warn(`No rate data found for ${currency}`);
       return null;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          this.logger.warn(`Currency ${currency} not found in NBP API`);
-        } else {
-          this.logger.error(
-            `HTTP error fetching ${currency}: ${error.response?.status} ${error.response?.statusText}`,
-          );
-        }
+      const error_ = error as Error & { name?: string };
+      if (error_.name === "AbortError") {
+        this.logger.error(`HTTP error fetching ${currency}: request timeout`);
       } else {
-        this.logger.error(`Unexpected error fetching ${currency}:`, error);
+        this.logger.error(
+          `Unexpected error fetching ${currency}: ${error_.message}`,
+        );
       }
       return null;
     }
@@ -81,7 +95,7 @@ export class ExchangeScraper {
     for (const currency of currencies) {
       try {
         const rate = await this.fetchCurrencyRate(currency);
-        if (rate) {
+        if (rate !== null) {
           rates.push(rate);
         }
       } catch (error) {

@@ -21,7 +21,7 @@ export class ExchangeScheduler {
 
       if (rates.length > 0) {
         this.logger.log(
-          `Scheduled update completed. Updated ${rates.length} currency rates.`,
+          `Scheduled update completed. Updated ${String(rates.length)} currency rates.`,
         );
       } else {
         this.logger.warn(
@@ -45,7 +45,7 @@ export class ExchangeScheduler {
 
       if (rates.length > 0) {
         this.logger.log(
-          `Hourly update completed. Updated ${rates.length} currency rates.`,
+          `Hourly update completed. Updated ${String(rates.length)} currency rates.`,
         );
       } else {
         this.logger.warn("Hourly update completed but no rates were updated.");
@@ -63,7 +63,7 @@ export class ExchangeScheduler {
 
       if (rates.length > 0) {
         this.logger.log(
-          `Manual update completed. Updated ${rates.length} currency rates.`,
+          `Manual update completed. Updated ${String(rates.length)} currency rates.`,
         );
       } else {
         this.logger.warn("Manual update completed but no rates were updated.");

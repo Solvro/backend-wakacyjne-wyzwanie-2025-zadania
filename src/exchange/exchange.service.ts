@@ -26,7 +26,7 @@ export class ExchangeService {
       const savedRates = await this.saveRatesToDatabase(rates);
 
       this.logger.log(
-        `Successfully updated ${savedRates.length} exchange rates`,
+        `Successfully updated ${String(savedRates.length)} exchange rates`,
       );
       return savedRates;
     } catch (error) {
@@ -62,7 +62,11 @@ export class ExchangeService {
     return savedRates;
   }
 
-  async getLatestRates(limit = 1): Promise<any[]> {
+  async getLatestRates(
+    limit = 1,
+  ): Promise<
+    { id: number; currency: string; rate: number; createdAt: Date }[]
+  > {
     try {
       const rates = await this.prisma.currencyRate.findMany({
         orderBy: {
@@ -71,14 +75,24 @@ export class ExchangeService {
         take: limit * this.exchangeScraper.getSupportedCurrencies().length,
       });
 
-      return rates;
+      return rates as {
+        id: number;
+        currency: string;
+        rate: number;
+        createdAt: Date;
+      }[];
     } catch (error) {
       this.logger.error("Failed to get latest rates:", error);
       throw error;
     }
   }
 
-  async getRatesForCurrency(currency: string, limit = 10): Promise<any[]> {
+  async getRatesForCurrency(
+    currency: string,
+    limit = 10,
+  ): Promise<
+    { id: number; currency: string; rate: number; createdAt: Date }[]
+  > {
     try {
       const rates = await this.prisma.currencyRate.findMany({
         where: {
@@ -90,7 +104,12 @@ export class ExchangeService {
         take: limit,
       });
 
-      return rates;
+      return rates as {
+        id: number;
+        currency: string;
+        rate: number;
+        createdAt: Date;
+      }[];
     } catch (error) {
       this.logger.error(`Failed to get rates for ${currency}:`, error);
       throw error;
@@ -103,7 +122,7 @@ export class ExchangeService {
       orderBy: { createdAt: "desc" },
     });
 
-    if (!latestRate) {
+    if (latestRate === null) {
       throw new Error(`No rate found for ${currency}`);
     }
 
@@ -130,7 +149,7 @@ export class ExchangeService {
       const savedRates = await this.saveRatesToDatabase(rates);
 
       this.logger.log(
-        `Successfully updated ${savedRates.length} specific exchange rates`,
+        `Successfully updated ${String(savedRates.length)} specific exchange rates`,
       );
       return savedRates;
     } catch (error) {
