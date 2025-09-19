@@ -22,11 +22,14 @@ model Expense {
   title          String
   category       Category
   amount         Decimal
+  currency       CurrencyName
   date           DateTime
   trip_id        Int
-  trip           Trip        @relation(fields: [trip_id], references: [trip_id], onDelete: Cascade)
+  trip           Trip        @relation(fields: [trip_id], references: [trip_id])
   participant_id Int
-  participant    Participant @relation(fields: [participant_id], references: [participant_id], onDelete: Cascade)
+  participant    Participant @relation(fields: [participant_id], references: [participant_id])
+  payments       Payments[]
+  paid           Boolean
 }
 
 model Participant {
@@ -50,6 +53,23 @@ model TripParticipant {
   @@unique([trip_id, participant_id]) 
 }
 
+model Currency {
+  currency_id Int @id @default(autoincrement())
+  currency  CurrencyName
+  value  Decimal
+  timeStamp DateTime
+}
+
+model Payments {
+  payment_id  Int @id @default(autoincrement())
+  date  DateTime
+  currency CurrencyName
+  amount  Decimal @db.Decimal(18, 2)
+  amountPLN Decimal @db.Decimal(18, 2)
+  expense_id Int
+  expense Expense @relation(fields: [expense_id], references: [expense_id], onDelete: Cascade)
+}
+
 enum Category {
   Transport
   Jedzenie
@@ -61,4 +81,11 @@ enum Role {
   Participant
   Admin
   Trip_Coordinator
+}
+
+enum CurrencyName {
+  PLN
+  EUR
+  USD
+  GBP
 }

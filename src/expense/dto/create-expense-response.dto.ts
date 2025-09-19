@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import { Category, CurrencyName } from "@prisma/client";
 
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -14,6 +14,9 @@ export class CreateExpenseResponseDto {
 
   @ApiProperty()
   amount: number;
+
+  @ApiProperty()
+  currency: CurrencyName;
 
   @ApiProperty()
   trip_id: number;
