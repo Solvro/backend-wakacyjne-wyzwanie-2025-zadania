@@ -7,6 +7,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { TripModule } from "./trip/trip.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
@@ -20,6 +21,7 @@ import { UserModule } from "./user/user.module";
     ExpenseModule,
     AuthModule,
     UserModule,
+    TripModule,
   ],
   controllers: [AppController],
   providers: [AppService],
