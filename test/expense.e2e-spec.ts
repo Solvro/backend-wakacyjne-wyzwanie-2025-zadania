@@ -53,6 +53,11 @@ describe("Expenses (e2e)", () => {
     expect(Array.isArray(response.body)).toBeTruthy();
   });
 
+  it("GET /expenses/:id should return 404 if expense does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    await request(server).get("/expenses/999999").expect(404);
+  });
+
   it("POST /expenses should create when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
 
@@ -72,6 +77,20 @@ describe("Expenses (e2e)", () => {
       note: "Lunch",
       participantId,
     });
+  });
+
+  it("POST /expenses should return 404 if participant does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .post("/expenses")
+      .set("Authorization", `Bearer ${tokenForExpense}`)
+      .send({
+        participantId: 999_999,
+        amount: 50,
+        category: "OTHER",
+      })
+      .expect(404);
   });
 
   it("PATCH /expenses/:id should update when authenticated", async () => {
@@ -100,6 +119,24 @@ describe("Expenses (e2e)", () => {
     expect(updated.note).toBe("Updated note");
   });
 
+  it("PATCH /expenses/:id should return 404 if participant does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    const expense = await prisma.expense.create({
+      data: {
+        amount: 10,
+        category: "FOOD",
+        note: "Has valid participant",
+        participantId,
+      },
+    });
+
+    await request(server)
+      .patch(`/expenses/${expense.id.toString()}`)
+      .set("Authorization", `Bearer ${tokenForExpense}`)
+      .send({ participantId: 999_999 })
+      .expect(404);
+  });
+
   it("DELETE /expenses/:id should delete when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
     const expense = await prisma.expense.create({
@@ -116,5 +153,14 @@ describe("Expenses (e2e)", () => {
       .expect(200);
 
     expect(response.body).toEqual({ deleted: true });
+  });
+
+  it("DELETE /expenses/:id should return 404 if expense does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .delete("/expenses/999999")
+      .set("Authorization", `Bearer ${tokenForExpense}`)
+      .expect(404);
   });
 });
