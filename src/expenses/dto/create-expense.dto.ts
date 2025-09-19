@@ -44,11 +44,4 @@ export class CreateExpenseDto {
   })
   @IsEmail()
   user_email: string;
-
-  @ApiProperty({
-    description: "ID of the participant associated with the expense",
-    example: 3,
-  })
-  @IsInt()
-  participant_id: number;
 }
