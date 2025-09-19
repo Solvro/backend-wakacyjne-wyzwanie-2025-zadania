@@ -11,7 +11,6 @@ export class ExpenseService {
   async create(createExpenseDto: CreateExpenseDto) {
     await this.database.expense.create({
       data: {
-        id: createExpenseDto.id,
         amount: createExpenseDto.amount,
         tripParticipantId: createExpenseDto.tripParticipantId,
       },
@@ -30,7 +29,6 @@ export class ExpenseService {
     return this.database.expense.update({
       where: { id },
       data: {
-        id: updateExpenseDto.id,
         amount: updateExpenseDto.amount,
         tripParticipantId: updateExpenseDto.tripParticipantId,
       },

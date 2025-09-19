@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 import {
   Body,
   Controller,
@@ -8,9 +10,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { AuthGuard } from "../auth/auth.guard";
+import { Public, Roles } from "../auth/roles";
+import { RolesGuard } from "../auth/roles.guard";
 import { CreateTripDto } from "./dto/create-trip.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripService } from "./trip.service";
@@ -31,6 +37,8 @@ export class TripController {
     status: 201,
     description: "Trip created",
   })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
   async create(@Body() createTripDto: CreateTripDto) {
     return this.tripService.create(createTripDto);
   }
@@ -44,6 +52,7 @@ export class TripController {
     status: 200,
     description: "List of trips retrieved successfully",
   })
+  @Public()
   async findAll() {
     return this.tripService.findAll();
   }
@@ -61,6 +70,7 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
+  @Public()
   async findOne(@Param("id") id: string) {
     return this.tripService.findOne(+id);
   }
@@ -78,6 +88,8 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
   async update(@Param("id") id: string, @Body() updateTripDto: UpdateTripDto) {
     return this.tripService.update(+id, updateTripDto);
   }
@@ -95,6 +107,8 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.COORDINATOR)
   async remove(@Param("id") id: string) {
     return this.tripService.remove(+id);
   }

@@ -11,7 +11,6 @@ export class TripParticipantService {
   async create(createTripParticipantDto: CreateTripParticipantDto) {
     await this.database.tripParticipant.create({
       data: {
-        id: createTripParticipantDto.id,
         tripId: createTripParticipantDto.tripId,
         participantId: createTripParticipantDto.participantId,
       },
@@ -30,7 +29,6 @@ export class TripParticipantService {
     return this.database.tripParticipant.update({
       where: { id },
       data: {
-        id: updateTripParticipantDto.id,
         tripId: updateTripParticipantDto.tripId,
         participantId: updateTripParticipantDto.participantId,
       },
