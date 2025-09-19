@@ -7,7 +7,8 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
-import { IsAfter } from "src/common/validators/is-after-validator";
+
+import { IsAfter } from "../../common/validators/is-after-validator";
 
 enum TripStatus {
   PLANNED = "PLANNED",

@@ -1,5 +1,4 @@
 import type { Request } from "express";
-import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 
 import { Body, Controller, Param, Patch, Req, UseGuards } from "@nestjs/common";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@nestjs/swagger";
 
 import type { JwtPayload } from "../auth/jwt.strategy";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { TripResponseDto } from "./dto/trip-response.dto";
 import { UpdateTripDto } from "./dto/update-trip.dto";
 import { TripAccessService } from "./trip-access.service";
