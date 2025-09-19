@@ -1,4 +1,4 @@
-import puppeteer, { Browser, Frame } from "puppeteer";
+import type { Browser, Frame } from "puppeteer";
 
 import { Injectable, Logger } from "@nestjs/common";
 
@@ -11,6 +11,7 @@ export class Waluty24Scraper {
   async scrape(quoteSymbols: string[], base = "PLN") {
     let browser: Browser | undefined;
     try {
+      const { default: puppeteer } = await import("puppeteer");
       browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
