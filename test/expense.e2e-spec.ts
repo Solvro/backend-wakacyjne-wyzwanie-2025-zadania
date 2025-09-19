@@ -96,6 +96,7 @@ describe("ExpenseController (e2e)", () => {
         tripId: 1,
         expenseAmount: 1234,
         expenseDescription: "Test",
+        currencyCode: "PLN",
       })
       .expect(201)
       .then((expense) => {
@@ -116,6 +117,7 @@ describe("ExpenseController (e2e)", () => {
         tripId: 1,
         expenseAmount: 1234,
         expenseDescription: "Test",
+        currencyCode: "PLN",
       })
       .expect(401); // without coordinator or admin token its not possible to make a expense
   });
