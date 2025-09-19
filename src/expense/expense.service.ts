@@ -24,9 +24,11 @@ export class ExpenseService {
         title: createExpenseDto.title,
         category: createExpenseDto.category,
         amount: createExpenseDto.amount,
+        currency: createExpenseDto.currency,
         date: createExpenseDto.date,
         trip_id: createExpenseDto.trip_id,
         participant_id: id,
+        paid: false,
       },
     });
   }

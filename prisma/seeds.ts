@@ -1,4 +1,4 @@
-import { Category, PrismaClient, Role } from "@prisma/client";
+import { Category, CurrencyName, PrismaClient, Role } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -28,9 +28,11 @@ export async function seedDatabase() {
       title: "Bilet PKP",
       category: Category.Transport,
       amount: 21.37,
-      date: new Date("2025-08-13"),
+      currency: CurrencyName.PLN,
+      date: new Date("2025-09-19"),
       trip_id: trip.trip_id,
       participant_id: janusz.participant_id,
+      paid: false,
     },
   });
 

@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import { Category, CurrencyName } from "@prisma/client";
 import {
   IsDateString,
   IsEnum,
@@ -22,6 +22,10 @@ export class CreateExpenseDto {
   @IsNumber()
   @ApiProperty()
   amount: number;
+
+  @IsEnum(CurrencyName)
+  @ApiProperty()
+  currency: CurrencyName;
 
   @IsDateString()
   @ApiProperty()
