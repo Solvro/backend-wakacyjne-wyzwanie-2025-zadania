@@ -36,6 +36,6 @@ export class ExpenseService {
   }
 
   async remove(id: number) {
-    return this.database.expense.deleteMany({ where: { id } });
+    return this.database.expense.delete({ where: { id } });
   }
 }
