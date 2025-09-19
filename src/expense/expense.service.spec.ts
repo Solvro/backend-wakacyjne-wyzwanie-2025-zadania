@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import { Category, CurrencyName } from "@prisma/client";
 import { DatabaseService } from "src/database/database.service";
 import type { PaginationDto } from "src/pagination/pagination.dto";
 
@@ -49,6 +49,8 @@ describe("ExpenseService", () => {
       amount: 200,
       date: "2025-09-11T00:00:00Z",
       trip_id: 1,
+      paid: false,
+      currency: CurrencyName.USD,
     };
 
     mockDatabaseService.expense.create.mockResolvedValue({
@@ -153,6 +155,8 @@ describe("ExpenseService", () => {
       amount: 200,
       date: "2025-09-11T00:00:00Z",
       trip_id: 1,
+      paid: false,
+      currency: CurrencyName.USD,
     };
 
     mockDatabaseService.expense.create.mockResolvedValue(dto);

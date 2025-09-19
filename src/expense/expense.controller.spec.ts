@@ -1,4 +1,4 @@
-import { Category, Role } from "@prisma/client";
+import { Category, CurrencyName, Role } from "@prisma/client";
 import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
 import type { PaginationDto } from "src/pagination/pagination.dto";
@@ -45,6 +45,8 @@ describe("ExpenseController", () => {
       amount: 200,
       date: "2025-09-11T00:00:00Z",
       trip_id: 1,
+      paid: false,
+      currency: CurrencyName.USD,
     };
 
     const participant: ParticipantMetadata = {
@@ -70,6 +72,8 @@ describe("ExpenseController", () => {
       date: "2025-09-11T00:00:00Z",
       trip_id: 1,
       participant_id: 1,
+      paid: false,
+      currency: CurrencyName.USD,
     };
     mockExpenseService.create.mockReturnValue(dto);
 
