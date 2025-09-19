@@ -25,12 +25,12 @@ export class CreateExpenseDto {
   @IsPositive()
   amount: number;
 
-  @ApiProperty({ enum: ["USD", "EUR", "GBP", "CHF", "JPY", "PLN"] })
+  @ApiPropertyOptional({ enum: ["USD", "EUR", "GBP", "CHF", "JPY", "PLN"] })
   @IsIn(["USD", "EUR", "GBP", "CHF", "JPY", "PLN"])
-  @IsDefined()
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  currency: string;
+  currency?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

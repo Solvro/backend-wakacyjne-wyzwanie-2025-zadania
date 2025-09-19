@@ -16,7 +16,7 @@ export class ExpenseService {
     let amountPLN = createExpenseDto.amount;
 
     const currency = createExpenseDto.currency;
-    if (currency !== "PLN") {
+    if (typeof currency === "string" && currency !== "PLN") {
       const rate = await this.exchangeService.getRate(currency);
       amountPLN = createExpenseDto.amount * rate;
     }
