@@ -1,15 +1,23 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { Injectable, Logger, OnApplicationShutdown } from "@nestjs/common";
+import { Cron, CronExpression, SchedulerRegistry } from "@nestjs/schedule";
 
 import { CurrencyService } from "./currency.service";
 
 @Injectable()
-export class CurrencyScheduler {
+export class CurrencyScheduler implements OnApplicationShutdown {
   private readonly logger = new Logger(CurrencyScheduler.name);
 
-  constructor(private readonly currency: CurrencyService) {}
+  constructor(
+    private readonly currency: CurrencyService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  async onApplicationShutdown(_?: string) {
+    const scraperJob = this.schedulerRegistry.getCronJob("scrapeCurrency");
+    await scraperJob.stop();
+  }
+
+  @Cron(CronExpression.EVERY_HOUR, { name: "scrapeCurrency" })
   async scrapeJob(): Promise<void> {
     this.logger.log("Start scrapeJob");
     await this.currency.refresh().catch((error: unknown) => {
