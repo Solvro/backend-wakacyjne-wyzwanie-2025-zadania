@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ScheduleModule } from "@nestjs/schedule";
 
 import { AuthModule } from "./auth/auth.module";
 import { ExpensesModule } from "./expenses/expenses.module";
@@ -10,6 +11,7 @@ import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     TripsModule,
     ParticipantsModule,
     ExpensesModule,

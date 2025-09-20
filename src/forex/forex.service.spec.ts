@@ -15,6 +15,7 @@ describe("ForexService", () => {
     forexRate: {
       create: jest.fn(),
       findMany: jest.fn(),
+      deleteMany: jest.fn(),
     },
     $queryRaw: jest.fn(),
   };
@@ -181,6 +182,105 @@ describe("ForexService", () => {
           fetchedAt: "desc",
         },
         take: 5,
+      });
+    });
+  });
+
+  describe("Scheduled Tasks", () => {
+    describe("fetchRatesDaily", () => {
+      it("should fetch rates successfully", async () => {
+        // Mock successful API response
+        const mockNBPResponse = [
+          {
+            table: "A",
+            no: "123/A/NBP/2025",
+            effectiveDate: "2025-09-20",
+            rates: [
+              { currency: "dolar amerykański", code: "USD", mid: 4.1234 },
+            ],
+          },
+        ];
+
+        (globalThis.fetch as jest.Mock).mockResolvedValue({
+          ok: true,
+          json: jest.fn().mockResolvedValue(mockNBPResponse),
+        });
+
+        mockPrismaService.forexRate.create.mockResolvedValue({
+          currencyName: "USD",
+          rate: 4.1234,
+          fetchedAt: new Date("2025-09-20T10:00:00Z"),
+        });
+
+        // Should not throw
+        await expect(service.fetchRatesDaily()).resolves.toBeUndefined();
+      });
+
+      it("should handle errors gracefully", async () => {
+        (globalThis.fetch as jest.Mock).mockRejectedValue(
+          new Error("Network error"),
+        );
+
+        // Should not throw - errors are handled internally
+        await expect(service.fetchRatesDaily()).resolves.toBeUndefined();
+      });
+    });
+
+    describe("fetchRatesWeekdayAfternoon", () => {
+      it("should fetch rates successfully", async () => {
+        // Mock successful API response
+        const mockNBPResponse = [
+          {
+            table: "A",
+            no: "123/A/NBP/2025",
+            effectiveDate: "2025-09-20",
+            rates: [{ currency: "euro", code: "EUR", mid: 4.5678 }],
+          },
+        ];
+
+        (globalThis.fetch as jest.Mock).mockResolvedValue({
+          ok: true,
+          json: jest.fn().mockResolvedValue(mockNBPResponse),
+        });
+
+        mockPrismaService.forexRate.create.mockResolvedValue({
+          currencyName: "EUR",
+          rate: 4.5678,
+          fetchedAt: new Date("2025-09-20T14:00:00Z"),
+        });
+
+        // Should not throw
+        await expect(
+          service.fetchRatesWeekdayAfternoon(),
+        ).resolves.toBeUndefined();
+      });
+    });
+
+    describe("weeklyMaintenanceTask", () => {
+      it("should clean up old rates successfully", async () => {
+        mockPrismaService.forexRate.deleteMany.mockResolvedValue({
+          count: 50,
+        });
+
+        // Should not throw
+        await expect(service.weeklyMaintenanceTask()).resolves.toBeUndefined();
+
+        expect(mockPrismaService.forexRate.deleteMany).toHaveBeenCalledWith({
+          where: {
+            fetchedAt: {
+              lt: expect.any(Date) as Date,
+            },
+          },
+        });
+      });
+
+      it("should handle errors gracefully", async () => {
+        mockPrismaService.forexRate.deleteMany.mockRejectedValue(
+          new Error("Database error"),
+        );
+
+        // Should not throw - errors are handled internally
+        await expect(service.weeklyMaintenanceTask()).resolves.toBeUndefined();
       });
     });
   });

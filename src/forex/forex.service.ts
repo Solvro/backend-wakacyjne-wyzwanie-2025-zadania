@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 import { PrismaService } from "../prisma/prisma.service";
 import type { NBPRate, NBPResponse } from "./dto/forex.dto";
@@ -168,6 +169,60 @@ export class ForexService {
     } catch (error) {
       this.logger.error("Failed to fetch rates history from database", error);
       throw new BadRequestException("Failed to fetch currency rates history");
+    }
+  }
+
+  // Scheduled Tasks
+
+  @Cron(CronExpression.EVERY_DAY_AT_9AM)
+  async fetchRatesDaily(): Promise<void> {
+    this.logger.log("Running scheduled daily currency rates fetch at 9:00 AM");
+    try {
+      const result = await this.fetchCurrentRates();
+      this.logger.log(
+        `Scheduled fetch completed successfully: ${String(result.fetchedCount)} rates updated`,
+      );
+    } catch (error) {
+      this.logger.error("Scheduled daily currency rates fetch failed", error);
+    }
+  }
+
+  @Cron("0 14 * * 1-5") // Every weekday at 2:00 PM
+  async fetchRatesWeekdayAfternoon(): Promise<void> {
+    this.logger.log(
+      "Running scheduled weekday currency rates fetch at 2:00 PM",
+    );
+    try {
+      const result = await this.fetchCurrentRates();
+      this.logger.log(
+        `Scheduled weekday fetch completed successfully: ${String(result.fetchedCount)} rates updated`,
+      );
+    } catch (error) {
+      this.logger.error("Scheduled weekday currency rates fetch failed", error);
+    }
+  }
+
+  @Cron("0 0 * * 1") // Every Monday at midnight
+  async weeklyMaintenanceTask(): Promise<void> {
+    this.logger.log("Running weekly forex data maintenance task");
+    try {
+      // Clean up old rates (older than 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const deletedCount = await this.prisma.forexRate.deleteMany({
+        where: {
+          fetchedAt: {
+            lt: thirtyDaysAgo,
+          },
+        },
+      });
+
+      this.logger.log(
+        `Weekly maintenance completed: ${String(deletedCount.count)} old rates cleaned up`,
+      );
+    } catch (error) {
+      this.logger.error("Weekly maintenance task failed", error);
     }
   }
 }

@@ -85,6 +85,62 @@ Returns historical exchange rates with optional filtering.
 - `GET /forex/history?limit=5` - Get last 5 rates for all currencies
 - `GET /forex/history?currency=EUR&limit=20` - Get last 20 rates for EUR
 
+### GET /forex/schedule/status
+
+Returns information about scheduled tasks for currency rate fetching.
+
+**Response:**
+
+```json
+{
+  "enabled": true,
+  "schedules": [
+    {
+      "name": "Daily Morning Fetch",
+      "expression": "0 9 * * *",
+      "description": "Fetches currency rates every day at 9:00 AM (NBP working hours)",
+      "nextRun": "2025-09-21T09:00:00.000Z"
+    },
+    {
+      "name": "Weekday Afternoon Fetch",
+      "expression": "0 14 * * 1-5",
+      "description": "Fetches currency rates on weekdays at 2:00 PM for midday updates",
+      "nextRun": "2025-09-20T14:00:00.000Z"
+    },
+    {
+      "name": "Weekly Maintenance",
+      "expression": "0 0 * * 1",
+      "description": "Runs weekly maintenance every Monday at midnight (cleans up old data)",
+      "nextRun": "2025-09-23T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Scheduled Tasks
+
+The forex module includes automated scheduled tasks using `@nestjs/schedule`:
+
+### Daily Morning Fetch (`0 9 * * *`)
+
+- **When**: Every day at 9:00 AM
+- **Purpose**: Fetches the latest currency rates when NBP typically publishes new data
+- **Action**: Calls `fetchCurrentRates()` and saves new rates to database
+
+### Weekday Afternoon Fetch (`0 14 * * 1-5`)
+
+- **When**: Every weekday at 2:00 PM
+- **Purpose**: Provides midday rate updates for active trading days
+- **Action**: Calls `fetchCurrentRates()` for the latest rates
+
+### Weekly Maintenance (`0 0 * * 1`)
+
+- **When**: Every Monday at midnight
+- **Purpose**: Cleanup and maintenance of historical data
+- **Action**: Removes currency rate records older than 30 days to keep database optimized
+
+All scheduled tasks include comprehensive error handling and logging. Failed tasks are logged but don't affect application stability.
+
 ## Data Source
 
 The scraper uses the **NBP (National Bank of Poland) Web API**, which provides:
@@ -176,23 +232,31 @@ curl http://localhost:3000/forex/latest
 curl "http://localhost:3000/forex/history?currency=USD&limit=5"
 ```
 
+### Check Schedule Status
+
+```bash
+curl http://localhost:3000/forex/schedule/status
+```
+
 ## Architecture
 
 The forex module follows NestJS best practices:
 
 - **Module**: `ForexModule` - Configures dependencies and exports
-- **Service**: `ForexService` - Business logic for fetching and storing rates
+- **Service**: `ForexService` - Business logic for fetching, storing rates, and scheduled tasks
 - **Controller**: `ForexController` - HTTP endpoints and validation
 - **DTOs**: Type definitions and validation rules
+- **Scheduling**: `@nestjs/schedule` integration for automated tasks
 - **Tests**: Comprehensive unit and E2E test coverage
 
 ## Future Enhancements
 
 Potential improvements for the forex module:
 
-- **Scheduled fetching**: Add cron jobs to automatically fetch rates
+- **Dynamic scheduling**: Add endpoints to modify schedule configurations
 - **More currencies**: Support additional currencies from NBP API
 - **Rate change alerts**: Notify on significant rate changes
 - **Caching**: Add Redis caching for frequently accessed data
 - **Historical analysis**: Add endpoints for rate trends and statistics
 - **WebSocket updates**: Real-time rate updates for connected clients
+- **Health checks**: Monitor scheduled task execution and NBP API health

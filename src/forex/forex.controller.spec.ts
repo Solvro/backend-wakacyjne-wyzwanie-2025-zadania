@@ -133,4 +133,33 @@ describe("ForexController", () => {
       );
     });
   });
+
+  describe("getScheduleStatus", () => {
+    it("should return schedule status with enabled flag and schedules", () => {
+      const result = controller.getScheduleStatus();
+
+      expect(result).toHaveProperty("enabled", true);
+      expect(result).toHaveProperty("schedules");
+      expect(Array.isArray(result.schedules)).toBe(true);
+      expect(result.schedules).toHaveLength(3);
+
+      // Check that all schedules have required properties
+      for (const schedule of result.schedules) {
+        expect(schedule).toHaveProperty("name");
+        expect(schedule).toHaveProperty("expression");
+        expect(schedule).toHaveProperty("description");
+        expect(schedule).toHaveProperty("nextRun");
+        expect(typeof schedule.name).toBe("string");
+        expect(typeof schedule.expression).toBe("string");
+        expect(typeof schedule.description).toBe("string");
+        expect(typeof schedule.nextRun).toBe("string");
+      }
+
+      // Check specific schedule names
+      const scheduleNames = result.schedules.map((s) => s.name);
+      expect(scheduleNames).toContain("Daily Morning Fetch");
+      expect(scheduleNames).toContain("Weekday Afternoon Fetch");
+      expect(scheduleNames).toContain("Weekly Maintenance");
+    });
+  });
 });

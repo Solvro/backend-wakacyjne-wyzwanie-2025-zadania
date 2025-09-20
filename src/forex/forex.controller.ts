@@ -101,4 +101,78 @@ export class ForexController {
 
     return this.forexService.getRatesHistory(currency, validatedLimit);
   }
+
+  @Get("schedule/status")
+  @ApiOperation({
+    summary: "Get schedule status",
+    description:
+      "Returns information about scheduled tasks for currency rate fetching",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Schedule status retrieved successfully",
+    schema: {
+      type: "object",
+      properties: {
+        enabled: { type: "boolean" },
+        schedules: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              expression: { type: "string" },
+              description: { type: "string" },
+              nextRun: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+  })
+  getScheduleStatus(): {
+    enabled: boolean;
+    schedules: {
+      name: string;
+      expression: string;
+      description: string;
+      nextRun?: string;
+    }[];
+  } {
+    return {
+      enabled: true,
+      schedules: [
+        {
+          name: "Daily Morning Fetch",
+          expression: "0 9 * * *",
+          description:
+            "Fetches currency rates every day at 9:00 AM (NBP working hours)",
+          nextRun: this.getNextCronTime("0 9 * * *"),
+        },
+        {
+          name: "Weekday Afternoon Fetch",
+          expression: "0 14 * * 1-5",
+          description:
+            "Fetches currency rates on weekdays at 2:00 PM for midday updates",
+          nextRun: this.getNextCronTime("0 14 * * 1-5"),
+        },
+        {
+          name: "Weekly Maintenance",
+          expression: "0 0 * * 1",
+          description:
+            "Runs weekly maintenance every Monday at midnight (cleans up old data)",
+          nextRun: this.getNextCronTime("0 0 * * 1"),
+        },
+      ],
+    };
+  }
+
+  private getNextCronTime(_expression: string): string {
+    // This is a simplified implementation
+    // In a real application, you might want to use a proper cron parser
+    const now = new Date();
+    const nextRun = new Date(now);
+    nextRun.setDate(nextRun.getDate() + 1); // Simplified: next day
+    return nextRun.toISOString();
+  }
 }

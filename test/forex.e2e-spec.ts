@@ -133,4 +133,44 @@ describe("Forex (e2e)", () => {
       await request(httpServer).get("/forex/history?limit=101").expect(400);
     });
   });
+
+  describe("/forex/schedule/status (GET)", () => {
+    it("should return schedule status", async () => {
+      const response = await request(httpServer)
+        .get("/forex/schedule/status")
+        .expect(200);
+
+      const body = response.body as {
+        enabled: boolean;
+        schedules: {
+          name: string;
+          expression: string;
+          description: string;
+          nextRun?: string;
+        }[];
+      };
+
+      expect(body).toHaveProperty("enabled", true);
+      expect(body).toHaveProperty("schedules");
+      expect(Array.isArray(body.schedules)).toBe(true);
+      expect(body.schedules).toHaveLength(3);
+
+      // Verify schedule structure
+      for (const schedule of body.schedules) {
+        expect(schedule).toHaveProperty("name");
+        expect(schedule).toHaveProperty("expression");
+        expect(schedule).toHaveProperty("description");
+        expect(schedule).toHaveProperty("nextRun");
+        expect(typeof schedule.name).toBe("string");
+        expect(typeof schedule.expression).toBe("string");
+        expect(typeof schedule.description).toBe("string");
+      }
+
+      // Check for expected schedules
+      const scheduleNames = body.schedules.map((s) => s.name);
+      expect(scheduleNames).toContain("Daily Morning Fetch");
+      expect(scheduleNames).toContain("Weekday Afternoon Fetch");
+      expect(scheduleNames).toContain("Weekly Maintenance");
+    });
+  });
 });
