@@ -13,12 +13,7 @@ describe("ParticipantController", () => {
 
   let participantCounter = 1;
 
-  let participantsInMemory: {
-    id: number;
-    email: string;
-    name: string;
-    role: Role;
-  }[] = [];
+  let participantsInMemory: Participant[] = [];
 
   const initialParticipants = [
     {
@@ -36,16 +31,16 @@ describe("ParticipantController", () => {
   ];
 
   const mockParticipantService = {
-    create: jest.fn((dto: Participant) => {
+    create: jest.fn(({ data }: { data: Participant }) => {
       const newParticipant: Participant = {
         id: participantCounter++,
-        email: dto.email,
-        name: dto.name,
-        role: dto.role,
+        email: data.email,
+        name: data.name,
+        role: data.role,
       };
       participantsInMemory.push(newParticipant);
       return newParticipant;
-    }),
+    }) as jest.Mock,
     getAll: jest.fn(),
     getOne: jest.fn(),
     update: jest.fn(),
@@ -83,7 +78,7 @@ describe("ParticipantController", () => {
       role: Role.PARTICIPANT,
     };
 
-    const expectedValue = { id: participantCounter, ...dto };
+    const expectedValue: Participant = { id: participantCounter, ...dto };
     mockParticipantService.create.mockResolvedValue(expectedValue);
 
     const result = await controller.post(dto);
@@ -153,8 +148,6 @@ describe("ParticipantController", () => {
   });
 
   it("should delete a participant", async () => {
-    mockParticipantService.delete.mockResolvedValue();
-
     await expect(controller.delete("1")).resolves.toBeUndefined();
 
     expect(mockParticipantService.delete).toHaveBeenCalledTimes(1);

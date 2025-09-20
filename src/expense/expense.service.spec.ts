@@ -114,7 +114,14 @@ describe("ExpenseService", () => {
       participant_id: 1,
       trip_id: 1,
     };
-    const result = await service.create(dto);
+    const result = await service.create({
+      description: dto.description,
+      amount: dto.amount,
+      currency: dto.currency,
+      date: dto.date.toISOString(),
+      participant_id: dto.participant_id,
+      trip_id: dto.trip_id,
+    });
 
     expect(result).toHaveProperty("id");
     expect(result.description).toBe("Test Expense");

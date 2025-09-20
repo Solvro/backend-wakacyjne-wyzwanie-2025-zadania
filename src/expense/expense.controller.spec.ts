@@ -44,7 +44,15 @@ describe("ExpenseController", () => {
 
   const mockExpenseService = {
     create: jest.fn(({ data }: { data: Expense }) => {
-      const newExpense: Expense = { id: expenseCounter++, ...data };
+      const newExpense: Expense = {
+        id: expenseCounter++,
+        description: data.description,
+        amount: data.amount,
+        currency: data.currency,
+        date: data.date,
+        participant_id: data.participant_id,
+        trip_id: data.trip_id,
+      };
       expensesInMemory.push(newExpense);
       return newExpense;
     }) as jest.Mock,
@@ -83,12 +91,12 @@ describe("ExpenseController", () => {
       description: "Lunch",
       amount: 50,
       currency: "USD",
-      date: new Date(),
+      date: "2025-09-16T15:17:10.005Z",
       participant_id: 1,
       trip_id: 1,
     };
 
-    const expectedValue: Expense = { id: expenseCounter, ...dto };
+    const expectedValue = { id: expenseCounter, ...dto };
     mockExpenseService.create.mockResolvedValue(expectedValue);
 
     const result = await controller.post(dto);
@@ -121,14 +129,15 @@ describe("ExpenseController", () => {
       description: "Dinner",
       amount: 80,
       currency: "EUR",
-      date: new Date(),
+      date: "2025-09-16T18:00:00.000Z",
       participant_id: 1,
       trip_id: 1,
     };
-    const expenseMock = await controller.post(dto); // np. id == 3
+
+    const expenseMock = await controller.post(dto);
 
     const dtoUpdate = { amount: 200 };
-    const expenseUpdated: Expense = { ...expenseMock, ...dtoUpdate };
+    const expenseUpdated = { ...expenseMock, ...dtoUpdate };
 
     mockExpenseService.update.mockResolvedValue(expenseUpdated);
 

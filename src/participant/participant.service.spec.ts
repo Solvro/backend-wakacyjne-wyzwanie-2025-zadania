@@ -173,7 +173,7 @@ describe("ParticipantService", () => {
   });
 
   it("should delete a participant", async () => {
-    mockDatabaseService.participant.delete.mockResolvedValue();
+    mockDatabaseService.participant.delete.mockResolvedValue(null);
 
     await expect(service.delete(1)).resolves.toBeUndefined();
 

@@ -2,6 +2,7 @@
 import { AuthRole, PrismaClient, Role } from "@prisma/client";
 import type { SuperTest, Test } from "supertest";
 import request from "supertest";
+import TestAgent from "supertest/lib/agent";
 
 import type { INestApplication } from "@nestjs/common";
 import { ValidationPipe } from "@nestjs/common";
@@ -20,7 +21,7 @@ describe("ParticipantController (e2e)", () => {
   let app: INestApplication;
   let createdId: number;
   let prisma: PrismaClient;
-  let httpRequest: SuperTest<Test>;
+  let httpRequest: TestAgent<Test>;
 
   beforeAll(async () => {
     const moduleFixture = await NestTest.createTestingModule({
@@ -40,7 +41,6 @@ describe("ParticipantController (e2e)", () => {
     prisma = new PrismaClient();
     httpRequest = request(app.getHttpServer());
 
-    // cleanup
     await prisma.participant.deleteMany({
       where: {
         email: { in: ["john.doe@example.com", "jane.doe@example.com"] },
@@ -52,7 +52,6 @@ describe("ParticipantController (e2e)", () => {
       },
     });
 
-    // seed users
     await prisma.user.create({
       data: {
         email: "john.doe@example.com",
