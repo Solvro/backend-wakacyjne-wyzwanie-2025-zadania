@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment */
 import { AuthRole, PrismaClient, Role } from "@prisma/client";
-import type { SuperTest, Test } from "supertest";
+import type { Test } from "supertest";
 import request from "supertest";
-import TestAgent from "supertest/lib/agent";
+import type TestAgent from "supertest/lib/agent";
 
 import type { INestApplication } from "@nestjs/common";
 import { ValidationPipe } from "@nestjs/common";
@@ -140,7 +140,7 @@ describe("ExpenseController (e2e)", () => {
     const body: ExpenseResponse[] = result.body;
 
     expect(body.length).toBeGreaterThan(0);
-    expect(body.some((e) => e.id === createdId)).toBeTruthy();
+    expect(body.some((response) => response.id === createdId)).toBeTruthy();
   });
 
   it("GET /api/v1/expenses/:id → should return single expense", async () => {
