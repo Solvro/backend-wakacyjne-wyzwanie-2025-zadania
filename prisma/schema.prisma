@@ -41,6 +41,7 @@ model Trip {
 
   participants Participant[]
   expenses     Expense[]
+  payments     Payment[]
 
   @@map("trips")
 }
@@ -76,6 +77,8 @@ model Expense {
   participantId Int
   participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
+  payments Payment[]
+
   @@map("expenses")
 }
 
@@ -90,7 +93,37 @@ model User {
 
 model ForexRate {
   id        Int      @id @default(autoincrement())
-  currencyName String
+  currency  String // Changed from currencyName to currency to match service
   rate      Float
   fetchedAt DateTime @default(now())
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Payment {
+  id               Int           @id @default(autoincrement())
+  title            String
+  description      String?
+  originalAmount   Float // Amount in original currency
+  originalCurrency String // ISO currency code (USD, EUR, GBP, PLN)
+  plnAmount        Float // Converted amount in PLN
+  exchangeRate     Float? // Rate used for conversion (null for PLN)
+  status           PaymentStatus @default(PENDING)
+  processedAt      DateTime? // When payment was completed
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  // Optional relation to trip/expense for integration
+  tripId Int?
+  trip   Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+
+  expenseId Int?
+  expense   Expense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+
+  @@map("payments")
 }
