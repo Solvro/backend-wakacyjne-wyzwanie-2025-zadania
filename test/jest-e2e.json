@@ -5,5 +5,10 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../$1"
+  },
+  "maxWorkers": 1,
+  "testSequencer": "./e2e-test-sequencer.js"
 }

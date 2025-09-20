@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:check": "prettier --check .",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "preflight": "npm run lint && npm run format && npm run typecheck && npm run test && npm run build",
+    "preflight": "npm run lint && npm run format && npm run typecheck && npm run test && npm run test:e2e && npm run build",
     "prepare": "husky || true",
     "seed": "ts-node prisma/seed.ts",
     "start": "nest start",
@@ -21,6 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e:setup": "prisma generate && prisma migrate deploy",
     "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit"
   },
@@ -38,6 +39,9 @@
       "json",
       "ts"
     ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/../$1"
+    },
     "rootDir": "src",
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",

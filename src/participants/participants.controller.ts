@@ -148,6 +148,7 @@ export class ParticipantsController {
   @Delete(":id")
   @Roles(Role.ADMIN, Role.TRIP_COORDINATOR)
   @UseGuards(AuthGuard, RoleGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: "Delete participant",
     description: "Delete an existing participant",
