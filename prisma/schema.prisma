@@ -82,3 +82,13 @@ model Currency {
   updatedAt DateTime @default(now())
 
 }
+
+model Payment {
+  id              Int      @id @default(autoincrement())
+  originalAmount  Decimal  @db.Decimal(10, 2) 
+  originalCurrency String  @db.VarChar(3)     
+  amountInPLN     Decimal  @db.Decimal(10, 2) 
+  exchangeRate    Decimal  @db.Decimal(10, 4) 
+  createdAt       DateTime @default(now())
+  description     String?  @db.VarChar(255)
+}
