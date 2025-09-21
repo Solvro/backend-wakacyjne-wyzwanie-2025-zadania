@@ -69,14 +69,14 @@ export class AuthService {
     }
 
     const now = Date.now();
-    const expiry = now + Number(process.env.EXPIRY_TIME_MS);
+    // const expiry = now + Number(process.env.EXPIRY_TIME_MS);
 
     // payload do JWT
     const payload = {
       sub: user.email, // identyfikator użytkownika
       role: user.role, // rola (USER, COORDINATOR, ADMIN)
       iat: now,
-      exp: expiry,
+      // exp: expiry,
     };
 
     const token = await this.jwt.signAsync(payload, {

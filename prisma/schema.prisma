@@ -22,7 +22,7 @@ model Trip {
   coordinatorEmail String
   coordinator      User?  @relation(fields: [coordinatorEmail], references: [email])
 
-  participants Participant[]
+  participants Participant[] @relation("TripParticipants")
 
   expenses Expense[]
 }
@@ -33,7 +33,7 @@ model Participant {
   lastName  String
   email     String
 
-  trips     Trip[]
+  trips     Trip[] @relation("TripParticipants")
   userEmail String?
   user      User?   @relation(fields: [userEmail], references: [email])
 
