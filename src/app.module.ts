@@ -8,6 +8,8 @@ import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
 import { TripModule } from "./trip/trip.module";
 import { UserModule } from "./user/user.module";
+import { ScheduleModule } from '@nestjs/schedule';
+import { CurrencyModule } from './currency/currency.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { UserModule } from "./user/user.module";
     ExpenseModule,
     UserModule,
     AuthModule,
+    ScheduleModule.forRoot(),
+    CurrencyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

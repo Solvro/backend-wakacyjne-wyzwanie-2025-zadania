@@ -3,6 +3,29 @@ import { ExpenseType, PrismaClient, TripRole, UserRole } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+
+    await prisma.currency.createMany({
+    data: [
+      {
+        code: 'PLN',
+        rate: 1.0000, 
+      },
+      {
+        code: 'USD',
+        rate: 4.2500, 
+      },
+      {
+        code: 'EUR',
+        rate: 4.6800, 
+      },
+      {
+        code: 'GBP',
+        rate: 5.3200, 
+      },
+    ],
+    skipDuplicates: true,
+  });
+
   await prisma.user.createMany({
     data: [
       {

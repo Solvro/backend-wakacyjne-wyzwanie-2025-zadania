@@ -63,8 +63,7 @@ model Expense {
   expense_date DateTime    @default(now())
   cost         Decimal     @db.Decimal(10, 2)
   description  String?     @db.VarChar(255)
-  currencyId   Int
-  currency     Currency    @relation(fields: [currencyId], references: [id])
+
 }
 
 model User {
@@ -80,6 +79,6 @@ model Currency {
   id        Int      @id @default(autoincrement())
   code      String   @unique 
   rate      Decimal  @db.Decimal(10, 4) 
-  updatedAt DateTime @default(now()) @updatedAt
-  expenses  Expense[]
+  updatedAt DateTime @default(now())
+
 }
