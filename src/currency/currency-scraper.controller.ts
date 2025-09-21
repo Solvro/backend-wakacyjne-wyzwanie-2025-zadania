@@ -5,7 +5,7 @@ import { CurrencyScraperService } from "./currency-scraper.service";
 
 @ApiTags("currencies")
 @Controller("currencies")
-export class CurrencyAdminController {
+export class CurrencyScraperController {
   constructor(
     private readonly currencyScraperService: CurrencyScraperService,
   ) {}
