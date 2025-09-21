@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @darraghor/nestjs-typed/api-method-should-specify-api-response */
+/* eslint-disable @darraghor/nestjs-typed/api-method-should-specify-api-operation */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { Currency } from "./currency.enum";
+import { CurrencyScraper } from "./currency.scraper";
 import { CurrencyService } from "./currency.service";
 import { CreateCurrencyRateDto } from "./dto/create-currency.dto";
 import { CurrencyResponseDto } from "./dto/currency-response.dto";
@@ -11,7 +15,10 @@ import { CurrencyResponseDto } from "./dto/currency-response.dto";
 @ApiTags("currencies")
 @Controller("currencies")
 export class CurrencyController {
-  constructor(private readonly currencyService: CurrencyService) {}
+  constructor(
+    private readonly currencyService: CurrencyService,
+    private readonly currencyScraper: CurrencyScraper,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: "Create or update a currency rate" })
@@ -24,6 +31,12 @@ export class CurrencyController {
   @ApiOperation({ summary: "Get all currency rates" })
   @ApiResponse({ status: 200, type: [CurrencyResponseDto] })
   async findAll() {
+    return this.currencyService.findAll();
+  }
+
+  @Get("scrape")
+  async scrape() {
+    await this.currencyScraper.scrape();
     return this.currencyService.findAll();
   }
 

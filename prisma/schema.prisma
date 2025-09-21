@@ -94,7 +94,7 @@ enum CurrencyCode {
 
 model CurrencyRate {
   id        Int      @id @default(autoincrement())
-  code      String   @db.VarChar(3) // np. USD, EUR
+  code      String   @db.VarChar(3) @unique
   rate      Decimal  @db.Decimal(10, 4) // kurs względem PLN
   updatedAt DateTime @updatedAt
 }

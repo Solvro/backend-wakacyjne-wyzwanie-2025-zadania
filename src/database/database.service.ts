@@ -8,7 +8,6 @@ export class DatabaseService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  currencyRate: any;
   async onModuleInit() {
     await this.$connect();
   }
