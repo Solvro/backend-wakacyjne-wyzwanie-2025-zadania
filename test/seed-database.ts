@@ -1,0 +1,45 @@
+import { PrismaClient, Role } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export async function seedDatabase() {
+  const trip = await prisma.trip.create({
+    data: {
+      name: "Testowa wycieczka",
+      start: new Date("2024-03-26"),
+      end: new Date("2025-03-26"),
+    },
+  });
+
+  const user = await prisma.user.create({
+    data: {
+      email: "test@example.com",
+      password: "Solvro",
+      role: Role.ADMIN,
+    },
+  });
+
+  const participant = await prisma.participant.create({
+    data: {
+      name: "Szymon",
+      surname: "Stępień",
+      age: 30,
+      email: user.email,
+    },
+  });
+
+  const tripParticipant = await prisma.tripParticipant.create({
+    data: {
+      tripId: trip.id,
+      participantId: participant.id,
+      joinedAt: new Date("2025-03-26"),
+    },
+  });
+
+  await prisma.expense.create({
+    data: {
+      amount: 1111.11,
+      tripParticipantId: tripParticipant.id,
+    },
+  });
+}

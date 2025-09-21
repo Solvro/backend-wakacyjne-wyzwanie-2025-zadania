@@ -14,8 +14,8 @@ jobs:
         image: postgres:latest
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: wakacyjne_test_db
+          POSTGRES_PASSWORD: Solvro123
+          POSTGRES_DB: db_test
         ports:
           - 5432:5432
 
@@ -58,7 +58,7 @@ jobs:
         run: npm run test:e2e
         if: always()
         env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+          DATABASE_URL: "postgresql://postgres:Solvro123@localhost:5432/db_test"
 
       - name: Build
         run: npm run build
