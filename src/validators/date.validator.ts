@@ -15,6 +15,9 @@ export class NiceDateConstraint implements ValidatorConstraintInterface {
     const relatedValue = (arguments_.object as Record<string, unknown>)[
       relatedPropertyName
     ];
+    if (value == null || relatedValue == null) {
+      return true;
+    }
     if (typeof value !== "string" && !(value instanceof Date)) {
       return false;
     }
@@ -30,7 +33,7 @@ export class NiceDateConstraint implements ValidatorConstraintInterface {
   }
   defaultMessage(arguments_: ValidationArguments): string {
     const relatedPropertyName = this.getPropertyName(arguments_.constraints);
-    return `That's not a nice date, is it? ($property must be after ${relatedPropertyName ?? "the specified date"})`;
+    return `That's not a nice date, is it? (${arguments_.property} must be after ${relatedPropertyName ?? "the specified date"})`;
   }
 
   private getPropertyName(constraints: readonly unknown[]): string | null {

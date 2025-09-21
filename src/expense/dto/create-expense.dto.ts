@@ -1,8 +1,8 @@
 import { ExpenseCategory } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
+import { Type } from "class-transformer";
 import {
-  IsCurrency,
   IsEnum,
-  IsIBAN,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -36,7 +36,6 @@ export class CreateExpenseDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsIBAN()
   @IsString()
   @MaxLength(50)
   recipientIban?: string;
@@ -55,14 +54,14 @@ export class CreateExpenseDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsCurrency()
   @IsPositive()
-  amount?: number;
+  @Type(() => Decimal)
+  amount?: Decimal;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsCurrency()
-  budgetLeft?: number;
+  @Type(() => Decimal)
+  budgetLeft?: Decimal;
 
   @Validate(NiceText)
   @ApiPropertyOptional()

@@ -8,6 +8,47 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: budzetownik_user
+          POSTGRES_PASSWORD: budzetownik_password
+          POSTGRES_DB: budzetownik
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U budzetownik_user -d budzetownik"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DATABASE_URL: postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik
+      DATABASE_URL_TEST: postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik_test
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USER: test@example.com
+      EMAIL_PASS: test-password
+      EMAIL_FROM: "Test <test@example.com>"
+      JWT_SECRET: test-jwt-secret-for-ci
+      EXPIRY_TIME_MS: 3600000
+      NODE_ENV: test
+      PORT: 5001
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,10 +68,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-      - name: Generate Prisma
-        run: npx prisma generate
-        if: always()
-
       - name: Run prettier
         run: npm run format:check
         if: always()
@@ -43,13 +80,36 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+        if: always()
+
+      - name: Verify Redis connection
+        run: redis-cli ping
+        if: always()
+
+      - name: Apply Prisma schema to database
+        run: npx prisma migrate deploy
+        if: always()
+
+      - name: Seed database
+        run: npm run seed
+        if: always()
+
+      - name: Create test database
+        run: PGPASSWORD=budzetownik_password createdb -h localhost -U budzetownik_user budzetownik_test
+
+      - name: Apply Prisma schema to test database
+        run: npm run test:prepare
+        if: always()
+
       - name: Run tests
         run: npm test
         if: always()
 
-      #- name: Run e2e tests
-      #  run: npm run test:e2e
-      #  if: always()
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
 
       - name: Build
         run: npm run build

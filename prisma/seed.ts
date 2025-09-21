@@ -62,7 +62,7 @@ async function main() {
         dateOfBirth: new Date("2004-02-29"),
         placeOfBirth: "Urodzinów",
         sex: ParticipantSex.MALE,
-        note: "student bez budżetu",
+        note: "Student bez budżetu",
       },
     }),
 
@@ -90,6 +90,16 @@ async function main() {
         address: "ul. Pomocna 96, 7312-024 Pomocnowo",
         isAdult: true,
         placeOfBirth: "Pomocnowo",
+        sex: ParticipantSex.MALE,
+      },
+    }),
+
+    prisma.participant.create({
+      data: {
+        role: ParticipantRole.ORGANIZER,
+        name: "wsparcie",
+        surname: "dev",
+        email: "kamil.sztabert@gmail.com",
         sex: ParticipantSex.MALE,
       },
     }),
@@ -149,6 +159,20 @@ async function main() {
         note: "Przepłacone wakacje nad Bałtykiem",
       },
     }),
+
+    prisma.trip.create({
+      data: {
+        category: TripCategory.VACATION,
+        title: "Email test",
+        destination: "skrzynka email",
+        budget: 9999,
+        startDate: new Date("2025-07-15T08:00:00Z"),
+        endDate: new Date("2025-07-22T20:00:00Z"),
+        accommodation: "serwer",
+        travelTime: 99,
+        travelDistance: 999,
+      },
+    }),
   ]);
 
   await Promise.all([
@@ -199,6 +223,15 @@ async function main() {
         },
       },
     }),
+
+    prisma.trip.update({
+      where: { id: createdTrips[4].id },
+      data: {
+        participants: {
+          connect: [{ id: createdParticipants[5].id }],
+        },
+      },
+    }),
   ]);
 
   const createdActivities = await Promise.all([
@@ -244,7 +277,7 @@ async function main() {
         place: "Plaża Barceloneta, Barcelona",
         startDate: new Date("2025-07-17T11:00:00Z"),
         endDate: new Date("2025-07-17T16:00:00Z"),
-        category: ActivityCategory.RELAXATION,
+        category: ActivityCategory.LEISURE,
         tripId: createdTrips[0].id,
         participants: {
           connect: [
@@ -358,7 +391,7 @@ async function main() {
         place: "Plaża w Władysławowie",
         startDate: new Date("2025-08-06T10:00:00Z"),
         endDate: new Date("2025-08-06T18:00:00Z"),
-        category: ActivityCategory.RELAXATION,
+        category: ActivityCategory.LEISURE,
         note: "Zabrać przekąski",
         tripId: createdTrips[3].id,
         participants: {
@@ -433,7 +466,7 @@ async function main() {
         currency: "PLN",
         amount: 1800,
         budgetLeft: 2000,
-        note: "Loty w obie strony",
+        note: "Lot w obie strony",
         participantId: createdParticipants[1].id,
         tripId: createdTrips[0].id,
       },
@@ -487,7 +520,7 @@ async function main() {
         currency: "PLN",
         quantity: 2,
         amount: 752,
-        note: "Bilety w obie strony 1 klasa",
+        note: "Bilet w obie strony 1 klasa",
         participantId: createdParticipants[1].id,
         tripId: createdTrips[1].id,
       },
@@ -573,6 +606,21 @@ async function main() {
         activityId: createdActivities[11].id,
       },
     }),
+
+    prisma.expense.create({
+      data: {
+        category: ExpenseCategory.ACCOMMODATION,
+        title: "List",
+        recipientName: "wsparcie",
+        currency: "PLN",
+        quantity: 1,
+        amount: 99,
+        budgetLeft: 9,
+        note: "list",
+        participantId: createdParticipants[5].id,
+        tripId: createdTrips[4].id,
+      },
+    }),
   ]);
 
   const password = await hash("haslo", 10);
@@ -619,6 +667,16 @@ async function main() {
             id: createdParticipants[2].id,
           },
         },
+      },
+    }),
+
+    prisma.user.create({
+      data: {
+        email: "admin@imejl.pl",
+        username: "admin",
+        password: password,
+        role: Role.ADMIN,
+        isArchived: false,
       },
     }),
   ]);

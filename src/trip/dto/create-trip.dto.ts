@@ -1,6 +1,7 @@
 import { TripCategory } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
+import { Type } from "class-transformer";
 import {
-  IsCurrency,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -35,20 +36,20 @@ export class CreateTripDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsCurrency()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   budget?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
-  startDate?: string = new Date().toString();
+  startDate?: string;
 
   @NiceDate("startDate")
   @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
-  endDate?: string = new Date().toString();
+  endDate?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -57,19 +58,19 @@ export class CreateTripDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @Type(() => Decimal)
   @IsPositive()
-  travelTime?: number;
+  travelTime?: Decimal;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @Type(() => Decimal)
   @IsPositive()
-  travelDistance?: number;
+  travelDistance?: Decimal;
 
+  @ApiPropertyOptional()
+  @IsOptional()
   @Validate(NiceText)
-  @ApiPropertyOptional()
-  @IsOptional()
   @IsString()
   note?: string;
 

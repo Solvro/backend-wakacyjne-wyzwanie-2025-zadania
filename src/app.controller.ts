@@ -30,4 +30,19 @@ To umiłowanie życia. To właśnie ono sprawia, że dzisiaj na przykład buduj�
   getHello(): { title: string; quote: string } {
     return this.appService.getHello();
   }
+
+  @HttpCode(200)
+  @Get("health")
+  @ApiOperation({ summary: "Check application health status" })
+  @ApiResponse({
+    status: 200,
+    description: "Health check successful",
+  })
+  healthCheck() {
+    return {
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+    };
+  }
 }
