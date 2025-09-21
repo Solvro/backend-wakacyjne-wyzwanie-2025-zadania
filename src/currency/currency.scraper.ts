@@ -5,6 +5,7 @@
 import axios from "axios";
 
 import { Injectable, Logger } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 import { Currency } from "./currency.enum";
 import { CurrencyService } from "./currency.service";
@@ -15,6 +16,7 @@ export class CurrencyScraper {
 
   constructor(private readonly currencyService: CurrencyService) {}
 
+  @Cron(CronExpression.EVERY_3_HOURS)
   async scrape() {
     this.logger.log("Starting currency scrape...");
 
