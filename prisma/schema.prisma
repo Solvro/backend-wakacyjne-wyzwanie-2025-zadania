@@ -85,3 +85,16 @@ enum AuthRole {
   USER
   COORDINATOR
 }
+
+enum CurrencyCode {
+  EUR
+  USD
+  GBP
+}
+
+model CurrencyRate {
+  id        Int      @id @default(autoincrement())
+  code      String   @db.VarChar(3) // np. USD, EUR
+  rate      Decimal  @db.Decimal(10, 4) // kurs względem PLN
+  updatedAt DateTime @updatedAt
+}

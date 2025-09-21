@@ -33,7 +33,7 @@ export class ParticipantService {
     const p = await this.prisma.participant.findUnique({
       where: { id },
       include: {
-        trips: true, // zamiast memberships -> trips
+        trips: true,
         paidExpenses: true,
       },
     });
