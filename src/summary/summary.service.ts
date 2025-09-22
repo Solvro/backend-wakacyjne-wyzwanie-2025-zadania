@@ -2,12 +2,7 @@ import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 
 import { CurrencyService } from "../currency/currency.service";
 import { DatabaseService } from "../database/database.service";
-import { EmailQueueService } from "../email/email-queue.service";
-import { TripSummaryData } from "./dto/summary-create.dto";
-import {
-  TripCloseResponseDto,
-  TripSummaryResponseDto,
-} from "./dto/summary-response.dto";
+import { TripSummaryResponseDto } from "./dto/summary-response.dto";
 
 @Injectable()
 export class SummaryService {
@@ -15,73 +10,8 @@ export class SummaryService {
 
   constructor(
     private database: DatabaseService,
-    private emailQueueService: EmailQueueService,
     private currencyService: CurrencyService,
   ) {}
-
-  async closeTripWithEmail(tripId: number): Promise<TripCloseResponseDto> {
-    const trip = await this.database.trip.findUnique({
-      where: { id: tripId },
-      include: {
-        participants: {
-          where: { isArchived: false },
-        },
-        expenses: {
-          where: { isArchived: false },
-        },
-      },
-    });
-    if (trip === null) {
-      throw new NotFoundException(
-        `Trip with ID ${tripId.toString()} not found`,
-      );
-    }
-    const summary = await this.calculateTripSummary(trip);
-    const emailData: TripSummaryData = {
-      tripId: summary.tripId,
-      tripTitle: summary.tripTitle,
-      destination: summary.destination,
-      startDate: summary.startDate,
-      endDate: summary.endDate,
-      totalExpenses: summary.totalExpenses,
-      expensesByCurrency: summary.expensesByCurrency,
-      participantExpenses: summary.participantExpenses,
-      paymentSummary: summary.paymentSummary,
-    };
-    const validParticipants = trip.participants.filter(
-      (participant) =>
-        participant.email !== null && participant.email.length > 0,
-    );
-    const emailJobs = validParticipants
-      .map((participant) => {
-        const email = participant.email;
-        if (email !== null) {
-          return {
-            to: email,
-            recipientName: `${participant.name} ${participant.surname}`,
-            tripSummary: emailData,
-          };
-        }
-        return null;
-      })
-      .filter((job): job is NonNullable<typeof job> => job !== null);
-    if (emailJobs.length > 0) {
-      await this.emailQueueService.addTripSummaryEmailsJob({
-        emails: emailJobs,
-        tripId,
-        tripTitle: trip.title,
-      });
-    }
-    await this.database.trip.update({
-      where: { id: tripId },
-      data: { isArchived: true },
-    });
-    return {
-      message: `Trip "${trip.title}" has been closed and email notifications sent.`,
-      emailsSent: validParticipants.length,
-      summary,
-    };
-  }
 
   async calculateSummary(tripId: number): Promise<TripSummaryResponseDto> {
     const trip = await this.database.trip.findUnique({

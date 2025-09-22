@@ -84,10 +84,6 @@ jobs:
         run: npx prisma generate
         if: always()
 
-      - name: Verify Redis connection
-        run: redis-cli ping
-        if: always()
-
       - name: Apply Prisma schema to database
         run: npx prisma migrate deploy
         if: always()
@@ -108,7 +104,7 @@ jobs:
         if: always()
 
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- --runInBand
         if: always()
 
       - name: Build

@@ -65,14 +65,3 @@ export class TripSummaryResponseDto {
   })
   paymentSummary: PaymentSummaryDto[];
 }
-
-export class TripCloseResponseDto {
-  @ApiProperty()
-  message: string;
-
-  @ApiProperty()
-  emailsSent: number;
-
-  @ApiProperty({ type: TripSummaryResponseDto })
-  summary: TripSummaryResponseDto;
-}

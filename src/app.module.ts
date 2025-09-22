@@ -14,7 +14,6 @@ import { CurrencyModule } from "./currency/currency.module";
 import { DatabaseController } from "./database/database.controller";
 import { DatabaseModule } from "./database/database.module";
 import { DatabaseService } from "./database/database.service";
-import { EmailModule } from "./email/email.module";
 import { ExpenseController } from "./expense/expense.controller";
 import { ExpenseModule } from "./expense/expense.module";
 import { ExpenseService } from "./expense/expense.service";
@@ -51,7 +50,6 @@ import { UserService } from "./user/user.service";
     AuthModule,
     UserModule,
     PaymentModule,
-    EmailModule,
     SummaryModule,
   ],
   controllers: [
