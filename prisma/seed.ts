@@ -1,10 +1,15 @@
 //import { PrismaClient } from '../generated/prisma';
-import { Gender, PrismaClient } from "@prisma/client";
+import { Gender, PrismaClient, Role } from "@prisma/client";
+import { hash } from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Rozpoczynam seeding...");
+
+  const password = "password";
+  const salt = 10;
+  const hashedPassword = await hash(password, salt);
 
   const trp = await prisma.trip.create({
     data: {
@@ -14,12 +19,22 @@ async function main() {
     },
   });
 
+  const user = await prisma.user.create({
+    data: {
+      email: "emao",
+      name: "Jan",
+      password: hashedPassword,
+      role: Role.ADMIN,
+      is_enabled: true,
+    },
+  });
+
   const part = await prisma.participant.create({
     data: {
       first_name: "Jan",
       second_name: "K",
       last_name: "Kowalski",
-      email: "emao",
+      email: user.email,
       gender: Gender.MALE,
     },
   });
