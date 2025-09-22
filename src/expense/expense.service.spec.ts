@@ -92,7 +92,7 @@ describe("ExpenseService", () => {
     expect(response).toEqual({ id: 3, amount: 55 });
     expect(prismaMock.expense.update).toHaveBeenCalledWith({
       where: { id: 3 },
-      data: { amount: 55 },
+      data: { amount: 55, amountPLN: 247.5 },
     });
   });
 
