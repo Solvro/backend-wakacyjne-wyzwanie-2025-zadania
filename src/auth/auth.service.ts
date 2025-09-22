@@ -16,7 +16,7 @@ export class AuthService {
 
   constructor(private userService: UserService) {}
 
-  private expiryTime = 2000000000;
+  private expiryTimeMs = 2000000000;
 
   async validateToken(token: string): Promise<UserMetadata> {
     if (!token.startsWith(this.tokenPrefix)) {
@@ -27,7 +27,7 @@ export class AuthService {
     const email = parts[2];
     const createdAt = Number(parts[3]);
 
-    if (createdAt + this.expiryTime < Date.now()) {
+    if (createdAt + this.expiryTimeMs < Date.now()) {
       throw new UnauthorizedException("Token expired");
     }
 
