@@ -1,6 +1,5 @@
 import { Controller, Get } from "@nestjs/common";
 
-import { CurrencyExchangeScrapper } from "./currency-exchange.scraper";
 import { CurrencyExchangeService } from "./currency-exchange.service";
 
 @Controller("currency-exchange")

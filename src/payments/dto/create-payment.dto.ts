@@ -1,5 +1,4 @@
-import { Currency } from "@prisma/client";
-import { Allow, IsNumber } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -9,8 +8,8 @@ export class CreatePaymentDto {
   amount: number;
 
   @ApiProperty()
-  @Allow()
-  curency: Currency;
+  @IsString()
+  curency: string;
 
   @ApiProperty()
   @IsNumber()

@@ -9,11 +9,11 @@ import { UpdateCurrencyExchangeDto } from "./dto/update-currency-exchange.dto";
 export class CurrencyExchangeService {
   constructor(private database: DatabaseService) {}
 
-  findAll() {
+  async findAll() {
     return this.database.currencyExchange.findMany();
   }
 
-  update(
+  async update(
     currency: Currency,
     updateCurrencyExchangeDto: UpdateCurrencyExchangeDto,
   ) {

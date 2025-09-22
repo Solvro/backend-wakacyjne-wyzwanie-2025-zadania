@@ -12,7 +12,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Request,
   UseGuards,
@@ -53,7 +52,6 @@ export class PaymentsController {
       user: UserMetadata;
     },
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.paymentsService.create(
       request.user.email,
       createPaymentDto,

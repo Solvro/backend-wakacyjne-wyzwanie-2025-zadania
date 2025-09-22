@@ -1,4 +1,3 @@
-import { AuthModule } from "src/auth/auth.module";
 import { DatabaseModule } from "src/database/database.module";
 
 import { Module } from "@nestjs/common";

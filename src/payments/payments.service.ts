@@ -1,3 +1,4 @@
+import { Currency } from "@prisma/client";
 import { DatabaseService } from "src/database/database.service";
 
 import { Injectable, NotFoundException } from "@nestjs/common";
@@ -24,9 +25,10 @@ export class PaymentsService {
       where: { id: participantId },
     });
 
+    const curency: Currency = createPaymentDto.curency as Currency;
     const exchange = await this.database.currencyExchange
       .findUniqueOrThrow({
-        where: { currency: createPaymentDto.curency },
+        where: { currency: curency },
       })
       .catch(() => {
         throw new NotFoundException(`Currency not found`);

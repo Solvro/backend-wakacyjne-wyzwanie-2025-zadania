@@ -17,10 +17,13 @@ export class CurrencyExchangeScrapper {
         throw new Error(`HTTP error! status: ${response.status.toString()}`);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = (await response.json()) as any[];
       const rates: Record<string, number> = {};
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       for (const rate of data[0].rates) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         rates[rate.code.toUpperCase()] = rate.mid;
       }
 
@@ -30,12 +33,12 @@ export class CurrencyExchangeScrapper {
 
       await Promise.all(
         currencies.map(async (currency) => {
-          const code = currency.toString().toUpperCase();
+          const code = currency;
           const rate = rates[code];
           if (rate) {
             await this.service.update(currency, { exchange: rate });
           } else {
-            console.warn(`Brak kursu dla ${currency.toString()}`);
+            console.warn(`Brak kursu dla ${currency}`);
           }
         }),
       );
