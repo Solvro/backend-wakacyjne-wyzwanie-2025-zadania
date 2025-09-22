@@ -11,11 +11,11 @@ export class ActivityResponseDto extends CreateActivityDto {
 
   @ApiProperty()
   @IsDateString()
-  updatedAt: string = new Date().toString();
+  updatedAt: string = new Date().toISOString();
 
   @ApiProperty()
   @IsDateString()
-  createdAt: string = new Date().toString();
+  createdAt: string = new Date().toISOString();
 
   @ApiProperty()
   @IsBoolean()

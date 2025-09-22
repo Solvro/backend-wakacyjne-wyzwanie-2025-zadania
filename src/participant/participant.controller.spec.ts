@@ -120,7 +120,7 @@ describe("ParticipantController", () => {
     it("should call service update method", async () => {
       const updateParticipantDto: UpdateParticipantDto = {
         name: "Zaktualizowany Adam",
-        updatedAt: new Date().toString(),
+        updatedAt: new Date().toISOString(),
         isArchived: false,
       };
       const mockResult = { id: 1, name: "Zaktualizowany Adam" };

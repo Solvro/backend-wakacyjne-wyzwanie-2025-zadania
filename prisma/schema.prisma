@@ -84,9 +84,9 @@ model Activity {
   isArchived Boolean          @default(false)
 
   tripId       Int?
-  trip         Trip?         @relation(fields: [tripId], references: [id])
+  trip         Trip?         @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   expenses     Expense[]
-  participants Participant[]
+  participants Participant[] @relation("ActivityParticipants")
 }
 
 model Expense {
@@ -110,6 +110,7 @@ model Expense {
   participant   Participant? @relation(fields: [participantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   activity      Activity?    @relation(fields: [activityId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  payment       Payment[]
 
   @@index([tripId])
   @@index([participantId])
@@ -133,7 +134,8 @@ model Trip {
   isArchived     Boolean      @default(false)
 
   expenses     Expense[]
-  participants Participant[]
+  payments     Payment[]
+  participants Participant[] @relation("TripParticipants")
   activities   Activity[]
 }
 
@@ -141,7 +143,7 @@ model Participant {
   id           Int             @id @default(autoincrement())
   name         String          @db.VarChar(100)
   surname      String          @db.VarChar(100)
-  email        String?         @db.VarChar(200)
+  email        String?         @unique @db.VarChar(200)
   phone        String?         @db.VarChar(25)
   address      String?         @db.Text
   iban         String?         @db.VarChar(50)
@@ -156,13 +158,14 @@ model Participant {
   isArchived   Boolean         @default(false)
 
   expenses   Expense[]
-  trips      Trip[]
-  activities Activity[]
+  payments   Payment[]
+  trips      Trip[]     @relation("TripParticipants")
+  activities Activity[] @relation("ActivityParticipants")
   user       User[]
 }
 
 model User {
-  email      String   @id @db.VarChar(200)
+  email      String   @id @unique @db.VarChar(200)
   username   String?  @db.VarChar(100)
   password   String   @db.VarChar(255)
   role       Role
@@ -172,6 +175,58 @@ model User {
   updatedAt  DateTime @default(now()) @db.Timestamptz
   isArchived Boolean  @default(false)
 
+  participantId String?
+  participant   Participant? @relation(fields: [participantId], references: [email], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([participantId])
+}
+
+model Currency {
+  code        String   @id @unique @db.VarChar(3)
+  name        String   @db.VarChar(100)
+  currentRate Decimal  @db.Decimal(10, 4)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  updatedAt   DateTime @default(now()) @db.Timestamptz
+
+  exchangeRates ExchangeRate[]
+}
+
+model ExchangeRate {
+  id        Int      @id @default(autoincrement())
+  rate      Decimal  @db.Decimal(10, 6)
+  source    String?  @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+
+  currencyId String
+  currency   Currency @relation(fields: [currencyId], references: [code], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([currencyId])
+}
+
+model Payment {
+  id               Int      @id @default(autoincrement())
+  title            String?  @db.VarChar(255)
+  description      String?  @db.Text
+  originalAmount   Decimal  @db.Decimal(10, 2)
+  originalCurrency String   @db.VarChar(3)
+  amountPLN        Decimal  @db.Decimal(10, 2)
+  exchangeRate     Decimal  @db.Decimal(10, 6)
+  paymentDate      DateTime @default(now()) @db.Timestamptz
+  createdAt        DateTime @default(now()) @db.Timestamptz
+  updatedAt        DateTime @default(now()) @db.Timestamptz
+  isArchived       Boolean  @default(false)
+
   participantId Int?
-  participant   Participant? @relation(fields: [participantId], references: [id])
+  tripId        Int?
+  expenseId     Int?
+  participant   Participant? @relation(fields: [participantId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  expense       Expense?     @relation(fields: [expenseId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([tripId])
+  @@index([participantId])
+  @@index([expenseId])
 }

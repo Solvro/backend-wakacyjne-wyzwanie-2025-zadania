@@ -117,7 +117,7 @@ describe("TripController", () => {
     it("should call service update method", async () => {
       const updateTripDto: UpdateTripDto = {
         title: "Zaktualizowane wakacje letnie",
-        updatedAt: new Date().toString(),
+        updatedAt: new Date().toISOString(),
         isArchived: false,
       };
       const mockResult = { id: 1, title: "Zaktualizowane wakacje letnie" };

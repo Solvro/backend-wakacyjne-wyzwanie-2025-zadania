@@ -93,6 +93,16 @@ async function main() {
         sex: ParticipantSex.MALE,
       },
     }),
+
+    prisma.participant.create({
+      data: {
+        role: ParticipantRole.ORGANIZER,
+        name: "wsparcie",
+        surname: "dev",
+        email: "kamil.sztabert@gmail.com",
+        sex: ParticipantSex.MALE,
+      },
+    }),
   ]);
 
   const createdTrips = await Promise.all([
@@ -149,6 +159,20 @@ async function main() {
         note: "Przepłacone wakacje nad Bałtykiem",
       },
     }),
+
+    prisma.trip.create({
+      data: {
+        category: TripCategory.VACATION,
+        title: "Email test",
+        destination: "skrzynka email",
+        budget: 9999,
+        startDate: new Date("2025-07-15T08:00:00Z"),
+        endDate: new Date("2025-07-22T20:00:00Z"),
+        accommodation: "serwer",
+        travelTime: 99,
+        travelDistance: 999,
+      },
+    }),
   ]);
 
   await Promise.all([
@@ -196,6 +220,15 @@ async function main() {
             { id: createdParticipants[1].id },
             { id: createdParticipants[3].id },
           ],
+        },
+      },
+    }),
+
+    prisma.trip.update({
+      where: { id: createdTrips[4].id },
+      data: {
+        participants: {
+          connect: [{ id: createdParticipants[5].id }],
         },
       },
     }),
@@ -573,6 +606,21 @@ async function main() {
         activityId: createdActivities[11].id,
       },
     }),
+
+    prisma.expense.create({
+      data: {
+        category: ExpenseCategory.ACCOMMODATION,
+        title: "List",
+        recipientName: "wsparcie",
+        currency: "PLN",
+        quantity: 1,
+        amount: 99,
+        budgetLeft: 9,
+        note: "list",
+        participantId: createdParticipants[5].id,
+        tripId: createdTrips[4].id,
+      },
+    }),
   ]);
 
   const password = await hash("haslo", 10);
@@ -619,6 +667,16 @@ async function main() {
             id: createdParticipants[2].id,
           },
         },
+      },
+    }),
+
+    prisma.user.create({
+      data: {
+        email: "admin@imejl.pl",
+        username: "admin",
+        password: password,
+        role: Role.ADMIN,
+        isArchived: false,
       },
     }),
   ]);

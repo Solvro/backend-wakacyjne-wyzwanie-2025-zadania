@@ -34,13 +34,13 @@ export class CreateActivityDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
-  startDate?: string = new Date().toString();
+  startDate?: string = new Date().toISOString();
 
   @NiceDate("startDate")
   @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
-  endDate?: string = new Date().toString();
+  endDate?: string = new Date().toISOString();
 
   @Validate(NiceText)
   @ApiPropertyOptional()

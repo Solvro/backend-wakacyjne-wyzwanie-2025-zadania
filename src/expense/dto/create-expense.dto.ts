@@ -54,8 +54,8 @@ export class CreateExpenseDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Decimal)
   @IsPositive()
+  @Type(() => Decimal)
   amount?: Decimal;
 
   @ApiPropertyOptional()
