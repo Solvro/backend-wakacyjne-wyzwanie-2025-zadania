@@ -1,4 +1,4 @@
-import { PrismaClient, Role, Sex } from "@prisma/client";
+import { Currency, PrismaClient, Role, Sex } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -51,6 +51,23 @@ async function main() {
       userEmail: user.email,
       tripId: trip.id,
     },
+  });
+
+  await prisma.currencyExchange.createMany({
+    data: [
+      {
+        currency: Currency.CHF,
+        exchange: 1,
+      },
+      {
+        currency: Currency.EUR,
+        exchange: 1,
+      },
+      {
+        currency: Currency.USD,
+        exchange: 1,
+      },
+    ],
   });
 }
 

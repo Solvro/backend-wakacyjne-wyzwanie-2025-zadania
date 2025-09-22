@@ -42,6 +42,7 @@ model User {
   isEnabled   Boolean @default(true)
   role        Role @default(USER)
   participants Participant[]
+  
 
 
 }
@@ -52,8 +53,29 @@ model Participant {
   userEmail     String
   trip        Trip @relation(fields: [tripId], references: [id],onDelete: Cascade)
   tripId      Int
- 
+  
+  paymants Payments[]
 
+}
+
+model Payments {
+  id          Int @id @default(autoincrement())
+  amount Float
+  participant_id Int
+  
+  participant Participant @relation(fields: [participant_id],references: [id])
+
+}
+
+model CurrencyExchange{
+  currency Currency @unique @id
+  exchange Float
+}
+
+enum Currency {
+  EUR
+  CHF
+  USD
 }
 
 enum Role {
@@ -68,3 +90,4 @@ enum Sex {
   FEMALE
   OTHER
 }
+
