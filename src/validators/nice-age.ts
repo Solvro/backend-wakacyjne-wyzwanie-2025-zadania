@@ -7,7 +7,7 @@ import {
 @ValidatorConstraint({ name: "niceAge", async: false })
 export class NiceAge implements ValidatorConstraintInterface {
   validate(age: number, _: ValidationArguments) {
-    if (age > 120 || age < 0) {
+    if (age > 140 || age < 0) {
       return false;
     } else {
       return true;
