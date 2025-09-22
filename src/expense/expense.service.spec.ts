@@ -17,7 +17,7 @@ describe("ExpenseService", () => {
     convertToPLN: jest
       .fn()
       .mockImplementation((amount: number): number => amount),
-    getExchangeRate: jest.fn().mockResolvedValue(4.5),
+    getRate: jest.fn().mockResolvedValue(4.5),
   };
 
   beforeEach(async () => {
