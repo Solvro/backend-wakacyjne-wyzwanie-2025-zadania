@@ -21,4 +21,7 @@ describe("AppController (e2e)", () => {
   it("/ (GET)", () => {
     expect(app.getHttpServer()).toBeDefined();
   });
+  afterAll(async () => {
+    await app.close();
+  });
 });
