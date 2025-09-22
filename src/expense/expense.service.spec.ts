@@ -5,6 +5,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { mockPrisma } from "../../test/utils/mock-prisma";
+import { CurrencyService } from "../currency/currency.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { ExpenseService } from "./expense.service";
 
@@ -12,11 +13,19 @@ describe("ExpenseService", () => {
   let service: ExpenseService;
   const prismaMock = mockPrisma();
 
+  const currencyServiceMock = {
+    convertToPLN: jest
+      .fn()
+      .mockImplementation((amount: number): number => amount),
+    getExchangeRate: jest.fn().mockResolvedValue(4.5),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExpenseService,
         { provide: PrismaService, useValue: prismaMock },
+        { provide: CurrencyService, useValue: currencyServiceMock },
       ],
     }).compile();
 
