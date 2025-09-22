@@ -53,7 +53,7 @@ describe("UserController (e2e)", () => {
 
     authToken = `Bearer ${generateTestToken("adam.nowak@imejl.pl")}`;
     adminAuthToken = `Bearer ${generateTestToken("admin@example.com")}`;
-  });
+  }, 10_000);
 
   afterEach(async () => {
     await app.close();

@@ -8,7 +8,7 @@ import { CreateActivityDto } from "./create-activity.dto";
 export class UpdateActivityDto extends PartialType(CreateActivityDto) {
   @ApiProperty()
   @IsDateString()
-  updatedAt: string = new Date().toString();
+  updatedAt: string = new Date().toISOString();
 
   @ApiProperty()
   @IsBoolean()

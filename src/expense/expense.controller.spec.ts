@@ -101,7 +101,7 @@ describe("ExpenseController", () => {
     it("should call service update method", async () => {
       const updateExpenseDto: UpdateExpenseDto = {
         title: "Zaktualizowany Spektakl w teatrze",
-        updatedAt: new Date().toString(),
+        updatedAt: new Date().toISOString(),
         isArchived: false,
       };
       const mockResult = { id: 1, title: "Zaktualizowany Spektakl w teatrze" };

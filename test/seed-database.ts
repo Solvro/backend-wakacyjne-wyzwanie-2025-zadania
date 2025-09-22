@@ -124,6 +124,7 @@ export async function seedDatabase() {
         },
       },
     }),
+
     testPrisma.trip.update({
       where: { id: 2 },
       data: {

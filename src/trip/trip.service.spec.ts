@@ -156,7 +156,6 @@ describe("TripService", () => {
       });
       expect(result).toEqual(expectedTrip);
     });
-
     it("should throw NotFoundException if trip not found", async () => {
       mockDatabaseService.trip.findUnique.mockResolvedValue(null);
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
@@ -171,7 +170,16 @@ describe("TripService", () => {
       const updateTripDto: UpdateTripDto = {
         title: "Zaktualizowane wakacje letnie",
         destination: "Ośrodek w górach",
-        updatedAt: new Date().toString(),
+        updatedAt: new Date().toISOString(),
+        isArchived: false,
+      };
+      const existingTrip = {
+        id: 1,
+        title: "Wakacje letnie",
+        category: TripCategory.LEISURE,
+        destination: "Plaża",
+        createdAt: new Date(),
+        updatedAt: new Date(),
         isArchived: false,
       };
       const expectedTrip = {
@@ -183,8 +191,12 @@ describe("TripService", () => {
         updatedAt: new Date(),
         isArchived: false,
       };
+      mockDatabaseService.trip.findUnique.mockResolvedValue(existingTrip);
       mockDatabaseService.trip.update.mockResolvedValue(expectedTrip);
       const result = await service.update(1, updateTripDto);
+      expect(mockDatabaseService.trip.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
       expect(mockDatabaseService.trip.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: updateTripDto,
