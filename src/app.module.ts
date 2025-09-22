@@ -8,6 +8,7 @@ import { CurrencyModule } from "./currency/currency.module";
 import { DatabaseModule } from "./database/database.module";
 import { ExpenseModule } from "./expense/expense.module";
 import { ParticipantModule } from "./participant/participant.module";
+import { PaymentModule } from "./payment/payment.module";
 import { TripModule } from "./trip/trip.module";
 import { UserModule } from "./user/user.module";
 
@@ -21,6 +22,7 @@ import { UserModule } from "./user/user.module";
     AuthModule,
     CurrencyModule,
     ScheduleModule.forRoot(),
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
