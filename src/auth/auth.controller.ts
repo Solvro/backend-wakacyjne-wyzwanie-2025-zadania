@@ -31,14 +31,14 @@ export class AuthController {
     summary: "Register account",
   })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: "Registered",
   })
   @ApiResponse({
     status: 401,
     description: "No permision or account disabled",
   })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @Post("register")
   async registerAuth(@Body() registerUser: RegisterUserDto) {
     return this.authService.registerAuth(registerUser);
