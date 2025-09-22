@@ -20,8 +20,6 @@ import { ExpenseService } from "./expense/expense.service";
 import { ParticipantController } from "./participant/participant.controller";
 import { ParticipantModule } from "./participant/participant.module";
 import { ParticipantService } from "./participant/participant.service";
-import { PaymentModule } from "./payment/payment.module";
-import { SummaryModule } from "./summary/summary.module";
 import { TripController } from "./trip/trip.controller";
 import { TripModule } from "./trip/trip.module";
 import { TripService } from "./trip/trip.service";
@@ -49,8 +47,6 @@ import { UserService } from "./user/user.service";
     ActivityModule,
     AuthModule,
     UserModule,
-    PaymentModule,
-    SummaryModule,
   ],
   controllers: [
     AppController,
