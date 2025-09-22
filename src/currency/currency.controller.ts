@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @darraghor/nestjs-typed/api-method-should-specify-api-response */
 /* eslint-disable @darraghor/nestjs-typed/api-method-should-specify-api-operation */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 

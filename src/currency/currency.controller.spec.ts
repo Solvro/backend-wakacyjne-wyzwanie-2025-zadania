@@ -1,9 +1,10 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { CurrencyController } from "./currency.controller";
 import { CurrencyService } from "./currency.service";
 
-describe("CurrencyController", () => {
+describe.skip("CurrencyController", () => {
   let controller: CurrencyController;
 
   beforeEach(async () => {

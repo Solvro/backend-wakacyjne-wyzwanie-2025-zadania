@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable no-shadow */
 /* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { CurrencyService } from "src/currency/currency.service";
 import { DatabaseService } from "src/database/database.service";
 

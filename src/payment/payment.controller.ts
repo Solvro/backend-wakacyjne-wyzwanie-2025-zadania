@@ -1,6 +1,3 @@
-/* eslint-disable import/namespace */
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 

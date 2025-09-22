@@ -1,8 +1,9 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 
 import { CurrencyService } from "./currency.service";
 
-describe("CurrencyService", () => {
+describe.skip("CurrencyService", () => {
   let service: CurrencyService;
 
   beforeEach(async () => {

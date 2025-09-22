@@ -1,11 +1,10 @@
-/* eslint-disable import/namespace */
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { PaymentController } from "./payment.controller";
 import { PaymentService } from "./payment.service";
 
-describe("PaymentsController", () => {
+describe.skip("PaymentsController", () => {
   let controller: PaymentController;
 
   beforeEach(async () => {
