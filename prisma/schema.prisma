@@ -19,7 +19,13 @@ enum Gender {
   FEMALE
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model Participant {
+  user	User @relation(onDelete: Cascade, fields: [email], references: [email])
   id          Int     @id @default(autoincrement())
   first_name  String
   second_name String?
@@ -27,6 +33,16 @@ model Participant {
   email       String
   gender      Gender
   trips       Trip[]
+}
+
+model User {
+  email       String        @id
+  password    String
+  role        Role
+  is_enabled  Boolean
+  name        String?
+  participant Participant[] 
+
 }
 
 model Trip {
