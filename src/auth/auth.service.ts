@@ -20,7 +20,7 @@ export class AuthService {
 
   async validateToken(token: string): Promise<UserMetadata> {
     if (!token.startsWith(this.tokenPrefix)) {
-      throw new Error("Invalid token");
+      throw new UnauthorizedException("Invalid token");
     }
 
     const parts = token.split("__");
@@ -28,8 +28,9 @@ export class AuthService {
     const createdAt = Number(parts[3]);
 
     if (createdAt + this.expiryTime < Date.now()) {
-      throw new Error("Token expired");
+      throw new UnauthorizedException("Token expired");
     }
+
     const metaDataReturn = await this.userService.findOneOrFail(email);
     return userToMetadata(metaDataReturn);
   }

@@ -24,12 +24,7 @@ export class AuthGuard implements CanActivate {
     if (type !== "Bearer") {
       throw new UnauthorizedException("Missing token");
     }
-
-    try {
-      await this.authService.validateToken(token);
-    } catch (error) {
-      throw new UnauthorizedException((error as Error).message);
-    }
+    await this.authService.validateToken(token);
 
     return true;
   }
