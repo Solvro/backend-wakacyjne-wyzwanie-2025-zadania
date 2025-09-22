@@ -50,13 +50,13 @@ model Participant {
   expenses    Expense[] @relation("ParticipantExpenses")
 
   User        User?     @relation(fields: [email], references: [email], onDelete: Cascade)
-
-  
 }
 
 model Expense {
   id        Int             @id @default(autoincrement())
   amount    Float
+  currency  String          @default("PLN")
+  amountPLN Float
   category  ExpenseCategory
   note      String?
   paidAt    DateTime?       
@@ -82,4 +82,12 @@ model User {
   createdAt      DateTime        @default(now())
   
   participants   Participant[]
+}
+
+model CurrencyRate {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String?
+  rateToPLN Float
+  updatedAt DateTime @updatedAt
 }

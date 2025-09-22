@@ -51,6 +51,7 @@ describe("ExpenseService", () => {
       participantId: 7,
       amount: 100,
       category: ExpenseCategory.FOOD,
+      amountPLN: 100,
     };
     prismaMock.participant.findUnique.mockResolvedValue({ id: 7 });
     prismaMock.expense.create.mockResolvedValue({ id: 99, ...dto });

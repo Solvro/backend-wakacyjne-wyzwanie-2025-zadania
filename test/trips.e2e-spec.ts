@@ -5,7 +5,8 @@ import request from "supertest";
 
 import { ValidationPipe } from "@nestjs/common";
 
-import { app, prisma } from "./setup";
+import { app } from "./setup";
+import { truncateAll } from "./utils/database-helper-trunc";
 import { createTestUserWithToken } from "./utils/test-helper";
 
 describe("Trips (e2e)", () => {
@@ -20,9 +21,8 @@ describe("Trips (e2e)", () => {
     );
   });
 
-  afterAll(async () => {
-    await prisma.trip.deleteMany({});
-    await prisma.user.deleteMany({});
+  beforeEach(async () => {
+    await truncateAll();
   });
 
   it("/GET /trips should return 200 and an array", async () => {
@@ -45,6 +45,23 @@ describe("Trips (e2e)", () => {
       .expect(403);
   });
 
+  it("POST /trips should return 400 if startDate is invalid format", async () => {
+    const { token } = await createTestUserWithToken(
+      "coord_invaliddate@ex.com",
+      Role.COORDINATOR,
+    );
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .post("/trips")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "InvalidDateTrip",
+        startDate: "not-a-date",
+      })
+      .expect(400);
+  });
+
   it("POST /trips should validate future date (IsFutureDate) -> 400 with past date", async () => {
     const { token } = await createTestUserWithToken(
       "coord_validate@ex.com",
@@ -58,6 +75,22 @@ describe("Trips (e2e)", () => {
       .send({
         name: "TripWithPastDate",
         startDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      })
+      .expect(400);
+  });
+
+  it("POST /trips should return 400 if name is missing", async () => {
+    const { token } = await createTestUserWithToken(
+      "coord_missingname@ex.com",
+      Role.COORDINATOR,
+    );
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .post("/trips")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        startDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       })
       .expect(400);
   });
@@ -89,5 +122,19 @@ describe("Trips (e2e)", () => {
 
     const patchedTrip = patchResponse.body as { id: number; name: string };
     expect(patchedTrip.name).toBe("Vacation Updated");
+  });
+
+  it("PATCH /trips/:id should return 404 if trip does not exist", async () => {
+    const { token } = await createTestUserWithToken(
+      "coord_missingtrip@ex.com",
+      Role.COORDINATOR,
+    );
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .patch("/trips/999999")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ name: "NonExistent" })
+      .expect(404);
   });
 });

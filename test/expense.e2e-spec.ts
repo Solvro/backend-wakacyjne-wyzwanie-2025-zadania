@@ -4,6 +4,7 @@ import request from "supertest";
 import { ValidationPipe } from "@nestjs/common";
 
 import { app, prisma } from "./setup";
+import { truncateAll } from "./utils/database-helper-trunc";
 import { createTestUserWithToken } from "./utils/test-helper";
 
 describe("Expenses (e2e)", () => {
@@ -22,6 +23,8 @@ describe("Expenses (e2e)", () => {
   });
 
   beforeEach(async () => {
+    await truncateAll();
+
     const trip = await prisma.trip.create({
       data: {
         name: "Expenses Trip",
@@ -44,17 +47,15 @@ describe("Expenses (e2e)", () => {
     participantId = participant.id;
   });
 
-  afterAll(async () => {
-    await prisma.expense.deleteMany({});
-    await prisma.participant.deleteMany({});
-    await prisma.trip.deleteMany({});
-    await prisma.user.deleteMany({});
-  });
-
   it("/GET /expenses should return 200 and an array", async () => {
     const server = app.getHttpServer() as unknown as Server;
     const response = await request(server).get("/expenses").expect(200);
     expect(Array.isArray(response.body)).toBeTruthy();
+  });
+
+  it("GET /expenses/:id should return 404 if expense does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    await request(server).get("/expenses/999999").expect(404);
   });
 
   it("POST /expenses should create when authenticated", async () => {
@@ -78,6 +79,20 @@ describe("Expenses (e2e)", () => {
     });
   });
 
+  it("POST /expenses should return 404 if participant does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .post("/expenses")
+      .set("Authorization", `Bearer ${tokenForExpense}`)
+      .send({
+        participantId: 999_999,
+        amount: 50,
+        category: "OTHER",
+      })
+      .expect(404);
+  });
+
   it("PATCH /expenses/:id should update when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
     const expense = await prisma.expense.create({
@@ -86,6 +101,7 @@ describe("Expenses (e2e)", () => {
         category: "FOOD",
         note: "Old note",
         participantId,
+        amountPLN: 10,
       },
     });
 
@@ -104,6 +120,25 @@ describe("Expenses (e2e)", () => {
     expect(updated.note).toBe("Updated note");
   });
 
+  it("PATCH /expenses/:id should return 404 if participant does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    const expense = await prisma.expense.create({
+      data: {
+        amount: 10,
+        category: "FOOD",
+        note: "Has valid participant",
+        participantId,
+        amountPLN: 10,
+      },
+    });
+
+    await request(server)
+      .patch(`/expenses/${expense.id.toString()}`)
+      .set("Authorization", `Bearer ${tokenForExpense}`)
+      .send({ participantId: 999_999 })
+      .expect(404);
+  });
+
   it("DELETE /expenses/:id should delete when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
     const expense = await prisma.expense.create({
@@ -111,6 +146,7 @@ describe("Expenses (e2e)", () => {
         amount: 5,
         category: "OTHER",
         participantId,
+        amountPLN: 10,
       },
     });
 
@@ -120,5 +156,14 @@ describe("Expenses (e2e)", () => {
       .expect(200);
 
     expect(response.body).toEqual({ deleted: true });
+  });
+
+  it("DELETE /expenses/:id should return 404 if expense does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+
+    await request(server)
+      .delete("/expenses/999999")
+      .set("Authorization", `Bearer ${tokenForExpense}`)
+      .expect(404);
   });
 });

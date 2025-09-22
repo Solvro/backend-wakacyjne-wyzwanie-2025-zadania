@@ -46,6 +46,7 @@ describe("ExpenseController", () => {
       participantId: 1,
       amount: 12.5,
       category: ExpenseCategory.FOOD,
+      amountPLN: 12.5,
     };
     mockService.create.mockResolvedValue({ id: 11, ...dto });
     await expect(controller.create(dto)).resolves.toMatchObject({ id: 11 });

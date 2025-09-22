@@ -67,8 +67,20 @@ jobs:
       - name: Apply migrations
         run: npx prisma migrate deploy
 
-      - name: Run e2e tests
-        run: npm run test:e2e
+      # - name: Run e2e tests
+      #   run: npm run test:e2e
+      #   if: always()
+
+      - name: Run e2e tests - trips
+        run: npm run test:e2e -- test/trips.e2e-spec.ts
+        if: always()
+
+      - name: Run e2e test - participant
+        run: npm run test:e2e -- test/participant.e2e-spec.ts
+        if: always()
+
+      - name: Run e2e tests - expense
+        run: npm run test:e2e -- test/expense.e2e-spec.ts
         if: always()
 
       - name: Build

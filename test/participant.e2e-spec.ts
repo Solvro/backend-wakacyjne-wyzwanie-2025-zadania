@@ -4,6 +4,7 @@ import request from "supertest";
 import { ValidationPipe } from "@nestjs/common";
 
 import { app, prisma } from "./setup";
+import { truncateAll } from "./utils/database-helper-trunc";
 import { createTestUserWithToken } from "./utils/test-helper";
 
 describe("Participants (e2e)", () => {
@@ -20,6 +21,8 @@ describe("Participants (e2e)", () => {
   });
 
   beforeEach(async () => {
+    await truncateAll();
+
     const trip = await prisma.trip.create({
       data: {
         name: "Participants Trip",
@@ -27,12 +30,6 @@ describe("Participants (e2e)", () => {
       },
     });
     tripId = trip.id;
-  });
-
-  afterAll(async () => {
-    await prisma.participant.deleteMany({});
-    await prisma.trip.deleteMany({});
-    await prisma.user.deleteMany({});
   });
 
   it("/GET /participants should return 200 and an array", async () => {
@@ -64,6 +61,23 @@ describe("Participants (e2e)", () => {
     });
   });
 
+  it("POST /participants should return 404 if trip does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    const { token } = await createTestUserWithToken("missingtrip@example.com");
+
+    await request(server)
+      .post("/participants")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Very",
+        lastname: "Tripless",
+        email: "missingtrip@example.com",
+        role: "MEMBER",
+        tripId: 999_999,
+      })
+      .expect(404);
+  });
+
   it("PATCH /participants/:id should update when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
 
@@ -93,6 +107,39 @@ describe("Participants (e2e)", () => {
     expect(updated.lastname).toBe("After");
   });
 
+  it("PATCH /participants/:id should return 404 if participant does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    const { token } = await createTestUserWithToken("ghost@example.com");
+
+    await request(server)
+      .patch(`/participants/99999`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ name: "Nobody" })
+      .expect(404);
+  });
+
+  it("PATCH /participants/:id should return 404 if new tripId does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    const { token } = await createTestUserWithToken(
+      "anothertripless@example.com",
+    );
+
+    const participant = await prisma.participant.create({
+      data: {
+        name: "Much",
+        lastname: "TriplessToBe",
+        email: "anothertripless@example.com",
+        tripId,
+      },
+    });
+
+    await request(server)
+      .patch(`/participants/${participant.id.toString()}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ tripId: 999_999 })
+      .expect(404);
+  });
+
   it("DELETE /participants/:id should delete when authenticated", async () => {
     const server = app.getHttpServer() as unknown as Server;
 
@@ -113,5 +160,17 @@ describe("Participants (e2e)", () => {
       .expect(200);
 
     expect(response.body).toEqual({ deleted: true });
+  });
+
+  it("DELETE /participants/:id should return 404 if participant does not exist", async () => {
+    const server = app.getHttpServer() as unknown as Server;
+    const { token } = await createTestUserWithToken(
+      "deletemissing@example.com",
+    );
+
+    await request(server)
+      .delete("/participants/999999")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
   });
 });
