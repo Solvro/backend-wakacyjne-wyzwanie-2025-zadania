@@ -5,6 +5,7 @@ import {
   IsPositive,
   IsString,
   Length,
+  MaxLength,
 } from "class-validator";
 
 export class CreatePaymentDto {
@@ -19,5 +20,6 @@ export class CreatePaymentDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(64)
   description?: string;
 }

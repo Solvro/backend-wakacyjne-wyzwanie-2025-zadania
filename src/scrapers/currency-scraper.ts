@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
-import fetch from "node-fetch";
 
 const prisma = new PrismaClient();
 
