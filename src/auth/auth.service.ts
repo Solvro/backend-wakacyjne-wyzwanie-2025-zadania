@@ -62,9 +62,9 @@ export class AuthService {
       throw new ConflictException("User already exists");
     }
 
-    const salt = 10;
+    const depth = 10;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    const hashedPassword: string = await hash(registerUserDto.password, salt);
+    const hashedPassword: string = await hash(registerUserDto.password, depth);
 
     try {
       await this.userService.registerUser({
