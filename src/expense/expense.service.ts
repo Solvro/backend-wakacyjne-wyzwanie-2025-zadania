@@ -1,16 +1,33 @@
 import { Injectable } from "@nestjs/common";
 
+import { ExchangeService } from "../exchange/exchange.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
 export class ExpenseService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private exchangeService: ExchangeService,
+  ) {}
 
   async create(createExpenseDto: CreateExpenseDto) {
+    let amountPLN = createExpenseDto.amount;
+
+    const currency = createExpenseDto.currency;
+    if (typeof currency === "string" && currency !== "PLN") {
+      const rate = await this.exchangeService.getRate(currency);
+      amountPLN = createExpenseDto.amount * rate;
+    }
+
     return this.prisma.expense.create({
-      data: createExpenseDto,
+      data: {
+        trip_id: createExpenseDto.trip_id,
+        amount: amountPLN,
+        description: createExpenseDto.description,
+        date: createExpenseDto.date,
+      },
     });
   }
 
@@ -25,9 +42,30 @@ export class ExpenseService {
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
+    let amountPLN: number | undefined;
+
+    if (updateExpenseDto.amount !== undefined) {
+      if (
+        typeof updateExpenseDto.currency === "string" &&
+        updateExpenseDto.currency !== "PLN"
+      ) {
+        const rate = await this.exchangeService.getRate(
+          updateExpenseDto.currency,
+        );
+        amountPLN = updateExpenseDto.amount * rate;
+      } else {
+        amountPLN = updateExpenseDto.amount;
+      }
+    }
+
     return this.prisma.expense.update({
       where: { id },
-      data: updateExpenseDto,
+      data: {
+        trip_id: updateExpenseDto.trip_id,
+        amount: amountPLN ?? undefined,
+        description: updateExpenseDto.description,
+        date: updateExpenseDto.date,
+      },
     });
   }
 
