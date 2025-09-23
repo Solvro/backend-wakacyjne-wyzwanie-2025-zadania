@@ -7,7 +7,7 @@ import { scrapeNBP } from "../scrapers/currency-scraper";
 export class CurrencyService {
   private readonly logger = new Logger(CurrencyService.name);
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async handleCron() {
     this.logger.log("Starting NBP scraper");
     try {
