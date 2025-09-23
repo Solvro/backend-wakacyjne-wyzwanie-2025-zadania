@@ -54,6 +54,7 @@ model Participant {
   email          String   @db.VarChar(64)
 }
 
+
 model Expense {
   expense_id   Int         @id @default(autoincrement())
   trip_id      Int
@@ -62,6 +63,7 @@ model Expense {
   expense_date DateTime    @default(now())
   cost         Decimal     @db.Decimal(10, 2)
   description  String?     @db.VarChar(255)
+
 }
 
 model User {
@@ -72,3 +74,24 @@ model User {
   name        String?
   Participant Participant[]
 }
+
+model Currency {
+  code      String    @id
+  rate      Decimal   @db.Decimal(10, 4)
+  updatedAt DateTime  @default(now())
+
+  payments  Payment[] 
+}
+
+model Payment {
+  id             Int       @id @default(autoincrement())
+  originalAmount Decimal   @db.Decimal(10, 2)
+  amountInPLN    Decimal   @db.Decimal(10, 2)
+  exchangeRate   Decimal   @db.Decimal(10, 4)
+  createdAt      DateTime  @default(now())
+  description    String?   @db.VarChar(255)
+
+  currencyCode   String
+  currency       Currency  @relation(fields: [currencyCode], references: [code])
+}
+
