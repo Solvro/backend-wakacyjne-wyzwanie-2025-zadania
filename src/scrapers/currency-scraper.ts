@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { load } from "cheerio";
+
 import { Logger } from "@nestjs/common";
 
 const logger = new Logger("NBPScraper");
