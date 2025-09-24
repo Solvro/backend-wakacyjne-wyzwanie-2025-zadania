@@ -83,3 +83,23 @@ model User {
   updated_at           DateTime      @updatedAt
   created_participants Participant[]
 }
+
+model Currency {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  rate      Decimal
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Payment Payment[]
+}
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  amount     Decimal
+  currencyId Int
+  currency   Currency @relation(fields: [currencyId], references: [id])
+  amountPLN  Decimal
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
