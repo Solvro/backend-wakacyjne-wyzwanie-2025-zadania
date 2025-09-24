@@ -34,6 +34,7 @@ describe("TripController (e2e)", () => {
 
   afterEach(async () => {
     await app.close();
+    await new Promise((resolve) => setTimeout(resolve, 100));
   });
 
   describe("/trip (GET)", () => {

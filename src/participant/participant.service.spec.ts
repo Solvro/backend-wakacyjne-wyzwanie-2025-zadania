@@ -223,7 +223,7 @@ describe("ParticipantService", () => {
       const updateParticipantDto: UpdateParticipantDto = {
         name: "Zaktualizowany Adam",
         email: "adam.zaktualizowany@imejl.pl",
-        updatedAt: new Date().toString(),
+        updatedAt: new Date().toISOString(),
         isArchived: false,
       };
       const expectedParticipant = {

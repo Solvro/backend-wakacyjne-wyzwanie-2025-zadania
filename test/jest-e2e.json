@@ -6,5 +6,8 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "setupFilesAfterEnv": ["<rootDir>/test/test-setup.ts"]
+  "setupFilesAfterEnv": ["<rootDir>/test/test-setup.ts"],
+  "runInBand": true,
+  "detectOpenHandles": true,
+  "forceExit": true
 }

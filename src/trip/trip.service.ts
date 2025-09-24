@@ -17,6 +17,7 @@ interface TripOptions {
 @Injectable()
 export class TripService {
   constructor(private database: DatabaseService) {}
+
   async create(createTripDto: CreateTripDto) {
     const { participantIds, expensesIds, ...tripData } = createTripDto;
     return this.database.trip.create({
@@ -48,55 +49,41 @@ export class TripService {
     });
   }
 
-  async findOne(id: number) {
-    const trip = await this.database.trip.findUnique({ where: { id } });
+  async findOne(id: number, include?: Prisma.TripInclude) {
+    const trip = await this.database.trip.findUnique({
+      where: { id },
+      include,
+    });
     if (trip === null) {
-      throw new NotFoundException(`Trip with id ${String(id)} not found`);
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
     return trip;
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    const { participantIds, expensesIds, ...tripData } = updateTripDto;
-    try {
-      const trip = await this.database.trip.update({
-        where: { id },
-        data: {
-          ...tripData,
-          ...(participantIds !== undefined && {
-            participants:
-              participantIds.length > 0
-                ? {
-                    set: participantIds.map((participantId) => ({
-                      id: participantId,
-                    })),
-                  }
-                : {
-                    set: [],
-                  },
-          }),
-          ...(expensesIds !== undefined && {
-            expenses:
-              expensesIds.length > 0
-                ? {
-                    set: expensesIds.map((expenseId) => ({ id: expenseId })),
-                  }
-                : {
-                    set: [],
-                  },
-          }),
-        },
-      });
-      return trip;
-    } catch (error: unknown) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
-      }
-      throw error;
+    const trip = await this.database.trip.findUnique({ where: { id } });
+    if (trip === null) {
+      throw new NotFoundException(`Trip with ID ${id.toString()} not found`);
     }
+
+    const { participantIds, expensesIds, ...tripData } = updateTripDto;
+
+    return this.database.trip.update({
+      where: { id },
+      data: {
+        ...tripData,
+        ...(participantIds !== undefined && {
+          participants: {
+            set: participantIds.map((participantId) => ({ id: participantId })),
+          },
+        }),
+        ...(expensesIds !== undefined && {
+          expenses: {
+            set: expensesIds.map((expenseId) => ({ id: expenseId })),
+          },
+        }),
+      },
+    });
   }
 
   async remove(id: number) {

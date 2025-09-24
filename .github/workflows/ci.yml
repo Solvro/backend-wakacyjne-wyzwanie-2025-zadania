@@ -24,9 +24,30 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       DATABASE_URL: postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik
       DATABASE_URL_TEST: postgresql://budzetownik_user:budzetownik_password@localhost:5432/budzetownik_test
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USER: test@example.com
+      EMAIL_PASS: test-password
+      EMAIL_FROM: "Test <test@example.com>"
+      JWT_SECRET: test-jwt-secret-for-ci
+      EXPIRY_TIME_MS: 3600000
+      NODE_ENV: test
+      PORT: 5001
 
     steps:
       - name: Checkout
@@ -83,7 +104,7 @@ jobs:
         if: always()
 
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- --runInBand
         if: always()
 
       - name: Build
