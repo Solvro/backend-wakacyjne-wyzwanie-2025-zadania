@@ -11,6 +11,7 @@ import { NiceAge } from "src/validators/nice-age";
 export class RegisterUserDto {
   @IsString()
   @ApiProperty()
+  @MaxLength(50)
   email: string;
 
   @IsOptional()

@@ -38,7 +38,6 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const usr = await this.userService.findOneOrFail(email);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const isValid = (await compare(password, usr.password)) === true;
 
     if (!usr.isEnabled || !isValid) {
@@ -63,7 +62,6 @@ export class AuthService {
     }
 
     const depth = 10;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const hashedPassword: string = await hash(registerUserDto.password, depth);
 
     try {
