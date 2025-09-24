@@ -1,9 +1,9 @@
+import { Trip } from "@prisma/client";
 import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from "class-validator";
-import { Trip } from "generated/prisma";
 
 @ValidatorConstraint({ name: "IsStartBeforeEnd", async: false })
 export class IsStartBeforeEnd implements ValidatorConstraintInterface {
