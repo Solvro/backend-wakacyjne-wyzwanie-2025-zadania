@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaClient } from "@prisma/client";
 
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
@@ -7,6 +8,7 @@ export class DatabaseService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
+  [x: string]: any;
   async onModuleInit() {
     await this.$connect();
   }
