@@ -50,6 +50,11 @@ jobs:
         run: npm run typecheck
         if: always()
 
+      - name: Setup database
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/wakacyjne_test_db"
+
       - name: Run tests
         run: npm test
         if: always()
