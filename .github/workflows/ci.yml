@@ -8,26 +8,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: Heimerhui69
-          POSTGRES_DB: budzetownik
-          JWT_SECRET: giga_sekretny_jwt
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres -d budzetownik"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
-    env:
-      DATABASE_URL: postgresql://postgres:Heimerhui69@localhost:5432/budzetownik?schema=public
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,36 +23,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Prisma client
-        run: npx prisma generate
-
-      - name: Apply Prisma schema to test DB
-        run: npx prisma db push --skip-generate
-
       - name: Check commit name
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
       - name: Run prettier
-        if: always()
         run: npm run format:check
+        if: always()
 
       - name: Run Lint
-        if: always()
         run: npm run lint
+        if: always()
 
       - name: Check types
-        if: always()
         run: npm run typecheck
-
-      - name: Unit tests
         if: always()
-        run: npm test -- --runInBand
 
-      - name: E2E tests
+      - name: Run tests
+        run: npm test
         if: always()
-        run: npm run test:e2e -- --runInBand
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+        if: always()
 
       - name: Build
-        if: always()
         run: npm run build
+        if: always()
