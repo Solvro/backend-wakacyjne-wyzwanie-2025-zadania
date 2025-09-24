@@ -24,6 +24,7 @@ export class CreateParticipantDto {
   @ApiPropertyOptional({
     enum: Gender,
     description: "Gender of participant",
+
     enumName: "Gender",
   })
   gender?: Gender;
