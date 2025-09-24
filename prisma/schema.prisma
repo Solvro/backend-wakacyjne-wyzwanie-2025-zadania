@@ -45,6 +45,26 @@ model Expense {
   user_id Int
 }
 
+model Currency {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String
+  rate      Float
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  payments  Payment[]
+}
+
+model Payment {
+  id               Int      @id @default(autoincrement())
+  originalAmount   Float
+  originalCurrency Currency @relation(fields: [currencyId], references: [id])
+  currencyId       Int
+  amountInPLN      Float
+  exchangeRate     Float
+  createdAt        DateTime @default(now())
+}
+
 enum UserRole {
   USER
   ADMIN
