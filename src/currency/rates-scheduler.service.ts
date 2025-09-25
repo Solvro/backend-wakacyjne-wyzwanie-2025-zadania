@@ -18,9 +18,7 @@ export class RatesScheduler {
     this.logger.log("Starting scheduled rate fetch");
     try {
       const rates = await this.scraper.fetchRates();
-      for (const [code, rate] of Object.entries(rates)) {
-        await this.currencyService.upsertRate(code, rate);
-      }
+      await this.currencyService.upsertMany(rates);
       this.logger.log("Rates updated succesfully");
     } catch (error) {
       this.logger.error("Scheduled rate update failed", error);

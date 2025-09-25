@@ -1,4 +1,3 @@
-// 👇 Import Prisma-generated model type here
 import type { CurrencyRate } from "@prisma/client";
 
 import { Injectable, NotFoundException } from "@nestjs/common";
@@ -22,29 +21,32 @@ export class CurrencyService {
     return row.rateToPLN;
   }
 
-  async upsertRate(
-    dtoOrCode: CreateCurrencyRateDto | string,
-    rateToPLN?: number,
+  async upsertRate(dto: CreateCurrencyRateDto): Promise<CurrencyRate> {
+    return this.prisma.currencyRate.upsert({
+      where: { code: dto.code },
+      update: { rateToPLN: dto.rateToPLN, name: dto.name },
+      create: { code: dto.code, rateToPLN: dto.rateToPLN, name: dto.name },
+    });
+  }
+
+  async upsertRateRaw(
+    code: string,
+    rateToPLN: number,
     name?: string,
   ): Promise<CurrencyRate> {
-    let code: string;
-    let rate: number;
-    let nm: string | undefined;
+    return this.upsertRate({ code, rateToPLN, name });
+  }
 
-    if (typeof dtoOrCode === "string") {
-      code = dtoOrCode;
-      rate = rateToPLN ?? 0;
-      nm = name;
-    } else {
-      code = dtoOrCode.code;
-      rate = dtoOrCode.rateToPLN;
-      nm = dtoOrCode.name;
-    }
-
-    return await this.prisma.currencyRate.upsert({
-      where: { code },
-      update: { rateToPLN: rate, name: nm },
-      create: { code, rateToPLN: rate, name: nm },
-    });
+  async upsertMany(rates: Record<string, number>): Promise<void> {
+    await this.prisma.$transaction(
+      // eslint-disable-next-line @typescript-eslint/promise-function-async
+      Object.entries(rates).map(([code, rate]) =>
+        this.prisma.currencyRate.upsert({
+          where: { code },
+          update: { rateToPLN: rate },
+          create: { code, rateToPLN: rate },
+        }),
+      ),
+    );
   }
 }

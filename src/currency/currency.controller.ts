@@ -20,14 +20,12 @@ export class CurrencyController {
 
   @Post("refresh")
   @Roles("ADMIN")
-  @ApiOperation({ summary: "Create a new trip" })
-  @ApiCreatedResponse({ description: "Created trip" })
+  @ApiOperation({ summary: "scrape currency from site" })
+  @ApiCreatedResponse({ description: "scraped currency from site" })
   @ApiBadRequestResponse({ description: "Invalid input data" })
   async refresh() {
     const rates = await this.scraper.fetchRates();
-    for (const [code, rate] of Object.entries(rates)) {
-      await this.currency.upsertRate(code, rate);
-    }
+    await this.currency.upsertMany(rates);
     return { ok: true, rates };
   }
 }

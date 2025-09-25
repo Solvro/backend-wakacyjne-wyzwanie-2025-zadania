@@ -33,38 +33,32 @@ export class RateScraperService {
       throw new Error("Currency table not found");
     }
 
-    const currencies = ["USD", "EUR", "GBP"];
-    for (const code of currencies) {
-      const rate = this.extractRate($, table, code);
-      rates[code] = rate;
-    }
-    this.logger.log(`Fetched rates: ${JSON.stringify(rates)}`);
-    return rates;
-  }
-
-  private extractRate(
-    $: cheerio.Root,
-    table: cheerio.Cheerio,
-    code: string,
-  ): number {
-    const currencyName = this.currencyMap[code];
-    let rate = 0;
-
     table.find("tr").each((_, row) => {
       const cells = $(row).find("td");
       if (cells.length >= 3) {
         const rowName = $(cells[0]).text().trim();
-        if (rowName === currencyName) {
-          const rateString = $(cells[2]).text().trim();
-          rate = Number.parseFloat(rateString);
+
+        for (const [code, currencyName] of Object.entries(this.currencyMap)) {
+          if (rowName === currencyName) {
+            const rateString = $(cells[2]).text().trim();
+            const parsed = Number.parseFloat(rateString);
+
+            if (Number.isNaN(parsed)) {
+              this.logger.warn(`Could not parse rate for ${code}`);
+            } else {
+              rates[code] = parsed;
+            }
+          }
         }
       }
     });
 
-    if (!rate || Number.isNaN(rate)) {
-      throw new TypeError(`Could not parse rate for ${code}`);
+    if (Object.keys(rates).length === 0) {
+      this.logger.error("No valid currency rates were parsed");
+    } else {
+      this.logger.log(`Fetched rates: ${JSON.stringify(rates)}`);
     }
 
-    return rate;
+    return rates;
   }
 }
