@@ -1,4 +1,5 @@
 import type { Browser, Frame } from "puppeteer";
+import puppeteer from "puppeteer";
 
 import { Injectable, Logger } from "@nestjs/common";
 
@@ -8,10 +9,14 @@ export class Waluty24Scraper {
 
   constructor(private readonly url = "https://waluty24.info/") {} // wiem że mogłem wybrać inną ale ta była git, dużo lepsza niż money.pl czy bankier.pl, mniej zagnieżdżonych divów na pewno
 
-  async scrape(quoteSymbols: string[], base = "PLN") {
+  async scrape(
+    quoteSymbols: string[],
+    base = "PLN",
+  ): Promise<
+    { quote: string; rate: number; source?: string; collectedAt: Date }[]
+  > {
     let browser: Browser | undefined;
     try {
-      const { default: puppeteer } = await import("puppeteer");
       browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -28,12 +33,17 @@ export class Waluty24Scraper {
         );
       });
       if (frame === undefined) {
+        this.logger.warn(
+          "nie znaleziono odpowiedniej ramki tradingview na stronie",
+        );
         return [];
       }
 
       await frame.waitForSelector(
         ".market-quotes-widget__row, .market-quotes__row",
-        { timeout: 30_000 },
+        {
+          timeout: 30_000,
+        },
       );
 
       const raw = await frame.evaluate(() => {
@@ -119,5 +129,3 @@ export class Waluty24Scraper {
     }
   }
 }
-
-// chciałem powiedzieć że ten kod był jakoś 2 razy krótszy przed dopasowaniem go do reguł ESLinta

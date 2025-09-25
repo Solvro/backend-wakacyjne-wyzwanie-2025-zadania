@@ -26,6 +26,7 @@ export class CurrencyService {
   async refresh(quotes = this.defaultQuotes()): Promise<void> {
     const samples = await this.scraper.scrape(quotes, "PLN");
     if (samples.length === 0) {
+      this.logger.warn("brak próbek kursów zewnętrznego źródła");
       return;
     }
     await this.prisma.$transaction(async (tx) => {

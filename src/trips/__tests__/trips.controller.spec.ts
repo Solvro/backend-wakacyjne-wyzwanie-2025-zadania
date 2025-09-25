@@ -34,7 +34,7 @@ describe("TripsController (unit)", () => {
   it("PATCH /trips/:tripId", async () => {
     tripsServiceMock.updateAs.mockResolvedValue({ id: 1, name: "X" });
     const request = {
-      user: { sub: 123, role: UserRole.USER }, // <-- Używamy enuma
+      user: { sub: 123, role: UserRole.USER },
     } as RequestWithUser;
     const updateDto: UpdateTripDto = { name: "X" };
 
@@ -44,7 +44,7 @@ describe("TripsController (unit)", () => {
     });
 
     expect(tripsServiceMock.updateAs).toHaveBeenCalledWith(
-      { sub: 123, role: UserRole.USER }, // <-- Używamy enuma
+      { sub: 123, role: UserRole.USER },
       1,
       { name: "X" },
     );

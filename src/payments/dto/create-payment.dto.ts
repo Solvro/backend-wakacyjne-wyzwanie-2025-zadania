@@ -1,19 +1,28 @@
-import { IsInt, IsOptional, IsString, Length, Matches } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsString, Matches } from "class-validator";
+
+export const CURRENCIES = [
+  "PLN",
+  "EUR",
+  "USD",
+  "AUD",
+  "CAD",
+  "GBP",
+  "CHF",
+] as const;
+type SupportedCurrency = (typeof CURRENCIES)[number];
 
 export class CreatePaymentDto {
   @IsInt()
-  tripId!: number;
+  tripId: number;
 
   @IsOptional()
   @IsInt()
   participantId?: number;
 
-  @IsString()
-  @Length(3, 3)
-  @Matches(/^[A-Z]{3}$/)
-  currency!: string;
+  @IsEnum(CURRENCIES)
+  currency: SupportedCurrency;
 
   @IsString()
   @Matches(/^\d+(\.\d{1,2})?$/)
-  amount!: string; // jakbyś pytał - chciałem floata ale coś nie działało z jakiegoś powodu
+  amount: string;
 }

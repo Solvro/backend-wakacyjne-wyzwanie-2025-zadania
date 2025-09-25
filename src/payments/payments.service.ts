@@ -4,6 +4,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from "@nestjs/common";
 
 import { PrismaService } from "../../prisma/prisma.service";
@@ -32,13 +33,13 @@ export class PaymentsService {
       throw new BadRequestException("Invalid amount");
     }
 
-    let rate = 1;
+    const rate = 1;
+
     if (currency !== "PLN") {
       const latest = await this.currency.getLatestRate(currency, "PLN");
       if (latest == null) {
-        throw new BadRequestException(`No rate for ${currency}/PLN`);
+        throw new ServiceUnavailableException(`No rate for ${currency}/PLN`);
       }
-      rate = latest;
     }
 
     const amountPln = Math.round(amount * rate * 100) / 100;
