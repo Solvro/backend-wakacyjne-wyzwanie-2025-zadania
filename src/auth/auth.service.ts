@@ -61,14 +61,11 @@ export class AuthService {
       throw new ConflictException("User already exists");
     }
 
-    const depth = 10;
-    const hashedPassword: string = await hash(registerUserDto.password, depth);
-
     try {
       await this.userService.registerUser({
         email: registerUserDto.email,
         login: registerUserDto.login,
-        password: hashedPassword,
+        password: await hash(registerUserDto.password, 10),
         age: registerUserDto.age,
         description: registerUserDto.description,
       });
