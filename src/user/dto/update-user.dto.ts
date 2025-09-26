@@ -7,7 +7,8 @@ import {
   MaxLength,
   Validate,
 } from "class-validator";
-import { NiceAge } from "src/validators/nice-age";
+
+import { NiceAge } from "../../validators/nice-age";
 
 export class UserUpdateDto {
   @ApiPropertyOptional()
