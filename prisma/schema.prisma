@@ -38,12 +38,12 @@ enum ParticipantRole {
 // models
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique @db.VarChar(255)
+  id           Int           @id @default(autoincrement())
+  email        String        @unique @db.VarChar(255)
   passwordHash String
-  role         UserRole  @default(USER)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  role         UserRole      @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   participants Participant[]
 }
 
@@ -58,32 +58,63 @@ model Trip {
   budget      Decimal?   @db.Decimal(12, 2)
 
   participants Participant[]
+  payments     Payment[]
 }
 
 model Participant {
-  id        Int             @id @default(autoincrement())
-  tripId    Int
-  userId    Int?
-  name      String          @db.VarChar(255)
-  role      ParticipantRole @default(MEMBER)
-  joinedAt  DateTime        @default(now())
-  share     Decimal         @db.Decimal(12, 2)
+  id       Int             @id @default(autoincrement())
+  tripId   Int
+  userId   Int?
+  name     String          @db.VarChar(255)
+  role     ParticipantRole @default(MEMBER)
+  joinedAt DateTime        @default(now())
+  share    Decimal         @db.Decimal(12, 2)
 
-  trip      Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  user      User?      @relation(fields: [userId], references: [id])
-  payments  Expense[]  @relation("ParticipantPaysExpense")
+  trip         Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user         User?     @relation(fields: [userId], references: [id])
+  payments     Expense[] @relation("ParticipantPaysExpense")
+  paymentsMade Payment[] @relation("ParticipantToPayment")
 
   @@index([tripId])
   @@index([userId])
 }
 
 model Expense {
-  id        Int              @id @default(autoincrement())
-  payerId   Int
-  amount    Decimal          @db.Decimal(12, 2)
-  category  ExpenseCategory
-  currency  String           @db.VarChar(3)
+  id       Int             @id @default(autoincrement())
+  payerId  Int
+  amount   Decimal         @db.Decimal(12, 2)
+  category ExpenseCategory
+  currency String          @db.VarChar(3)
   paidAt   DateTime?
 
-  payer     Participant @relation("ParticipantPaysExpense", fields: [payerId], references: [id], onDelete: Cascade)
+  payer Participant @relation("ParticipantPaysExpense", fields: [payerId], references: [id], onDelete: Cascade)
+}
+
+model CurrencyRate {
+  id          Int      @id @default(autoincrement())
+  base        String   @db.Char(3)
+  quote       String   @db.Char(3)
+  rate        Decimal  @db.Decimal(18, 8)
+  source      String?  @db.VarChar(64)
+  collectedAt DateTime @default(now())
+
+  @@index([base, quote, collectedAt])
+  @@index([source])
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  tripId        Int
+  participantId Int?
+  currency      String   @db.Char(3)
+  amountForeign Decimal  @db.Decimal(14, 2)
+  rate          Decimal  @db.Decimal(18, 8)
+  amountPln     Decimal  @db.Decimal(14, 2)
+  createdAt     DateTime @default(now())
+
+  trip        Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  participant Participant? @relation("ParticipantToPayment", fields: [participantId], references: [id])
+
+  @@index([tripId])
+  @@index([participantId])
 }

@@ -1,0 +1,1 @@
+export const CURRENCY_SCRAPER = Symbol("CURRENCY_SCRAPER");
