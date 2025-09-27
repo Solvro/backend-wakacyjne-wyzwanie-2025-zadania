@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { compare, hash } from "bcrypt";
 import { RegisterUserDto } from "src/user/dto/register-user.dto";
 
@@ -50,27 +45,18 @@ export class AuthService {
   }
 
   async registerAuth(registerUserDto: RegisterUserDto) {
-    let userExists = false;
-    try {
-      await this.userService.findOneOrFail(registerUserDto.email);
-    } catch {
-      userExists = true;
-    }
+    const email = registerUserDto.email;
+    const login = registerUserDto.login;
+    const age = registerUserDto.age;
 
-    if (userExists) {
-      throw new ConflictException("User already exists");
-    }
+    await this.userService.userAlreadyExist(email, login, age);
 
-    try {
-      await this.userService.registerUser({
-        email: registerUserDto.email,
-        login: registerUserDto.login,
-        password: await hash(registerUserDto.password, 10),
-        age: registerUserDto.age,
-        description: registerUserDto.description,
-      });
-    } catch {
-      throw new InternalServerErrorException("User could not be created");
-    }
+    await this.userService.registerUser({
+      email: registerUserDto.email,
+      login: registerUserDto.login,
+      password: await hash(registerUserDto.password, 10),
+      age: registerUserDto.age,
+      description: registerUserDto.description,
+    });
   }
 }

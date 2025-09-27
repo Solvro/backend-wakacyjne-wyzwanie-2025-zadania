@@ -1,11 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import { IsDate, IsString, MaxLength } from "class-validator";
 
 export class ResponseTripDto {
-  @ApiProperty()
+  @Type(() => Date)
   @IsDate()
+  @ApiProperty()
   startDate: Date;
 
+  @Type(() => Date)
   @ApiProperty()
   @IsDate()
   endDate: Date;
