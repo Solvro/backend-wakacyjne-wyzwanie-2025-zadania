@@ -20,8 +20,12 @@ jobs:
           node-version: 22
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install dependencies and generate Prisma client
         run: npm ci
+
+      - name: Generate prisma client
+        run: npx prisma generate
+        if: always()
 
       - name: Check commit name
         if: github.event_name == 'pull_request'

@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  //output   = "../generated/prisma"
+  //coutput   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,33 +15,53 @@ datasource db {
 }
 
 model Participant {
-  id    Int     @default(autoincrement()) @id
-  name String  
-  surname  String
-  age Int
-  tripId Int
-  gender  Gender?
-  trip  Trip  @relation(fields: [tripId], references: [id])
+  id        Int     @id @default(autoincrement())
+  name      String
+  surname   String
+  age       Int
+  tripId    Int
+  gender    Gender?
+  trip      Trip    @relation(fields: [tripId], references: [id])
+  User      User?   @relation(fields: [userEmail], references: [email])
+  userEmail String?
 }
 
 model Trip {
-  id    Int     @default(autoincrement()) @id
+  id          Int           @id @default(autoincrement())
   startDate   DateTime
-  endDate DateTime
-  location  String
-  participant Participant[]  
-  expense     Expense[] 
+  endDate     DateTime
+  location    String
+  participant Participant[]
+  expense     Expense[]
 }
 
 model Expense {
-  id    Int     @default(autoincrement()) @id
-  dailyPrice   Float
-  tripId  Int
-  discount Boolean
-  trip  Trip  @relation(fields: [tripId], references: [id])
+  id         Int     @id @default(autoincrement())
+  dailyPrice Float
+  tripId     Int
+  discount   Boolean
+  trip       Trip    @relation(fields: [tripId], references: [id])
+}
+
+model User {
+  email       String        @id
+  login       String
+  password    String
+  age Int
+  description String?
+  role        Role[]
+  isEnabled   Boolean
+  participant Participant[]
 }
 
 enum Gender {
   M
   F
+}
+
+enum Role {
+  USER
+  ADMIN
+  ORGANISER
+  TOURIST
 }
