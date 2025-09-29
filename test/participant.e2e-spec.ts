@@ -90,9 +90,9 @@ describe("ParticipantController (e2e)", () => {
     await app.close();
   });
 
-  it("POST /api/v1/participants → should create a participant", async () => {
+  it("POST /participant → should create a participant", async () => {
     const result = await httpRequest
-      .post("/api/v1/participants")
+      .post("/participant")
       .send({
         first_name: "John",
         second_name: "&",
@@ -116,8 +116,8 @@ describe("ParticipantController (e2e)", () => {
     createdId = body.id;
   });
 
-  it("GET /api/v1/participants → should return list with created participant", async () => {
-    const result = await httpRequest.get("/api/v1/participants").expect(200);
+  it("GET /participant → should return list with created participant", async () => {
+    const result = await httpRequest.get("/participant").expect(200);
 
     const body: ParticipantResponse[] = result.body;
 
@@ -125,9 +125,9 @@ describe("ParticipantController (e2e)", () => {
     expect(body[0]).toHaveProperty("id");
   });
 
-  it("GET /api/v1/participants/:id → should return single participant", async () => {
+  it("GET /participant/:id → should return single participant", async () => {
     const result = await httpRequest
-      .get(`/api/v1/participants/${String(createdId)}`)
+      .get(`/participant/${String(createdId)}`)
       .expect(200);
 
     const body: ParticipantResponse = result.body;
@@ -142,9 +142,9 @@ describe("ParticipantController (e2e)", () => {
     });
   });
 
-  it("PATCH /api/v1/participants/:id → should update participant", async () => {
+  it("PATCH /participant/:id → should update participant", async () => {
     const result = await httpRequest
-      .patch(`/api/v1/participants/${String(createdId)}`)
+      .patch(`/participant/${String(createdId)}`)
       .send({
         first_name: "Jane",
         second_name: "&",
@@ -166,13 +166,13 @@ describe("ParticipantController (e2e)", () => {
     });
   });
 
-  it("DELETE /api/v1/participants/:id → should delete participant", async () => {
+  it("DELETE /participant/:id → should delete participant", async () => {
     await httpRequest
-      .delete(`/api/v1/participants/${String(createdId)}`)
+      .delete(`/participant/${String(createdId)}`)
       .expect(200);
 
     await httpRequest
-      .get(`/api/v1/participants/${String(createdId)}`)
+      .get(`/participant/${String(createdId)}`)
       .expect(404);
   });
 });
