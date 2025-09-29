@@ -102,9 +102,9 @@ describe("ExpenseController (e2e)", () => {
     await app.close();
   });
 
-  it("POST /api/v1/expenses → should create an expense", async () => {
+  it("POST /expense → should create an expense", async () => {
     const result = await httpRequest
-      .post("/api/v1/expenses")
+      .post("/expense")
       .send({
         desc: "Test Expense - Hotel",
         price: 99.9,
@@ -124,8 +124,8 @@ describe("ExpenseController (e2e)", () => {
     createdId = body.id;
   });
 
-  it("GET /api/v1/expenses → should return list with created expense", async () => {
-    const result = await httpRequest.get("/api/v1/expenses").expect(200);
+  it("GET /expense → should return list with created expense", async () => {
+    const result = await httpRequest.get("/expense").expect(200);
 
     const body: ExpenseResponse[] = result.body;
 
@@ -133,9 +133,9 @@ describe("ExpenseController (e2e)", () => {
     expect(body.some((response) => response.id === createdId)).toBeTruthy();
   });
 
-  it("GET /api/v1/expenses/:id → should return single expense", async () => {
+  it("GET /expense/:id → should return single expense", async () => {
     const result = await httpRequest
-      .get(`/api/v1/expenses/${String(createdId)}`)
+      .get(`/expense/${String(createdId)}`)
       .expect(200);
 
     const body: ExpenseResponse = result.body;
@@ -148,9 +148,9 @@ describe("ExpenseController (e2e)", () => {
     });
   });
 
-  it("PATCH /api/v1/expenses/:id → should update expense", async () => {
+  it("PATCH /expense/:id → should update expense", async () => {
     const result = await httpRequest
-      .patch(`/api/v1/expenses/${String(createdId)}`)
+      .patch(`/expense/${String(createdId)}`)
       .send({
         desc: "Test Expense - Updated",
         price: 1000,
@@ -167,11 +167,11 @@ describe("ExpenseController (e2e)", () => {
     });
   });
 
-  it("DELETE /api/v1/expenses/:id → should delete expense", async () => {
+  it("DELETE /expense/:id → should delete expense", async () => {
     await httpRequest
-      .delete(`/api/v1/expenses/${String(createdId)}`)
+      .delete(`/expense/${String(createdId)}`)
       .expect(200);
 
-    await httpRequest.get(`/api/v1/expenses/${String(createdId)}`).expect(404);
+    await httpRequest.get(`/expense/${String(createdId)}`).expect(404);
   });
 });
