@@ -1,22 +1,142 @@
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { AuthService } from "../auth/auth.service";
 import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
 
 describe("ExpenseController", () => {
   let controller: ExpenseController;
 
+  interface Expense {
+    id: number;
+    desc: string;
+    price: number;
+    trip_id: number;
+  }
+
+  let expenseCounter = 1;
+  let expensesInMemory: Expense[] = [];
+
+  const initialExpenses: Expense[] = [
+    {
+      id: 1,
+      desc: "Hotel",
+      price: 120,
+      trip_id: 1,
+    },
+    {
+      id: 2,
+      desc: "Taxi",
+      price: 30,
+      trip_id: 1,
+    },
+  ];
+
+  const mockExpenseService = {
+    create: jest.fn(({ data }: { data: Expense }) => {
+      const newExpense: Expense = {
+        id: expenseCounter++,
+        desc: data.description,
+        price: data.amount,
+        trip_id: data.trip_id,
+      };
+      expensesInMemory.push(newExpense);
+      return newExpense;
+    }) as jest.Mock,
+    getAll: jest.fn(),
+    getOne: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  };
+
+  const mockAuthService = {
+    login: jest.fn(),
+    register: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExpenseController],
-      providers: [ExpenseService],
+      providers: [
+        { provide: ExpenseService, useValue: mockExpenseService },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compile();
+
+    expensesInMemory = [...initialExpenses];
+    expenseCounter = initialExpenses.length + 1;
 
     controller = module.get<ExpenseController>(ExpenseController);
   });
 
   it("should be defined", () => {
     expect(controller).toBeDefined();
+  });
+
+  it("should create an expense", async () => {
+    const dto = {
+      desc: "Lunch",
+      price: 50,
+      trip_id: 1,
+    };
+
+    const expectedValue = { id: expenseCounter, ...dto };
+    mockExpenseService.create.mockResolvedValue(expectedValue);
+
+    const result = await controller.post(dto);
+
+    expect(result).toEqual(expectedValue);
+    expect(mockExpenseService.create).toHaveBeenCalledWith(dto);
+  });
+
+  it("should return all expenses", async () => {
+    mockExpenseService.getAll.mockResolvedValue(expensesInMemory);
+
+    const result = await controller.getAll();
+
+    expect(result).toEqual(expensesInMemory);
+    expect(mockExpenseService.getAll).toHaveBeenCalledTimes(1);
+  });
+
+  it("should return one expense", async () => {
+    const expenseMock = initialExpenses[0];
+
+    mockExpenseService.getOne.mockResolvedValue(expenseMock);
+    const result = await controller.getOne("1");
+
+    expect(result).toEqual(expenseMock);
+    expect(mockExpenseService.getOne).toHaveBeenCalledWith(1);
+  });
+
+  it("should update an expense", async () => {
+    const dto = {
+      desc: "Dinner",
+      price: 80,
+      trip_id: 1,
+    };
+
+    const expenseMock = await controller.post(dto);
+
+    const dtoUpdate = { price: 200 };
+    const expenseUpdated = { ...expenseMock, ...dtoUpdate };
+
+    mockExpenseService.update.mockResolvedValue(expenseUpdated);
+
+    const result = await controller.update(String(expenseMock.id), dtoUpdate);
+
+    expect(mockExpenseService.update).toHaveBeenCalledWith(
+      expenseMock.id,
+      dtoUpdate,
+    );
+    expect(result).toEqual(expenseUpdated);
+  });
+
+  it("should delete an expense", async () => {
+    const expenseMock = initialExpenses[0];
+
+    await controller.delete(String(expenseMock.id));
+
+    expect(mockExpenseService.delete).toHaveBeenCalledWith(expenseMock.id);
   });
 });
