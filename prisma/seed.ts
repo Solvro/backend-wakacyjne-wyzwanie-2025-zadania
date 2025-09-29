@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Currency, PrismaClient, Role } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -40,6 +40,28 @@ async function main() {
     data: {
       amount: 1111.11,
       tripParticipantId: tripParticipant.id,
+    },
+  });
+
+  const rates = [
+    { currency: Currency.EUR, value: 4.7 },
+    { currency: Currency.USD, value: 5.4 },
+    { currency: Currency.SEK, value: 0.45 },
+  ];
+
+  for (const rate of rates) {
+    await prisma.rate.upsert({
+      where: { currency: rate.currency },
+      create: { currency: rate.currency, value: rate.value },
+      update: { value: rate.value },
+    });
+  }
+
+  await prisma.payment.create({
+    data: {
+      amount: 100,
+      amountPLN: 470,
+      currency: Currency.EUR,
     },
   });
 

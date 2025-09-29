@@ -73,3 +73,23 @@ enum Role {
   ADMIN
   COORDINATOR
 }
+
+enum Currency {
+  USD
+  EUR
+  SEK
+}
+
+model Rate {
+  currency  Currency @id
+  value     Float
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id                Int             @default(autoincrement()) @id
+  amount            Float
+  amountPLN         Float
+  currency          Currency
+  createdAt         DateTime        @default(now())
+}
