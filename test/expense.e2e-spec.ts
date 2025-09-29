@@ -58,7 +58,7 @@ describe("ExpenseController (e2e)", () => {
         email: "expense.user@example.com",
         password: "hashedpassword012345",
         role: Role.USER,
-        isEnabled: true,
+        is_enabled: true,
         name: "Expense User",
       },
     });
@@ -72,7 +72,7 @@ describe("ExpenseController (e2e)", () => {
       },
     });
 
-    participantId = participant.id;
+    participant = participant.id;
 
     const trip = await prisma.trip.create({
       data: {

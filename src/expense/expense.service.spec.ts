@@ -99,13 +99,13 @@ describe("ExpenseService", () => {
       trip_id: 1,
     };
     const result = await service.create({
-      desc: dto.description,
-      price: dto.amount,
+      desc: dto.desc,
+      price: dto.price,
       trip_id: dto.trip_id,
     });
 
     expect(result).toHaveProperty("id");
-    expect(result.description).toBe("Test Expense");
+    expect(result.desc).toBe("Test Expense");
 
     expect(mockDatabaseService.expense.create).toHaveBeenCalledWith({
       data: dto,

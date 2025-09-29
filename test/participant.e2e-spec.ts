@@ -58,7 +58,7 @@ describe("ParticipantController (e2e)", () => {
         email: "john.doe@example.com",
         password: "hashedPassword123",
         role: Role.USER,
-        isEnabled: true,
+        is_enabled: true,
         name: "John User",
       },
     });
@@ -68,7 +68,7 @@ describe("ParticipantController (e2e)", () => {
         email: "jane.doe@example.com",
         password: "hashedPassword123",
         role: Role.USER,
-        isEnabled: true,
+        is_enabled: true,
         name: "Jane User",
       },
     });

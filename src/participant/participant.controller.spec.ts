@@ -20,6 +20,7 @@ describe("ParticipantController", () => {
       id: 1,
       email: "a@example.com",
       first_name: "Alice",
+      second_name: "&",
       last_name: "White",
       gender: Gender.FEMALE,
     },
@@ -27,6 +28,7 @@ describe("ParticipantController", () => {
       id: 2,
       email: "b@example.com",
       first_name: "Bob",
+      second_name: "&",
       last_name: "the builder",
       gender: Gender.MALE,
     },
@@ -38,6 +40,7 @@ describe("ParticipantController", () => {
         id: participantCounter++,
         email: data.email,
         first_name: data.first_name,
+        second_name: data.second_name,
         last_name: data.last_name,
         gender: data.gender,
       };
@@ -78,6 +81,7 @@ describe("ParticipantController", () => {
     const dto = {
       email: "c@example.com",
       first_name: "Charlie",
+      second_name: "&",
       last_name: "Chaplin",
       gender: Gender.MALE,
     };
@@ -121,6 +125,7 @@ describe("ParticipantController", () => {
     const dto = {
       email: "c@example.com",
       first_name: "Charlie",
+      second_name: "&",
       last_name: "Chaplin",
       gender: Gender.MALE,
     };
@@ -130,6 +135,7 @@ describe("ParticipantController", () => {
       id: participantMock.id,
       email: "c@example.com",
       first_name: "Charles",
+      second_name: "&",
       last_name: "Chaplin",
       gender: Gender.MALE,
     };

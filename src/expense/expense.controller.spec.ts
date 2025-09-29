@@ -37,8 +37,8 @@ describe("ExpenseController", () => {
     create: jest.fn(({ data }: { data: Expense }) => {
       const newExpense: Expense = {
         id: expenseCounter++,
-        desc: data.description,
-        price: data.amount,
+        desc: data.desc,
+        price: data.price,
         trip_id: data.trip_id,
       };
       expensesInMemory.push(newExpense);
@@ -84,7 +84,7 @@ describe("ExpenseController", () => {
     const expectedValue = { id: expenseCounter, ...dto };
     mockExpenseService.create.mockResolvedValue(expectedValue);
 
-    const result = await controller.post(dto);
+    const result = await controller.create(dto);
 
     expect(result).toEqual(expectedValue);
     expect(mockExpenseService.create).toHaveBeenCalledWith(dto);
@@ -96,17 +96,17 @@ describe("ExpenseController", () => {
     const result = await controller.getAll();
 
     expect(result).toEqual(expensesInMemory);
-    expect(mockExpenseService.getAll).toHaveBeenCalledTimes(1);
+    expect(mockExpenseService.findAll).toHaveBeenCalledTimes(1);
   });
 
   it("should return one expense", async () => {
     const expenseMock = initialExpenses[0];
 
     mockExpenseService.getOne.mockResolvedValue(expenseMock);
-    const result = await controller.getOne("1");
+    const result = await controller.findOne("1");
 
     expect(result).toEqual(expenseMock);
-    expect(mockExpenseService.getOne).toHaveBeenCalledWith(1);
+    expect(mockExpenseService.findOne).toHaveBeenCalledWith(1);
   });
 
   it("should update an expense", async () => {
@@ -116,7 +116,7 @@ describe("ExpenseController", () => {
       trip_id: 1,
     };
 
-    const expenseMock = await controller.post(dto);
+    const expenseMock = await controller.create(dto);
 
     const dtoUpdate = { price: 200 };
     const expenseUpdated = { ...expenseMock, ...dtoUpdate };
@@ -135,8 +135,8 @@ describe("ExpenseController", () => {
   it("should delete an expense", async () => {
     const expenseMock = initialExpenses[0];
 
-    await controller.delete(String(expenseMock.id));
+    await controller.remove(String(expenseMock.id));
 
-    expect(mockExpenseService.delete).toHaveBeenCalledWith(expenseMock.id);
+    expect(mockExpenseService.remove).toHaveBeenCalledWith(expenseMock.id);
   });
 });
