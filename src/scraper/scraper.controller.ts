@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Post } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { ScraperService } from "./scraper.service";
@@ -20,5 +20,18 @@ export class ScraperController {
   })
   async scrape() {
     return this.scraperService.scraping();
+  }
+
+  @Post("store")
+  @ApiOperation({
+    summary: "Store currencies rates",
+    description: "Store rates in the database (Rate table)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Storing completed successfully",
+  })
+  async scrapeAndStore() {
+    return this.scraperService.storeRates();
   }
 }

@@ -1,6 +1,9 @@
+import { Currency, PrismaClient } from "@prisma/client";
 import puppeteer from "puppeteer";
 
 import { Injectable } from "@nestjs/common";
+
+const prisma = new PrismaClient();
 
 @Injectable()
 export class ScraperService {
@@ -48,5 +51,45 @@ export class ScraperService {
     await browser.close();
 
     return { euroSell, dollarSell, kronaSell };
+  }
+
+  async storeRates() {
+    const { euroSell, dollarSell, kronaSell } = await this.scraping();
+
+    const rates = [
+      {
+        currency: Currency.EUR,
+        value:
+          euroSell == null
+            ? null
+            : Number.parseFloat(euroSell.replace(",", ".")),
+      },
+      {
+        currency: Currency.USD,
+        value:
+          dollarSell == null
+            ? null
+            : Number.parseFloat(dollarSell.replace(",", ".")),
+      },
+      {
+        currency: Currency.SEK,
+        value:
+          kronaSell == null
+            ? null
+            : Number.parseFloat(kronaSell.replace(",", ".")),
+      },
+    ];
+
+    for (const rate of rates) {
+      if (rate.value != null && !Number.isNaN(rate.value)) {
+        await prisma.rate.upsert({
+          where: { currency: rate.currency },
+          create: { currency: rate.currency, value: rate.value },
+          update: { value: rate.value },
+        });
+      }
+    }
+
+    return { message: "Rates stored successfully", rates };
   }
 }

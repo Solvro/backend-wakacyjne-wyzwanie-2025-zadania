@@ -84,6 +84,7 @@ model Rate {
   currency  Currency @id
   value     Float
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Payment {
@@ -92,4 +93,5 @@ model Payment {
   amountPLN         Float
   currency          Currency
   createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }

@@ -13,5 +13,6 @@ export class SchedulerService {
   async handleMinutelyCurrencyUpdate() {
     this.logger.debug("Called every 5 seconds");
     await this.scraperService.scraping();
+    await this.scraperService.storeRates();
   }
 }
