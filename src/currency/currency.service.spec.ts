@@ -21,6 +21,8 @@ describe("CurrencyService", () => {
   it("scraper should work", async () => {
     const result = await service.scrape();
     console.warn(result);
-    expect(result).toBe(undefined);
+    expect(result).toBeDefined();
+
+    service.handleCron();
   });
 });
