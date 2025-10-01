@@ -1,42 +1,44 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import puppeteer from "puppeteer";
+import * as cheerio from "cheerio";
 
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class CurrencyService {
   async scrape(): Promise<unknown> {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const response = await fetch("https://www.walutomat.pl/kursy-walut");
+    const text = await response.text();
+    const data = cheerio.load(text);
 
-    await page.goto("https://www.walutomat.pl/kursy-walut");
+    const currencies = data(".rates-table__row")
+      .map((_, row) => {
+        const nameElement = data(row).find(".rates-table__exchange-rate");
+        const rateElement = data(row).find("[data-rate-value]");
 
-    await page.waitForSelector(".rates-table");
+        if (!nameElement.length || !rateElement.length) return null;
 
-    const currencies = await page.evaluate(() => {
-      const rows = document.querySelectorAll(".rates-table__row");
-      return [...rows]
-        .map((row) => {
-          const nameElement = row.querySelector(".rates-table__exchange-rate");
-          const rateElement = row.querySelector("[data-rate-value]");
-          if (nameElement == null || rateElement == null) {
-            return null;
-          }
-          return {
-            name: nameElement.textContent.trim(),
-            rate: rateElement.textContent.trim(),
-          };
-        })
-        .filter(Boolean)
-        .filter((c) =>
-          ["EUR / PLN", "USD / PLN", "CHF / PLN", "GBP / PLN"].includes(
-            c!.name.replaceAll("\u00A0", " "),
-          ),
-        );
-    });
+        return {
+          name: nameElement
+            .text()
+            .trim()
+            .replace(/\u00A0/g, " "),
+          rate: rateElement.text().trim(),
+        };
+      })
+      .get()
+      .filter((c) =>
+        ["EUR / PLN", "USD / PLN", "CHF / PLN", "GBP / PLN"].includes(c!.name),
+      )
+      .map(({ name, rate }) => {
+        const matches = rate.match(/[\d,]+/g) || [];
 
-    console.warn(currencies);
+        return {
+          name,
+          bid: matches[0] ? parseFloat(matches[0].replace(",", ".")) : null,
+          ask: matches[1] ? parseFloat(matches[1].replace(",", ".")) : null,
+        };
+      });
 
-    await browser.close();
+    return currencies;
   }
 }
