@@ -2,21 +2,21 @@ import * as cheerio from "cheerio";
 
 import { Injectable, Logger } from "@nestjs/common";
 
+export const currencyMap: Record<string, string> = {
+  USD: "US Dollar",
+  EUR: "Euro",
+  GBP: "British Pound",
+};
+
 @Injectable()
 export class RateScraperService {
   private readonly logger = new Logger(RateScraperService.name);
-
-  private readonly currencyMap: Record<string, string> = {
-    USD: "US Dollar",
-    EUR: "Euro",
-    GBP: "British Pound",
-  };
 
   private readonly nameToCode: Map<string, string>;
 
   constructor() {
     this.nameToCode = new Map(
-      Object.entries(this.currencyMap).map(([code, name]) => [name, code]),
+      Object.entries(currencyMap).map(([code, name]) => [name, code]),
     );
   }
 
@@ -32,7 +32,7 @@ export class RateScraperService {
     const $ = cheerio.load(html);
 
     const rates: Record<string, number> = {};
-    const expectedCount = Object.keys(this.currencyMap).length;
+    const expectedCount = Object.keys(currencyMap).length;
 
     const table = $(
       "#content .col2.pull-right.module .moduleContent table.ratesTable tbody",
@@ -42,25 +42,29 @@ export class RateScraperService {
       throw new Error("Currency table not found");
     }
 
-    table.find("tr").each((_, row) => {
-      if (Object.keys(rates).length >= expectedCount) {
-        return false;
+    let foundCount = 0;
+    const rows = table.find("tr").toArray();
+    for (const row of rows) {
+      if (foundCount >= expectedCount) {
+        break;
       }
 
       const cells = $(row).find("td");
       if (cells.length < 3) {
-        return;
+        this.logger.warn("Unexpected table row structure, skipping");
+        continue;
       }
 
       const rowName = $(cells[0]).text().trim();
       const code = this.nameToCode.get(rowName);
 
       if (code == null) {
-        return;
+        continue;
       }
 
-      if (Object.hasOwn(rates, code)) {
-        return;
+      if (code in rates) {
+        this.logger.warn(`Duplicate rate found for ${code}, skipping`);
+        continue;
       }
 
       const rateString = $(cells[2]).text().trim();
@@ -68,19 +72,20 @@ export class RateScraperService {
 
       if (Number.isNaN(parsed)) {
         this.logger.warn(`Could not parse rate for ${code}`);
-        return;
+        continue;
       }
       rates[code] = parsed;
-    });
+      foundCount++;
+    }
 
-    for (const wantedCode of Object.keys(this.currencyMap)) {
+    for (const wantedCode of Object.keys(currencyMap)) {
       if (!(wantedCode in rates)) {
         this.logger.warn(`Rate not found for ${wantedCode}`);
       }
     }
 
-    if (Object.keys(rates).length === 0) {
-      this.logger.error("No valid currency rates were parsed");
+    if (foundCount === 0) {
+      throw new Error("No valid currency rates were parsed – scraping failed");
     } else {
       this.logger.log(`Fetched rates: ${JSON.stringify(rates)}`);
     }
