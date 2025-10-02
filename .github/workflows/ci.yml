@@ -8,6 +8,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,9 +44,11 @@ jobs:
         run: npm test
         if: always()
 
-      - name: Run e2e tests
-        run: npm run test:e2e
-        if: always()
+      #      - name: Run e2e tests
+      #        run: npm run test:e2e
+      #        if: always()
+      #        env:
+      #          DATABASE_URL: "postgresql://postgres:Solvro123@localhost:5432/db_test"
 
       - name: Build
         run: npm run build
