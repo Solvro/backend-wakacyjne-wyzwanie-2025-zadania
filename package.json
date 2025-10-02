@@ -19,7 +19,7 @@
     "test": "cross-env DATABASE_URL=\"postgresql://postgres:Solvro123@localhost:5432/db_test\" jest",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env DATABASE_URL=\"postgresql://postgres:Solvro123@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit\"",
+    "test:e2e": "cross-env DATABASE_URL=\"postgresql://postgres:Solvro123@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --forceExit\"",
     "test:e2e:watch": "cross-env DATABASE_URL=\"postgresql://postgres:Solvro123@localhost:5432/db_test\" jest --config ./test/jest-e2e.json --watch",
     "test:prepare": "cross-env DATABASE_URL=\"postgresql://postgres:Solvro123@localhost:5432/db_test?schema=public\" npx prisma db push",
     "test:watch": "cross-env DATABASE_URL=\"postgresql://postgres:Solvro123@localhost:5432/db_test\" jest --watch",

@@ -9,7 +9,7 @@ export class SchedulerService {
 
   constructor(private scraperService: ScraperService) {}
 
-  @Cron("*/5 * * * * *")
+  @Cron("* */1 * * *")
   async handleMinutelyCurrencyUpdate() {
     this.logger.debug("Called every 5 seconds");
     await this.scraperService.scraping();
