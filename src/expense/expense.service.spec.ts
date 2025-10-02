@@ -5,6 +5,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { mockPrisma } from "../../test/utils/mock-prisma";
+import { CurrencyService } from "../currency/currency.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { ExpenseService } from "./expense.service";
 
@@ -12,11 +13,19 @@ describe("ExpenseService", () => {
   let service: ExpenseService;
   const prismaMock = mockPrisma();
 
+  const currencyServiceMock = {
+    convertToPLN: jest
+      .fn()
+      .mockImplementation((amount: number): number => amount),
+    getRate: jest.fn().mockResolvedValue(4.5),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExpenseService,
         { provide: PrismaService, useValue: prismaMock },
+        { provide: CurrencyService, useValue: currencyServiceMock },
       ],
     }).compile();
 
@@ -51,6 +60,7 @@ describe("ExpenseService", () => {
       participantId: 7,
       amount: 100,
       category: ExpenseCategory.FOOD,
+      amountPLN: 100,
     };
     prismaMock.participant.findUnique.mockResolvedValue({ id: 7 });
     prismaMock.expense.create.mockResolvedValue({ id: 99, ...dto });
@@ -82,7 +92,7 @@ describe("ExpenseService", () => {
     expect(response).toEqual({ id: 3, amount: 55 });
     expect(prismaMock.expense.update).toHaveBeenCalledWith({
       where: { id: 3 },
-      data: { amount: 55 },
+      data: { amount: 55, amountPLN: 247.5 },
     });
   });
 

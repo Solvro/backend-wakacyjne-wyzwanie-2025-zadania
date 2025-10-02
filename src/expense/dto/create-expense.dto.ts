@@ -24,6 +24,11 @@ export class CreateExpenseDto {
   @Max(100_000_000)
   amount: number;
 
+  @ApiPropertyOptional({ example: "EUR" })
+  @IsOptional()
+  @IsString()
+  currency?: string;
+
   @ApiProperty({ enum: ExpenseCategory, enumName: "ExpenseCategory" })
   @IsEnum(ExpenseCategory)
   category: ExpenseCategory;

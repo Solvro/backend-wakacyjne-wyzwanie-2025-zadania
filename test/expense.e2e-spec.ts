@@ -101,6 +101,7 @@ describe("Expenses (e2e)", () => {
         category: "FOOD",
         note: "Old note",
         participantId,
+        amountPLN: 10,
       },
     });
 
@@ -127,6 +128,7 @@ describe("Expenses (e2e)", () => {
         category: "FOOD",
         note: "Has valid participant",
         participantId,
+        amountPLN: 10,
       },
     });
 
@@ -144,6 +146,7 @@ describe("Expenses (e2e)", () => {
         amount: 5,
         category: "OTHER",
         participantId,
+        amountPLN: 10,
       },
     });
 

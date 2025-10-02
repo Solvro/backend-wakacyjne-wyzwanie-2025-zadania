@@ -34,6 +34,7 @@ async function main(): Promise<void> {
       amount: 350.75,
       category: ExpenseCategory.TRAVEL,
       note: "Bilety na kolej",
+      amountPLN: 350.75,
     },
   });
 }
