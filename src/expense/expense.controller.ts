@@ -54,7 +54,6 @@ export class ExpenseController {
   @ApiResponse({
     status: 200,
     description: "Expenses returned",
-    type: [ResponseExpenseDto],
   })
   @ApiResponse({
     status: 404,

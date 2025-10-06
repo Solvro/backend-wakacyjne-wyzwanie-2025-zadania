@@ -21,6 +21,11 @@ export class CreateParticipantDto {
   @IsNumber()
   tripId: number;
 
+  @ApiProperty()
+  @IsString()
+  @MaxLength(50)
+  userEmail?: string;
+
   @ApiPropertyOptional({
     enum: Gender,
     description: "Gender of participant",

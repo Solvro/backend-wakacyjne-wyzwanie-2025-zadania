@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { DatabaseService } from "src/database/database.service";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateParticipantDto } from "./dto/create-participant.dto";
 import { UpdateParticipantDto } from "./dto/update-participant.dto";
 
@@ -8,17 +8,18 @@ import { UpdateParticipantDto } from "./dto/update-participant.dto";
 export class ParticipantService {
   constructor(private database: DatabaseService) {}
 
-  findOneOrFail(id: number) {
-    const participant: unknown = this.database.participant.findUnique({
+  async findOneOrFail(id: number) {
+    const participant = await this.database.participant.findUnique({
       where: { id },
     });
-    if (participant == null) {
+    if (participant === null) {
       throw new NotFoundException("Participant not found");
     }
+    return participant;
   }
 
-  tripIdCheck(id: number) {
-    const expense: unknown = this.database.trip.findUnique({
+  async tripIdCheck(id: number) {
+    const expense = await this.database.trip.findUnique({
       where: { id },
     });
     if (expense == null) {
@@ -27,7 +28,7 @@ export class ParticipantService {
   }
 
   async create(createParticipantDto: CreateParticipantDto) {
-    this.tripIdCheck(createParticipantDto.tripId);
+    await this.tripIdCheck(createParticipantDto.tripId);
     return this.database.participant.create({
       data: {
         name: createParticipantDto.name,
@@ -35,6 +36,7 @@ export class ParticipantService {
         age: createParticipantDto.age,
         tripId: createParticipantDto.tripId,
         gender: createParticipantDto.gender,
+        userEmail: createParticipantDto.userEmail,
       },
     });
   }
@@ -44,17 +46,13 @@ export class ParticipantService {
   }
 
   async findOne(id: number) {
-    this.findOneOrFail(id);
-
-    return this.database.participant.findUnique({
-      where: { id },
-    });
+    return await this.findOneOrFail(id);
   }
 
   async update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    this.findOneOrFail(id);
+    await this.findOneOrFail(id);
     if (typeof updateParticipantDto.tripId != "undefined") {
-      this.tripIdCheck(updateParticipantDto.tripId);
+      await this.tripIdCheck(updateParticipantDto.tripId);
     }
     return this.database.participant.update({
       where: { id },
@@ -69,7 +67,7 @@ export class ParticipantService {
   }
 
   async remove(id: number) {
-    this.findOneOrFail(id);
+    await this.findOneOrFail(id);
     return this.database.participant.delete({ where: { id } });
   }
 }

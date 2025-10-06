@@ -1,18 +1,21 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { DatabaseService } from "src/database/database.service";
 
+import { DatabaseService } from "../database/database.service";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { UpdateExpenseDto } from "./dto/update-expense.dto";
 
 @Injectable()
 export class ExpenseService {
   constructor(private database: DatabaseService) {}
-  findOneOrFail(id: number) {
-    const expense: unknown = this.database.expense.findUnique({
+  async findOneOrFail(id: number) {
+    const expense: unknown = await this.database.expense.findUnique({
       where: { id },
     });
+
     if (expense == null) {
       throw new NotFoundException("Expense not found");
+    } else {
+      return expense;
     }
   }
 
@@ -41,14 +44,11 @@ export class ExpenseService {
   }
 
   async findOne(id: number) {
-    this.findOneOrFail(id);
-    return this.database.expense.findUnique({
-      where: { id },
-    });
+    return this.findOneOrFail(id);
   }
 
   async update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    this.findOneOrFail(id);
+    await this.findOneOrFail(id);
     if (typeof updateExpenseDto.tripId != "undefined") {
       this.tripIdCheck(updateExpenseDto.tripId);
     }
@@ -64,7 +64,7 @@ export class ExpenseService {
   }
 
   async remove(id: number) {
-    this.findOneOrFail(id);
+    await this.findOneOrFail(id);
     return this.database.expense.delete({ where: { id } });
   }
 }

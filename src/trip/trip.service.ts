@@ -8,13 +8,14 @@ import { UpdateTripDto } from "./dto/update-trip.dto";
 export class TripService {
   constructor(private database: DatabaseService) {}
 
-  findOneOrFail(id: number) {
-    const trip: unknown = this.database.trip.findUnique({
+  async findOneOrFail(id: number) {
+    const trip = await this.database.trip.findUnique({
       where: { id },
     });
     if (trip == null) {
-      throw new NotFoundException("Participant not found");
+      throw new NotFoundException("Trip not found");
     }
+    return trip;
   }
 
   async create(createTripDto: CreateTripDto) {
@@ -32,14 +33,11 @@ export class TripService {
   }
 
   async findOne(id: number) {
-    this.findOneOrFail(id);
-    return this.database.trip.findUnique({
-      where: { id },
-    });
+    return this.findOneOrFail(id);
   }
 
   async update(id: number, updateTripDto: UpdateTripDto) {
-    this.findOneOrFail(id);
+    await this.findOneOrFail(id);
     return this.database.trip.update({
       where: { id },
       data: {
@@ -51,7 +49,7 @@ export class TripService {
   }
 
   async remove(id: number) {
-    this.findOneOrFail(id);
+    await this.findOneOrFail(id);
     return this.database.trip.delete({ where: { id } });
   }
 }

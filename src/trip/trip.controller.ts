@@ -71,7 +71,7 @@ export class TripController {
     status: 404,
     description: "Trip not found",
   })
-  async findOne(@Param("id") id: string) {
+  async findOne(@Param("id") id: number) {
     return this.tripService.findOne(+id);
   }
 
