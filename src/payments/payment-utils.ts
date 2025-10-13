@@ -1,3 +1,5 @@
+import type { ForexRate } from "@prisma/client";
+
 import { BadRequestException } from "@nestjs/common";
 
 import type { PrismaService } from "../prisma/prisma.service";
@@ -10,13 +12,14 @@ export interface PaymentEntity {
   originalAmount: number;
   originalCurrency: string;
   plnAmount: number;
-  exchangeRate: number | null;
+  forexRateId: number;
   status: string;
   processedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   tripId: number | null;
   expenseId: number | null;
+  exchangeRate?: ForexRate;
 }
 
 export interface CreatePaymentData {
@@ -25,7 +28,7 @@ export interface CreatePaymentData {
   originalAmount: number;
   originalCurrency: string;
   plnAmount: number;
-  exchangeRate: number | null;
+  forexRateId: number;
   status: string;
   tripId: number | null;
   expenseId: number | null;
@@ -127,6 +130,37 @@ export class PaymentDatabaseUtils {
     }
   }
 
+  async safeFindManyPaymentsWithForexRate(options: {
+    where?: Record<string, unknown>;
+    orderBy?: Record<string, unknown>;
+    take?: number;
+    skip?: number;
+  }): Promise<PaymentEntity[]> {
+    try {
+      const prismaClient = this.prisma as unknown as {
+        payment: {
+          findMany: (
+            arguments_: typeof options & { include: { exchangeRate: boolean } },
+          ) => Promise<unknown>;
+        };
+      };
+      const result = await prismaClient.payment.findMany({
+        ...options,
+        include: { exchangeRate: true },
+      });
+
+      if (!isPaymentArray(result)) {
+        throw new Error("Invalid payment data returned from database");
+      }
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to find payments with forex rates: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
   async safeUpdatePayment(
     id: number,
     data: Partial<CreatePaymentData>,
@@ -154,6 +188,38 @@ export class PaymentDatabaseUtils {
     }
   }
 
+  async safeUpdatePaymentWithForexRate(
+    id: number,
+    data: Partial<CreatePaymentData>,
+  ): Promise<PaymentEntity> {
+    try {
+      const prismaClient = this.prisma as unknown as {
+        payment: {
+          update: (arguments_: {
+            where: { id: number };
+            data: Partial<CreatePaymentData>;
+            include: { exchangeRate: boolean };
+          }) => Promise<unknown>;
+        };
+      };
+      const result = await prismaClient.payment.update({
+        where: { id },
+        data,
+        include: { exchangeRate: true },
+      });
+
+      if (!isPaymentEntity(result)) {
+        throw new Error("Invalid payment data returned from database");
+      }
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update payment with forex rate: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
   async safeDeletePayment(id: number): Promise<void> {
     try {
       const prismaClient = this.prisma as unknown as {
@@ -165,6 +231,39 @@ export class PaymentDatabaseUtils {
     } catch (error) {
       throw new BadRequestException(
         `Failed to delete payment: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
+  async safeFindPaymentWithForexRate(
+    id: number,
+  ): Promise<PaymentEntity | null> {
+    try {
+      const prismaClient = this.prisma as unknown as {
+        payment: {
+          findUnique: (arguments_: {
+            where: { id: number };
+            include: { exchangeRate: boolean };
+          }) => Promise<unknown>;
+        };
+      };
+      const result = await prismaClient.payment.findUnique({
+        where: { id },
+        include: { exchangeRate: true },
+      });
+
+      if (result === null) {
+        return null;
+      }
+
+      if (!isPaymentEntity(result)) {
+        throw new Error("Invalid payment data returned from database");
+      }
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to find payment with forex rate: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }

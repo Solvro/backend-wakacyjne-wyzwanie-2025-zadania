@@ -63,7 +63,7 @@ export class PaymentsService {
       }
     }
 
-    // Calculate PLN amount and exchange rate
+    // Calculate PLN amount and get/create forex rate record
     const conversionResult = await this.convertCurrencyToPLN(
       originalAmount,
       originalCurrency,
@@ -75,7 +75,7 @@ export class PaymentsService {
         originalAmount,
         originalCurrency,
         plnAmount: conversionResult.plnAmount,
-        exchangeRate: conversionResult.exchangeRate,
+        forexRateId: conversionResult.forexRateId,
         status: "PENDING" as const,
         tripId: tripId ?? null,
         expenseId: expenseId ?? null,
@@ -98,7 +98,7 @@ export class PaymentsService {
    * Get payment by ID
    */
   async getPaymentById(id: number): Promise<PaymentResponseDto> {
-    const payment = await this.paymentDb.safeFindPayment(id);
+    const payment = await this.paymentDb.safeFindPaymentWithForexRate(id);
 
     if (payment === null) {
       throw new NotFoundException(`Payment with ID ${id.toString()} not found`);
@@ -138,7 +138,7 @@ export class PaymentsService {
       where.originalCurrency = currency;
     }
 
-    const payments = await this.paymentDb.safeFindManyPayments({
+    const payments = await this.paymentDb.safeFindManyPaymentsWithForexRate({
       where,
       orderBy: { createdAt: "desc" },
       take: limit,
@@ -161,14 +161,16 @@ export class PaymentsService {
       throw new NotFoundException(`Payment with ID ${id.toString()} not found`);
     }
 
-    const updatedPayment = await this.paymentDb.safeUpdatePayment(id, {
-      status: updateDto.status,
-
-      processedAt:
-        updateDto.status === PaymentStatusDto.COMPLETED
-          ? new Date()
-          : payment.processedAt,
-    });
+    const updatedPayment = await this.paymentDb.safeUpdatePaymentWithForexRate(
+      id,
+      {
+        status: updateDto.status,
+        processedAt:
+          updateDto.status === PaymentStatusDto.COMPLETED
+            ? new Date()
+            : payment.processedAt,
+      },
+    );
 
     return this.mapToPaymentResponse(updatedPayment);
   }
@@ -192,39 +194,21 @@ export class PaymentsService {
   async getPaymentConversionInfo(
     id: number,
   ): Promise<PaymentConversionInfoDto> {
-    const payment = await this.paymentDb.safeFindPayment(id);
+    const payment = await this.paymentDb.safeFindPaymentWithForexRate(id);
 
     if (payment === null) {
       throw new NotFoundException(`Payment with ID ${id.toString()} not found`);
     }
 
-    // Get the forex rate used for this payment
-
-    let rateTimestamp = payment.createdAt;
-
-    if (payment.exchangeRate !== null && payment.originalCurrency !== "PLN") {
-      // Try to find the exact rate record used
-      const forexRate = await this.prisma.forexRate.findFirst({
-        where: {
-          currency: payment.originalCurrency,
-        },
-        orderBy: { fetchedAt: "desc" },
-      });
-
-      if (forexRate !== null) {
-        rateTimestamp = forexRate.fetchedAt;
-      }
-    }
+    // Get the forex rate from the relation
+    const exchangeRate = payment.exchangeRate?.rate ?? 1;
+    const rateTimestamp = payment.exchangeRate?.fetchedAt ?? payment.createdAt;
 
     return {
       originalAmount: `${payment.originalAmount.toFixed(2)} ${payment.originalCurrency}`,
-
       plnAmount: `${payment.plnAmount.toFixed(2)} PLN`,
-
-      exchangeRate: payment.exchangeRate ?? 1,
-
+      exchangeRate,
       rateTimestamp: rateTimestamp.toISOString(),
-
       convertedAt: payment.createdAt.toISOString(),
     };
   }
@@ -235,15 +219,29 @@ export class PaymentsService {
   private async convertCurrencyToPLN(
     amount: number,
     currency: SupportedCurrency,
-  ): Promise<{ plnAmount: number; exchangeRate: number | null }> {
+  ): Promise<{ plnAmount: number; forexRateId: number }> {
     if (currency === SupportedCurrency.PLN) {
+      // For PLN payments, we need to find or create a PLN forex rate record
+      let plnForexRate = await this.prisma.forexRate.findFirst({
+        where: { currency: "PLN" },
+        orderBy: { fetchedAt: "desc" },
+      });
+
+      plnForexRate ??= await this.prisma.forexRate.create({
+        data: {
+          currency: "PLN",
+          rate: 1,
+          fetchedAt: new Date(),
+        },
+      });
+
       return {
         plnAmount: amount,
-        exchangeRate: null,
+        forexRateId: plnForexRate.id,
       };
     }
 
-    // Get latest exchange rate
+    // Get or create the forex rate record for the currency
     const latestRates = await this.forexService.getLatestRates();
     const rate = latestRates.find(
       (r) => r.currencyName === (currency as string),
@@ -255,11 +253,27 @@ export class PaymentsService {
       );
     }
 
+    // Find or create the corresponding ForexRate record
+    let forexRateRecord = await this.prisma.forexRate.findFirst({
+      where: {
+        currency: currency as string,
+        rate: rate.rate,
+      },
+      orderBy: { fetchedAt: "desc" },
+    });
+
+    forexRateRecord ??= await this.prisma.forexRate.create({
+      data: {
+        currency: currency as string,
+        rate: rate.rate,
+        fetchedAt: new Date(),
+      },
+    });
     const plnAmount = amount * rate.rate;
 
     return {
       plnAmount: Math.round(plnAmount * 100) / 100, // Round to 2 decimal places
-      exchangeRate: rate.rate,
+      forexRateId: forexRateRecord.id,
     };
   }
 
@@ -274,7 +288,7 @@ export class PaymentsService {
       originalAmount: payment.originalAmount,
       originalCurrency: payment.originalCurrency as SupportedCurrency,
       plnAmount: payment.plnAmount,
-      exchangeRate: payment.exchangeRate ?? undefined,
+      exchangeRate: payment.exchangeRate?.rate ?? undefined,
       status: payment.status as PaymentStatusDto,
       processedAt: payment.processedAt?.toISOString(),
       createdAt: payment.createdAt.toISOString(),

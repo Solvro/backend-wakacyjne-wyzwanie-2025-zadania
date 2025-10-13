@@ -136,7 +136,8 @@ export class PaymentResponseDto {
   plnAmount: number;
 
   @ApiPropertyOptional({
-    description: "Exchange rate used for conversion (null for PLN payments)",
+    description:
+      "Exchange rate used for conversion (retrieved from ForexRate table, 1.0 for PLN payments)",
     example: 4.1282,
   })
   exchangeRate?: number;
@@ -207,13 +208,14 @@ export class PaymentConversionInfoDto {
   plnAmount: string;
 
   @ApiProperty({
-    description: "Exchange rate used",
+    description: "Exchange rate used for conversion (from ForexRate record)",
     example: 4.1282,
   })
   exchangeRate: number;
 
   @ApiProperty({
-    description: "Rate fetch timestamp",
+    description:
+      "Timestamp when the exchange rate was fetched from external API",
     example: "2025-09-20T10:30:00.000Z",
   })
   rateTimestamp: string;

@@ -92,10 +92,11 @@ model User {
 }
 
 model ForexRate {
-  id        Int      @id @default(autoincrement())
-  currency  String // Changed from currencyName to currency to match service
+  id        Int       @id @default(autoincrement())
+  currency  String
   rate      Float
-  fetchedAt DateTime @default(now())
+  fetchedAt DateTime  @default(now())
+  Payment   Payment[]
 }
 
 enum PaymentStatus {
@@ -112,7 +113,6 @@ model Payment {
   originalAmount   Float // Amount in original currency
   originalCurrency String // ISO currency code (USD, EUR, GBP, PLN)
   plnAmount        Float // Converted amount in PLN
-  exchangeRate     Float? // Rate used for conversion (null for PLN)
   status           PaymentStatus @default(PENDING)
   processedAt      DateTime? // When payment was completed
   createdAt        DateTime      @default(now())
@@ -122,8 +122,11 @@ model Payment {
   tripId Int?
   trip   Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
 
-  expenseId Int?
-  expense   Expense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  expenseId   Int?
+  expense     Expense? @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  
+  exchangeRate     ForexRate     @relation(fields: [forexRateId], references: [id])
+  forexRateId Int
 
   @@map("payments")
 }

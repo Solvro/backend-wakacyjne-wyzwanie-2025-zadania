@@ -41,16 +41,18 @@ export class PaymentsController {
   @Post()
   @ApiOperation({
     summary: "Create a new payment",
-    description: "Create a payment with automatic currency conversion to PLN",
+    description:
+      "Create a payment with automatic currency conversion to PLN. The system will find or create a ForexRate record and link it to the payment for accurate exchange rate tracking.",
   })
   @ApiResponse({
     status: 201,
-    description: "Payment created successfully",
+    description: "Payment created successfully with linked ForexRate record",
     type: PaymentResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: "Bad request - validation failed or currency conversion error",
+    description:
+      "Bad request - validation failed, currency conversion error, or ForexRate record creation failed",
   })
   @ApiResponse({
     status: 404,
@@ -149,11 +151,12 @@ export class PaymentsController {
   @Get(":id/conversion-info")
   @ApiOperation({
     summary: "Get payment conversion information",
-    description: "Get detailed currency conversion information for a payment",
+    description:
+      "Get detailed currency conversion information for a payment, including the exchange rate from the linked ForexRate record and when it was fetched",
   })
   @ApiResponse({
     status: 200,
-    description: "Conversion info retrieved",
+    description: "Conversion info retrieved with ForexRate details",
     type: PaymentConversionInfoDto,
   })
   @ApiResponse({
