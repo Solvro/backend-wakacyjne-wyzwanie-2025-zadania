@@ -80,26 +80,6 @@ describe("ForexController", () => {
   });
 
   describe("getRatesHistory", () => {
-    it("should return rates history with default parameters", async () => {
-      const mockRates = [
-        {
-          currencyName: "USD",
-          rate: 4.1234,
-          fetchedAt: "2025-09-20T10:00:00.000Z",
-        },
-      ];
-
-      mockForexService.getRatesHistory.mockResolvedValue(mockRates);
-
-      const result = await controller.getRatesHistory();
-
-      expect(result).toEqual(mockRates);
-      expect(mockForexService.getRatesHistory).toHaveBeenCalledWith(
-        undefined,
-        10,
-      );
-    });
-
     it("should return rates history with currency filter", async () => {
       const mockRates = [
         {
@@ -115,12 +95,6 @@ describe("ForexController", () => {
 
       expect(result).toEqual(mockRates);
       expect(mockForexService.getRatesHistory).toHaveBeenCalledWith("USD", 5);
-    });
-
-    it("should throw BadRequestException for invalid currency code", async () => {
-      await expect(controller.getRatesHistory("INVALID")).rejects.toThrow(
-        BadRequestException,
-      );
     });
 
     it("should throw BadRequestException for invalid limit", async () => {

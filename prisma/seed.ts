@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { ExpenseCategory, PrismaClient, TripStatus } from "@prisma/client";
 
 // Set the DATABASE_URL if not already set
@@ -97,7 +94,7 @@ async function main() {
   });
 
   // Upsert sample expenses
-  await prisma.expense.upsert({
+  const expense1 = await prisma.expense.upsert({
     where: {
       id: 1, // Using ID 1 for the first expense
     },
@@ -220,7 +217,7 @@ async function main() {
   // Upsert additional trip for variety
   const trip2 = await prisma.trip.upsert({
     where: {
-      id: 2, // Using ID 2 for the second trip
+      id: 2,
     },
     update: {
       name: "Weekend w Krakowie",
@@ -242,7 +239,7 @@ async function main() {
 
   const participant3 = await prisma.participant.upsert({
     where: {
-      id: 4, // Using ID 4 for the third participant
+      id: 4,
     },
     update: {
       name: "Piotr Zieliński",
@@ -286,7 +283,7 @@ async function main() {
 
   await prisma.user.upsert({
     where: {
-      id: 1, // Using ID 1 for the first user
+      id: 1,
     },
     create: {
       email: "admin@test.com",
@@ -297,6 +294,81 @@ async function main() {
       email: "admin@test.com",
       password: "$2a$12$nD/SAA0hn/9RcZ6goRfN6OPHWiqVDb3GE.fbegGK2CGE1lT6MbZHm",
       roles: "10000",
+    },
+  });
+
+  await prisma.user.upsert({
+    where: {
+      id: 2,
+    },
+    create: {
+      email: "user@test.com",
+      password: "$2a$12$8PVCNf63D5L2xK4Tg7lVW.Sh31e4gzlfjXdScSTomI18MWnzoyfVy",
+      roles: "00001",
+    },
+    update: {
+      email: "user@test.com",
+      password: "$2a$12$8PVCNf63D5L2xK4Tg7lVW.Sh31e4gzlfjXdScSTomI18MWnzoyfVy",
+      roles: "00001",
+    },
+  });
+
+  await prisma.forexRate.upsert({
+    where: {
+      id: 1,
+    },
+    create: {
+      currency: "EUR",
+      rate: 4.5,
+      fetchedAt: new Date(),
+    },
+    update: {
+      currency: "EUR",
+      rate: 4.5,
+      fetchedAt: new Date(),
+    },
+  });
+
+  await prisma.forexRate.upsert({
+    where: {
+      id: 2,
+    },
+    create: {
+      currency: "USD",
+      rate: 4.2,
+      fetchedAt: new Date(),
+    },
+    update: {
+      currency: "USD",
+      rate: 4.2,
+      fetchedAt: new Date(),
+    },
+  });
+
+  await prisma.payment.upsert({
+    where: {
+      id: 1,
+    },
+    create: {
+      title: "Zaliczka na wakacje",
+      originalAmount: 1500,
+      originalCurrency: "EUR",
+      plnAmount: 6750,
+      status: "COMPLETED",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expenseId: expense1.id,
+      forexRateId: 1,
+    },
+    update: {
+      title: "Zaliczka na wakacje",
+      originalAmount: 1500,
+      originalCurrency: "EUR",
+      plnAmount: 6750,
+      status: "COMPLETED",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      expenseId: 1,
     },
   });
 }

@@ -78,64 +78,6 @@ export class ForexService {
     }
   }
 
-  private async safeFindForexRate(
-    currency: string,
-  ): Promise<ForexRateEntity | null> {
-    try {
-      const prismaClient = this.prisma as unknown as {
-        forexRate: {
-          findFirst: (arguments_: {
-            where: { currency: string };
-            orderBy: { fetchedAt: string };
-          }) => Promise<unknown>;
-        };
-      };
-      const result = await prismaClient.forexRate.findFirst({
-        where: { currency },
-        orderBy: { fetchedAt: "desc" },
-      });
-
-      if (result === null) {
-        return null;
-      }
-
-      if (!isForexRateEntity(result)) {
-        throw new Error("Invalid forex rate data returned from database");
-      }
-
-      return result;
-    } catch (error) {
-      throw new BadRequestException(
-        `Failed to find forex rate: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    }
-  }
-
-  private async safeFindManyForexRates(options: {
-    where?: Record<string, unknown>;
-    orderBy?: Record<string, unknown>;
-    take?: number;
-  }): Promise<ForexRateEntity[]> {
-    try {
-      const prismaClient = this.prisma as unknown as {
-        forexRate: {
-          findMany: (arguments_: typeof options) => Promise<unknown>;
-        };
-      };
-      const result = await prismaClient.forexRate.findMany(options);
-
-      if (!_isForexRateArray(result)) {
-        throw new Error("Invalid forex rate data returned from database");
-      }
-
-      return result;
-    } catch (error) {
-      throw new BadRequestException(
-        `Failed to find forex rates: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    }
-  }
-
   async fetchCurrentRates(): Promise<FetchRatesResponseDto> {
     this.logger.log("Starting to fetch current currency rates from NBP API");
 
@@ -257,25 +199,16 @@ export class ForexService {
   }
 
   async getRatesHistory(
-    currencyCode?: string,
+    currencyCode: string,
     limit = 10,
   ): Promise<ForexRateDto[]> {
     this.logger.log(
-      `Fetching rates history for ${currencyCode ?? "all currencies"} with limit ${String(limit)}`,
+      `Fetching rates history for ${currencyCode} with limit ${String(limit)}`,
     );
 
     try {
-      const whereClause =
-        currencyCode === undefined
-          ? {
-              currency: {
-                in: this.TARGET_CURRENCIES,
-              },
-            }
-          : { currency: currencyCode.toUpperCase() };
-
-      const rates = await this.safeFindManyForexRates({
-        where: whereClause,
+      const rates = await this.prisma.forexRate.findMany({
+        where: { currency: currencyCode.toUpperCase() },
         orderBy: {
           fetchedAt: "desc",
         },

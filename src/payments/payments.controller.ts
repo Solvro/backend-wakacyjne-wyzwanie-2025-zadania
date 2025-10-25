@@ -20,7 +20,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
+import { Role } from "@/lib/roles";
+
 import { AuthGuard } from "../auth/auth.guard";
+import { Roles } from "../auth/roles/role.decorator";
+import { RoleGuard } from "../auth/roles/role.guard";
 import {
   CreatePaymentDto,
   PaymentConversionInfoDto,
@@ -33,11 +37,12 @@ import { PaymentsService } from "./payments.service";
 
 @ApiTags("payments")
 @ApiBearerAuth()
-@UseGuards(AuthGuard)
 @Controller("payments")
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  @UseGuards(AuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   @Post()
   @ApiOperation({
     summary: "Create a new payment",

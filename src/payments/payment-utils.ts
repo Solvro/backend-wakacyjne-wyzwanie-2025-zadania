@@ -4,7 +4,7 @@ import { BadRequestException } from "@nestjs/common";
 
 import type { PrismaService } from "../prisma/prisma.service";
 
-// Define our own payment interface based on the schema
+// Define our own payment interface based on the current schema
 export interface PaymentEntity {
   id: number;
   title: string;
@@ -137,14 +137,7 @@ export class PaymentDatabaseUtils {
     skip?: number;
   }): Promise<PaymentEntity[]> {
     try {
-      const prismaClient = this.prisma as unknown as {
-        payment: {
-          findMany: (
-            arguments_: typeof options & { include: { exchangeRate: boolean } },
-          ) => Promise<unknown>;
-        };
-      };
-      const result = await prismaClient.payment.findMany({
+      const result = await this.prisma.payment.findMany({
         ...options,
         include: { exchangeRate: true },
       });
@@ -239,15 +232,7 @@ export class PaymentDatabaseUtils {
     id: number,
   ): Promise<PaymentEntity | null> {
     try {
-      const prismaClient = this.prisma as unknown as {
-        payment: {
-          findUnique: (arguments_: {
-            where: { id: number };
-            include: { exchangeRate: boolean };
-          }) => Promise<unknown>;
-        };
-      };
-      const result = await prismaClient.payment.findUnique({
+      const result = await this.prisma.payment.findUnique({
         where: { id },
         include: { exchangeRate: true },
       });

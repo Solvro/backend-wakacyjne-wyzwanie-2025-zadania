@@ -83,23 +83,15 @@ export class ForexController {
     description: "Invalid query parameters or database error",
   })
   async getRatesHistory(
-    @Query("currency") currency?: string,
-    @Query("limit", new ParseIntPipe({ optional: true })) limit?: number,
+    @Query("currency") currency: string,
+    @Query("limit", new ParseIntPipe({ optional: true })) limit = 10,
   ): Promise<ForexRateDto[]> {
-    // Validate currency code if provided
-    if (currency !== undefined && !/^[A-Z]{3}$/u.test(currency.toUpperCase())) {
-      throw new BadRequestException(
-        "Currency code must be a 3-letter ISO code (e.g., USD, EUR, GBP)",
-      );
-    }
-
     // Validate limit
-    const validatedLimit = limit ?? 10;
-    if (validatedLimit < 1 || validatedLimit > 100) {
+    if (limit < 1 || limit > 100) {
       throw new BadRequestException("Limit must be between 1 and 100");
     }
 
-    return this.forexService.getRatesHistory(currency, validatedLimit);
+    return this.forexService.getRatesHistory(currency, limit);
   }
 
   @Get("schedule/status")

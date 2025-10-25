@@ -98,7 +98,9 @@ export class PaymentsService {
    * Get payment by ID
    */
   async getPaymentById(id: number): Promise<PaymentResponseDto> {
-    const payment = await this.paymentDb.safeFindPaymentWithForexRate(id);
+    const payment = await this.prisma.payment.findUnique({
+      where: { id },
+    });
 
     if (payment === null) {
       throw new NotFoundException(`Payment with ID ${id.toString()} not found`);
